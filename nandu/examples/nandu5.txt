@@ -1,0 +1,15 @@
+22 14 
+X  X  X  X  X  Q1 Q2 X  X  Q3 Q4 X  X  Q5 Q6 X  X  X  X  X  X  X
+X  X  X  X  X  R  r  X  X  r  R  X  X  R  r  X  X  X  X  X  X  X 
+X  X  X  X  r  R  R  r  r  R  R  r  r  R  R  r  X  X  X  X  X  X  
+X  X  X  X  W  W  B  B  W  W  B  B  W  W  B  B  X  X  X  X  X  X  
+X  X  X  r  R  B  B  B  B  B  B  B  B  B  B  R  r  X  X  X  X  X  
+X  X  r  R  B  B  X  B  B  B  B  B  B  B  B  X  R  r  X  X  X  X 
+X  r  R  B  B  R  r  B  B  B  B  B  B  B  B  r  R  R  r  X  X  X  
+X  X  B  B  W  W  B  B  X  B  B  B  B  B  B  W  W  B  B  X  X  X 
+X  r  R  W  W  W  W  R  r  W  W  W  W  W  W  W  W  W  W  X  X  X 
+X  W  W  B  B  W  W  X  B  B  W  W  B  B  W  W  B  B  R  r  X  X
+r  R  B  B  B  B  R  r  X  B  B  B  B  B  B  B  B  B  B  R  r  X 
+X  B  B  B  B  B  B  R  r  B  B  B  B  B  B  B  B  B  B  W  W  X 
+r  R  B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  R  r
+L1 X  X  X  X L2  X  X  X  X L3  X  L4 X  X  X  X  X  X  X  X  L5
