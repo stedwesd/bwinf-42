@@ -1,7 +1,7 @@
 # bwinf-42
 
 A Github repository for our BWINF 42 Team.
-The team consists of:
+The team consists of: @stedwesd, @Roboter09, @Banana2308
 
 ## Progress on tasks
 
