@@ -14,4 +14,4 @@ The team consists of: @stedwesd, @Roboter09, @Banana2308
 | `N3` Zauberschule      | 🟨 Implementation process | @stedwesd
 | `N4` Nandu             | ✅ Program implemented| @stedwesd
 | `N5` Stadtführung      | - | 
-| `Z1` Website für `N4`  | - |
+| `Z1` Website für `N4`  | - | @Banan2308
