@@ -1,19 +1,15 @@
-# both libaries are not within the standart python library; have to be downloaded using pip / python -m pip
-from PIL import Image # pip install pillow
-import numpy as np # pip install numpy
+from PIL import Image
 
 def getSecretMessage(path: str):
-    im = np.array(Image.open(path))
+    img = Image.open(path)
     x, y, dx, dy = 0, 0, 0, 0
-    h, w = im.shape[:2]
+    w, h = img.size
     msg = ""
     while not msg or dx or dy:
-        char, dx, dy = im[y, x][:3]
-        msg += chr(char)
-        x += dx
-        y += dy
-        x %= w
-        y %= h
+        char, dx, dy, _ = img.getpixel((x, y))
+        msg += chr(char) # add the characters
+        x, y = x + dx, y + dy # add the offsets
+        x, y = x % w, y % h # wrap over the ends of the picture
     return msg
 
 
