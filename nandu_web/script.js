@@ -14,20 +14,18 @@ function init(event) {
     // prevent when called by submit
     event && event.preventDefault();
 
-    snapX  = +input.snapX.val();
-    snapY  = +input.snapY.val();
-    
     // cast input values to numbers
-    board.size    = +input.size.val();
-    
+    var snapX = +input.snapX.val();
+    var snapY = +input.snapY.val();
+    board.size = +input.size.val();
+    board.rows = Math.floor(100 / snapY);
+    board.cols = Math.floor(100 / snapX);
+
     createGrid();
     updateSize();
 }
 
 function initMarker(marker) {
-    marker.width  = +input.width.val();
-    marker.height = +input.height.val();
-
     // Set marker's size here
     marker.target.css({
         width: marker.width + "%",
@@ -39,20 +37,21 @@ function initMarker(marker) {
         containment: "parent", // Keep the marker within its parent element (the board)
         snap: ".cell",         // Snap to elements with the class "cell"
         snapMode: "both",       // Snap to both the x and y axes
-        drag: function(event, ui) {
+        drag: function (event, ui) {
             onDrag(event, ui, marker); // Pass the marker to onDrag
         }
     });
-    return(marker);
+    return (marker);
 }
 
 function onDrag(event, ui, marker) {
     console.log("onDrag called");
-    
+
     // Snap the marker to the nearest grid cell within the board
-    var xGrid = Math.round(ui.position.left / board.width * board.cols) * (100 / board.cols);
+    //var xGrid = Math.round(ui.position.left / board.width * board.cols) * (100 / board.cols);
+    var xGrid = Math.round(parseFloat(marker.target.css('left')) / board.width * board.cols) * (100 / board.cols);
     var yGrid = Math.round(parseFloat(marker.target.css('top')) / board.height * board.rows) * (100 / board.rows);
-    console.log(xGrid,yGrid)
+    console.log(xGrid, yGrid)
 
     // Set the marker's position to the snapped values in percentages
     marker.target.css({
@@ -67,26 +66,19 @@ function onDrag(event, ui, marker) {
 
 // SIZING :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 function updateSize() {
-    var winWidth  = window.innerWidth;
+    var winWidth = window.innerWidth;
     var winHeight = window.innerHeight;
     var landscape = (winWidth > winHeight);
 
-    var min  = Math.min(winWidth, winHeight);
-    var max  = Math.max(winWidth, winHeight);
+    var min = Math.min(winWidth, winHeight);
+    var max = Math.max(winWidth, winHeight);
     var size = board.size * min / 100;
 
     TweenLite.set(board.target, {
-        xPercent   : -50,
-        yPercent   : -50,
-        width      : size / (landscape ? max : min) * 100 + "%",
-        paddingTop : size / (landscape ? max : min) * 100 + "%"
-    });
-}
-
-function updateMarkerSize(marker) {
-    TweenLite.set(marker.target, {
-        width  : marker.width  + "%",
-        height : marker.height + "%"
+        xPercent: -50,
+        yPercent: -50,
+        width: size / (landscape ? max : min) * 100 + "%",
+        paddingTop: size / (landscape ? max : min) * 100 + "%"
     });
 }
 
@@ -102,16 +94,15 @@ function createGrid() {
 
             var target = $("<div class='cell' />").appendTo(board.target);
 
-            TweenLite.set(target, {        
-                width  : 100 / board.cols + "%",
-                height : 100 / board.rows + "%",
-                left   : col * 100 / board.cols + "%",
-                top    : row * 100 / board.rows + "%"
+            TweenLite.set(target, {
+                width: 100 / board.cols + "%",
+                height: 100 / board.rows + "%",
+                left: col * 100 / board.cols + "%",
+                top: row * 100 / board.rows + "%"
             });
         }
     }
 }
-
 
 $(document).ready(function () {
 
@@ -128,17 +119,14 @@ $(document).ready(function () {
         get bounds() { return this._bounds || this.target[0].getBoundingClientRect(); },
         set bounds(bounds) { this._bounds = bounds; },
 
-        get cols() { return Math.floor(100 / snapX); },
-        get rows() { return Math.floor(100 / snapY); },
-
         get width() { return this.bounds.width; },
         get height() { return this.bounds.height; }
     }
 
     var markerTargets = board.target.find(".marker");
     console.log(markerTargets.length)
-    
-    markerTargets.each(function() {
+
+    markerTargets.each(function () {
         var marker = {
             isDragging: false,
             target: $(this),
@@ -147,10 +135,12 @@ $(document).ready(function () {
             xPercent: 0,
             yPercent: 0,
         };
+        marker.width = +input.width.val();
+        marker.height = +input.height.val();
         markers.push(initMarker(marker));
     });
-    
-    markers.forEach(function(marker) {
+
+    markers.forEach(function (marker) {
         marker.target.on("mousedown", function (event) {
             event.preventDefault();
             marker.isDragging = true;
@@ -183,13 +173,38 @@ $(document).ready(function () {
             };
         });
     });
-
-    // Function to set the marker's relative position
-    function setRelative(marker) {
-        TweenLite.set(board.target, { zIndex: 10 });
-        TweenLite.set(marker.target, {
-            left: marker.xPercent + "%",
-            top: marker.yPercent + "%"
-        });
-    }
+    init(); // Initialize the board
 });
+
+// Function to set the marker's relative position
+function setRelative(marker) {
+    TweenLite.set(board.target, { zIndex: 10 });
+    TweenLite.set(marker.target, {
+        left: marker.xPercent + "%",
+        top: marker.yPercent + "%"
+    });
+}
+
+// Functions:::::::::::::::::::::::::::::::::
+function createMarker(xPercent, yPercent, width, height) {
+    var newMarker = $("<div class='marker' />").appendTo(board.target);
+
+    // Initialize the new marker
+    var marker = {
+        isDragging: false,
+        target: newMarker,
+        width: width,
+        height: height,
+        xPercent: xPercent,
+        yPercent: yPercent
+    };
+
+    // Set the initial position of the new marker using xPercent and yPercent
+    marker.target.css({
+        left: xPercent + "%",
+        top: yPercent + "%"
+    });
+
+    markers.push(initMarker(marker)); // Push the marker object, not the result of initMarker
+    init();
+}
