@@ -22,7 +22,7 @@ html, body {
     background: #d7d7d7;
   }
   
-  .marker {
+  #marker {
     position: absolute;
     background: rgba(128, 0, 128, 0.7);
     outline: 1px solid transparent;

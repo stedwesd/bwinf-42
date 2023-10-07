@@ -1,5 +1,4 @@
-var board;
-var markers = [];
+var board, marker;
 
 var input = {
     width: $("#marker-width"),
@@ -11,42 +10,36 @@ var input = {
 
 // INIT :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 function init(event) {
+
     // prevent when called by submit
     event && event.preventDefault();
-
-    snapX  = +input.snapX.val();
-    snapY  = +input.snapY.val();
     
     // cast input values to numbers
     board.size    = +input.size.val();
-    
-    createGrid();
-    updateSize();
-}
-
-function initMarker(marker) {
+    marker.snapX  = +input.snapX.val();
+    marker.snapY  = +input.snapY.val();
     marker.width  = +input.width.val();
     marker.height = +input.height.val();
-
+    
     // Set marker's size here
     marker.target.css({
         width: marker.width + "%",
         height: marker.height + "%"
     });
-
+    
     // Make the marker element draggable
-    marker.target.draggable({
+    $("#marker").draggable({
         containment: "parent", // Keep the marker within its parent element (the board)
         snap: ".cell",         // Snap to elements with the class "cell"
         snapMode: "both",       // Snap to both the x and y axes
-        drag: function(event, ui) {
-            onDrag(event, ui, marker); // Pass the marker to onDrag
-        }
+        drag: onDrag
     });
-    return(marker);
+    
+    createGrid();
+    updateSize();
 }
 
-function onDrag(event, ui, marker) {
+function onDrag(event, ui) {
     console.log("onDrag called");
     
     // Snap the marker to the nearest grid cell within the board
@@ -67,27 +60,26 @@ function onDrag(event, ui, marker) {
 
 // SIZING :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 function updateSize() {
-    var winWidth  = window.innerWidth;
-    var winHeight = window.innerHeight;
-    var landscape = (winWidth > winHeight);
 
-    var min  = Math.min(winWidth, winHeight);
-    var max  = Math.max(winWidth, winHeight);
-    var size = board.size * min / 100;
+var winWidth  = window.innerWidth;
+var winHeight = window.innerHeight;
+var landscape = (winWidth > winHeight);
 
-    TweenLite.set(board.target, {
-        xPercent   : -50,
-        yPercent   : -50,
-        width      : size / (landscape ? max : min) * 100 + "%",
-        paddingTop : size / (landscape ? max : min) * 100 + "%"
-    });
-}
+var min  = Math.min(winWidth, winHeight);
+var max  = Math.max(winWidth, winHeight);
+var size = board.size * min / 100;
 
-function updateMarkerSize(marker) {
-    TweenLite.set(marker.target, {
-        width  : marker.width  + "%",
-        height : marker.height + "%"
-    });
+TweenLite.set(board.target, {
+    xPercent   : -50,
+    yPercent   : -50,
+    width      : size / (landscape ? max : min) * 100 + "%",
+    paddingTop : size / (landscape ? max : min) * 100 + "%"
+});
+
+TweenLite.set(marker.target, {
+    width  : marker.width  + "%",
+    height : marker.height + "%"
+});
 }
 
 // GRID :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -128,64 +120,72 @@ $(document).ready(function () {
         get bounds() { return this._bounds || this.target[0].getBoundingClientRect(); },
         set bounds(bounds) { this._bounds = bounds; },
 
-        get cols() { return Math.floor(100 / snapX); },
-        get rows() { return Math.floor(100 / snapY); },
+        get cols() { return Math.floor(100 / marker._snapX); },
+        get rows() { return Math.floor(100 / marker._snapY); },
 
         get width() { return this.bounds.width; },
         get height() { return this.bounds.height; }
     }
 
-    var markerTargets = board.target.find(".marker");
-    console.log(markerTargets.length)
-    
-    markerTargets.each(function() {
-        var marker = {
-            isDragging: false,
-            target: $(this),
-            width: null,
-            height: null,
-            xPercent: 0,
-            yPercent: 0,
+    marker = {
+        _snapX: null,
+        _snapY: null,
+        target: $("#marker"),
+        width: null,
+        height: null,
+        xPercent: 0,
+        yPercent: 0,
+
+        get snapX() { return this._snapX + 100 % this._snapX / board.cols; },
+        set snapX(snapX) { this._snapX = snapX; },
+
+        get snapY() { return this._snapY + 100 % this._snapY / board.rows; },
+        set snapY(snapY) { this._snapY = snapY; },
+
+        get x() { return parseFloat(this.target.css('left')) || 0; },
+        get y() { return parseFloat(this.target.css('top')) || 0; }
+    };
+
+    init();
+
+    var isDragging = false;
+
+    marker.target.on("mousedown", function (event) {
+        event.preventDefault();
+        isDragging = true;
+
+        var startX = event.clientX;
+        var startY = event.clientY;
+        var startLeft = parseFloat(marker.target.css('left')) || 0;
+        var startTop = parseFloat(marker.target.css('top')) || 0;
+
+        document.onmousemove = function (e) {
+            if (isDragging) {
+                var newX = startLeft + e.clientX - startX;
+                var newY = startTop + e.clientY - startY;
+
+                // Ensure the marker stays within the board
+                newX = Math.min(Math.max(newX, 0), board.width - marker.width);
+                newY = Math.min(Math.max(newY, 0), board.height - marker.height);
+
+                marker.target.css({ left: newX + 'px', top: newY + 'px' });
+            }
         };
-        markers.push(initMarker(marker));
-    });
-    
-    markers.forEach(function(marker) {
-        marker.target.on("mousedown", function (event) {
-            event.preventDefault();
-            marker.isDragging = true;
 
-            var startX = event.clientX;
-            var startY = event.clientY;
-            var startLeft = parseFloat(marker.target.css('left')) || 0;
-            var startTop = parseFloat(marker.target.css('top')) || 0;
+        document.onmouseup = function () {
+            isDragging = false;
+            document.onmousemove = null;
+            document.onmouseup = null;
 
-            document.onmousemove = function (e) {
-                if (marker.isDragging) {
-                    var newX = startLeft + e.clientX - startX;
-                    var newY = startTop + e.clientY - startY;
-
-                    // Ensure the marker stays within the board
-                    newX = Math.min(Math.max(newX, 0), board.width - marker.width);
-                    newY = Math.min(Math.max(newY, 0), board.height - marker.height);
-
-                    marker.target.css({ left: newX + 'px', top: newY + 'px' });
-                }
-            };
-
-            document.onmouseup = function () {
-                marker.isDragging = false;
-                document.onmousemove = null;
-                document.onmouseup = null;
-
-                board.bounds = null;
-                setRelative(marker);
-            };
-        });
+            board.bounds = null;
+            setRelative();
+        };
     });
 
-    // Function to set the marker's relative position
-    function setRelative(marker) {
+    function setRelative() {
+        //marker.xPercent = marker.x / board.width * 100;
+        //marker.yPercent = marker.y / board.height * 100;
+
         TweenLite.set(board.target, { zIndex: 10 });
         TweenLite.set(marker.target, {
             left: marker.xPercent + "%",
