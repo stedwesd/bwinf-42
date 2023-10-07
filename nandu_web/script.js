@@ -36,22 +36,21 @@ function initMarker(marker) {
     marker.target.draggable({
         containment: "parent", // Keep the marker within its parent element (the board)
         snap: ".cell",         // Snap to elements with the class "cell"
-        snapMode: "both",       // Snap to both the x and y axes
+        snapMode: "both"       // Snap to both the x and y axes
+        /*
         drag: function (event, ui) {
             onDrag(event, ui, marker); // Pass the marker to onDrag
-        }
+        }*/
     });
+    console.log("initMarker called");
     return (marker);
 }
 
-function onDrag(event, ui, marker) {
-    console.log("onDrag called");
-
+function onDrag(/*event, ui, */marker) {
     // Snap the marker to the nearest grid cell within the board
-    //var xGrid = Math.round(ui.position.left / board.width * board.cols) * (100 / board.cols);
+    // var xGrid = Math.round(ui.position.left / board.width * board.cols) * (100 / board.cols);
     var xGrid = Math.round(parseFloat(marker.target.css('left')) / board.width * board.cols) * (100 / board.cols);
     var yGrid = Math.round(parseFloat(marker.target.css('top')) / board.height * board.rows) * (100 / board.rows);
-    console.log(xGrid, yGrid)
 
     // Set the marker's position to the snapped values in percentages
     marker.target.css({
@@ -124,7 +123,6 @@ $(document).ready(function () {
     }
 
     var markerTargets = board.target.find(".marker");
-    console.log(markerTargets.length)
 
     markerTargets.each(function () {
         var marker = {
@@ -154,12 +152,13 @@ $(document).ready(function () {
                 if (marker.isDragging) {
                     var newX = startLeft + e.clientX - startX;
                     var newY = startTop + e.clientY - startY;
-
                     // Ensure the marker stays within the board
                     newX = Math.min(Math.max(newX, 0), board.width - marker.width);
                     newY = Math.min(Math.max(newY, 0), board.height - marker.height);
 
-                    marker.target.css({ left: newX + 'px', top: newY + 'px' });
+                    marker.target.css({ left: newX + 'px', top: newY + 'px'});
+
+                    onDrag(marker);
                 }
             };
 
@@ -207,4 +206,37 @@ function createMarker(xPercent, yPercent, width, height) {
 
     markers.push(initMarker(marker)); // Push the marker object, not the result of initMarker
     init();
+
+    marker.target.on("mousedown", function (event) {
+        event.preventDefault();
+        marker.isDragging = true;
+
+        var startX = event.clientX;
+        var startY = event.clientY;
+        var startLeft = parseFloat(marker.target.css('left')) || 0;
+        var startTop = parseFloat(marker.target.css('top')) || 0;
+
+        document.onmousemove = function (e) {
+            if (marker.isDragging) {
+                var newX = startLeft + e.clientX - startX;
+                var newY = startTop + e.clientY - startY;
+                // Ensure the marker stays within the board
+                newX = Math.min(Math.max(newX, 0), board.width - marker.width);
+                newY = Math.min(Math.max(newY, 0), board.height - marker.height);
+
+                marker.target.css({ left: newX + 'px', top: newY + 'px'});
+
+                onDrag(marker);
+            }
+        };
+
+        document.onmouseup = function () {
+            marker.isDragging = false;
+            document.onmousemove = null;
+            document.onmouseup = null;
+
+            board.bounds = null;
+            setRelative(marker);
+        };
+    });
 }
