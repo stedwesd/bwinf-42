@@ -1,0 +1,25 @@
+body {
+    margin: 0;
+    padding: 100px;
+    position: relative;
+}
+
+#container {
+    height: 600px;
+    width: 600px;
+    position: relative;
+}
+
+.box {
+    height: 100px;
+    width: 100px;
+    position: absolute;
+    background: green;
+}
+
+[grid-cell] {
+    position: absolute;
+    border: 1px solid #000;
+    width: 49px;
+    height: 49px;
+}
