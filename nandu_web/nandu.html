@@ -1,45 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <link rel="stylesheet" href="style.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.1/gsap.min.js"></script>
+    </head>
 <body>
-    <div id="container">
-        <div class="box"></div>
-    </div>
-
-    <script>
-        var container = $("#container");
-        var box = $(".box");
-
-        var width  = 50;
-        var height = 50;
-        var rows   = 12;
-        var cols   = 12;
-        var snap   = 50;
-
-        $("<div grid-cell></div>").css({ top: 10, left: 10 }).prependTo(container);
-
-        for (var i = 0; i < rows * cols; i++) {
-            var y = Math.floor(i / cols) * height;
-            var x = (i * width) % (cols * width);
-            $("<div grid-cell></div>").css({ top: y, left: x }).prependTo(container);
-        }
-
-        Draggable.create(box, {
-            bounds: container,
-            onDrag: onDrag
-        });
-
-        function onDrag() {
-            TweenLite.to(box, 0.5, {
-                x: Math.round(this.x / snap) * snap,
-                y: Math.round(this.y / snap) * snap,
-                ease: Back.easeOut.config(2)
-            });   
-        }
-    </script>
+    <main>
+        <section id="panel">
+            <header>Percentages</header>
+            <form id=setting-form>
+                <label>
+                Snap X
+                <input id="snap-x" type="number" value="10" min="5" max="50" step="0.1" autofocus />
+                </label>
+                <label>
+                Snap Y
+                <input id="snap-y" type="number" value="10" min="5" max="50" step="0.1" />
+                </label>
+                <label>
+                Marker Width
+                <input id="marker-width" type="number" value="20" min="1" max="100" step="0.1" />
+                </label>
+                <label>
+                Marker Height
+                <input id="marker-height" type="number" value="20" min="1" max="100" step="0.1" />
+                </label>
+                <label>
+                Board Size
+                <input id="board-size" type="number" value="80" min="1" max="100" step="0.1" />
+                </label>
+                <input type="submit" value="Apply" />
+            </form>
+        </section>
+      
+        <section id="board">
+            <div id="marker"></div>
+        </section>
+        <script language="javascript" type="text/javascript" src="script.js"></script>
+    </main>
 </body>
 </html>

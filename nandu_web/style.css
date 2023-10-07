@@ -1,25 +1,81 @@
-body {
+html, body {
+    height: 100%;
     margin: 0;
-    padding: 100px;
+  }
+  
+  body {
+    background-color: #ddd;
+    overflow: hidden;
+  }
+  
+  main {
+    background: #ddd;
     position: relative;
-}
-
-#container {
-    height: 600px;
-    width: 600px;
+    height: 100vh;
+  }
+  
+  #board {
     position: relative;
-}
-
-.box {
-    height: 100px;
+    top: 50%;
+    left: 50%;
+    z-index: 10;
+    background: #d7d7d7;
+  }
+  
+  #marker {
+    position: absolute;
+    background: rgba(128, 0, 128, 0.7);
+    outline: 1px solid transparent;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+  }
+  
+  .cell {
+    background: #aeaeae;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  
+  #panel {
+    position: absolute;
+    padding: 10px;
+    z-index: 20;
+    background: #ddd;
+    border: 1px solid #ccc;
+  
+    header {
+      font-weight: bold;
+      font-size: 14px;
+    }
+  }
+  
+  input {
+    display: block;
+  }
+  
+  label {
+    display: block;
+    font-size: 12px;
+    margin: 6px 0;
+  }
+  
+  [type="number"] {
     width: 100px;
-    position: absolute;
-    background: green;
-}
-
-[grid-cell] {
-    position: absolute;
-    border: 1px solid #000;
-    width: 49px;
-    height: 49px;
-}
+    margin-top: 4px;
+  }
+  
+  [type="submit"] {
+    background: #ddd;
+    box-shadow: none;
+    outline: none;
+    font-size: 12px;
+    padding: 4px 8px;
+    border: 1px solid #aaa;
+    margin-top: 8px;
+  
+    &:focus {
+      outline: none;
+    }
+  }
