@@ -28,7 +28,8 @@ function initMarker(marker) {
     // Set marker's size here
     marker.target.css({
         width: marker.width + "%",
-        height: marker.height + "%"
+        height: marker.height + "%",
+        background: marker.color
     });
 
     // Make the marker element draggable
@@ -163,6 +164,7 @@ $(document).ready(function () {
         get height() { return this.bounds.height; }
     }
 
+    /*
     var markerTargets = board.target.find(".marker");
 
     markerTargets.each(function () {
@@ -176,7 +178,11 @@ $(document).ready(function () {
             xPercent: 0,
             yPercent: 0,
             inOut: [["I1","I2"],["O1","O2"],[null],[null]], // left, right, top, bottom
-            inOutTargets: []
+            inOutTargets: [],
+            rules: null,
+            color: "purple",
+            activeIns: [],
+            activeOuts: []
         };
         marker.width = 10;
         marker.height = 20;
@@ -217,6 +223,8 @@ $(document).ready(function () {
             };
         });
     });
+    // Delete until here */
+
     init(); // Initialize the board
 });
 
@@ -244,13 +252,110 @@ function createMarker(xPercent, yPercent) {
         xPercent: xPercent,
         yPercent: yPercent,
         inOut: [["I1","I2"],["O1","O2"],[null],[null]], // left, right, top, bottom
-        inOutTargets: []
+        inOutTargets: [],
+        rules: type.rules,
+        color: type.color,
+        activeIns: [],
+        activeOuts: []
     };
 
     marker.realWidth = $("#marker-width").val();
     marker.realHeight = $("#marker-height").val();
     marker.width=snapX*realWidth;
     marker.height=snapY*realHeight;
+
+    // Set the initial position of the new marker using xPercent and yPercent
+    marker.target.css({
+        left: xPercent + "%",
+        top: yPercent + "%"
+    });
+
+    markers.push(initMarker(marker)); // Push the marker object, not the result of initMarker
+
+    marker.target.on("mousedown", function (event) {
+        event.preventDefault();
+        marker.isDragging = true;
+
+        var startX = event.clientX;
+        var startY = event.clientY;
+        var startLeft = parseFloat(marker.target.css('left')) || 0;
+        var startTop = parseFloat(marker.target.css('top')) || 0;
+
+        document.onmousemove = function (e) {
+            if (marker.isDragging) {
+                var newX = startLeft + e.clientX - startX;
+                var newY = startTop + e.clientY - startY;
+                // Ensure the marker stays within the board
+                newX = Math.min(Math.max(newX, 0), board.width - marker.width);
+                newY = Math.min(Math.max(newY, 0), board.height - marker.height);
+
+                marker.target.css({ left: newX + 'px', top: newY + 'px'});
+
+                onDrag(marker);
+            }
+        };
+
+        document.onmouseup = function () {
+            marker.isDragging = false;
+            document.onmousemove = null;
+            document.onmouseup = null;
+
+            board.bounds = null;
+            setRelative(marker);
+        };
+    });
+}
+
+var markerTypes = [
+    {
+        color: "blue",
+        realWidth: 1,
+        realHeight: 2,
+        inOut: [["I1","I2"],["O1","O2"],[null],[null]],
+        rules: [
+            [true,true],
+            [true,false],
+            [false,true],
+            [false,false]
+        ]
+    }
+]
+
+function createMarker(type, xPercent, yPercent) {
+    var newMarker = $("<div class='marker' />").appendTo(board.target);
+    var type = markerTypes[type];
+
+    // Initialize the new marker
+    var marker = {
+        isDragging: false,
+        target: newMarker,
+        width: snapX*type.realWidth,
+        height: snapY*type.realHeight,
+        realWidth: type.realWidth,
+        realHeight: type.realHeight,
+        xPercent: xPercent,
+        yPercent: yPercent,
+        inOut: type.inOut, // left, right, top, bottom
+        inOutTargets: [],
+        rules: type.rules,
+        color: type.color,
+        activeIns: [],
+        activeOuts: []
+    };
+
+    s=type.inOut;
+    for(var c=0; c<4; c++) {
+        for(var i=0; i<type.inOut[c].length; i++) {
+            if(s[c][i]!=null) {
+                if(s[c][i][0]=="I") {
+                    marker.activeIns.push(false);
+                }
+                if(s[c][i][0]=="O") {
+                    marker.activeOuts.push(false);
+                }
+            }
+        }
+    }
 
     // Set the initial position of the new marker using xPercent and yPercent
     marker.target.css({
