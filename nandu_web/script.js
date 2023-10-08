@@ -203,9 +203,10 @@ function deleteLights() {
 function updateLightMapObstacles(){
     markers.forEach(function (marker) {
         var pos={
-            x: marker.xPercent/board.cols,
-            y: marker.yPercent/board.rows
+            x: marker.xPercent/100*board.cols,
+            y: marker.yPercent/100*board.rows
         };
+
         var size={
             x: marker.realWidth,
             y: marker.realHeight
@@ -216,8 +217,9 @@ function updateLightMapObstacles(){
             }
         }
     });
+    
     sources.forEach(function (source) {
-        lightMap[source.yPercent/board.rows][source.xPercent/board.cols] = 1;
+        lightMap[source.yPercent/100*board.rows][source.xPercent/100*board.cols] = 1;
     });
 }
 
@@ -230,11 +232,11 @@ function updateLightSources(){
             if(source.outs[i]==true) {
                 var pos = [];
                 if(i<=1) {
-                    pos = [source.xPercent/board.cols+2*i-1,source.yPercent/board.rows];
+                    pos = [source.xPercent/100*board.cols+2*i-1,source.yPercent/100*board.rows];
                     newLight(0,pos);
                 }
                 else {
-                    pos = [source.xPercent/board.cols,source.yPercent/board.rows+2*(i-2)-1];
+                    pos = [source.xPercent/100*board.cols,source.yPercent/100*board.rows+2*(i-2)-1];
                     newLight(1,pos);
                 }
             }
@@ -262,13 +264,14 @@ function updateLightMarkers() {
     markers.forEach(function (marker) {
         console.log("ihi");
         var pos={
-            x: marker.xPercent/board.cols,
-            y: marker.yPercent/board.rows
+            x: marker.xPercent/100*board.cols,
+            y: marker.yPercent/100*board.rows
         };
         var size={
             x: marker.realWidth,
             y: marker.realHeight
         };
+        console.log(pos);
 
         // Get positions of space at input and output
         var inOut = marker.inOut;
@@ -368,18 +371,18 @@ function newLight(type,pos) { //type: 0 horizontal, 1 vertical; pos as array [x,
     if(type==0) {
         newLight = $("<div class='horizontal-light' />").appendTo(board.target);
         newLight.css({
-            left: pos[0]*board.cols + "%",
-            top: (pos[1]+0.4)*board.rows + "%",
+            left: pos[0]*100/board.cols + "%",
+            top: (pos[1]+0.4)*100/board.rows + "%",
             width: 100/board.cols + "%",
-            height: 0.2*board.rows + "%"
+            height: 20/board.rows + "%"
         })
     }
     else {
         newLight = $("<div class='vertical-light' />").appendTo(board.target);
         newLight.css({
-            left: (pos[0]+0.4)*board.cols + "%",
-            top: pos[1]*board.rows + "%",
-            width: 0.2*board.cols + "%",
+            left: (pos[0]+0.4)*100/board.cols + "%",
+            top: pos[1]*100/board.rows + "%",
+            width: 20/board.cols + "%",
             height: 100/board.rows + "%"
         })
     }
@@ -720,8 +723,8 @@ function createSource(outs,xPercent,yPercent) {
         isDragging: false,
         target: newSource,
         outs: outs,
-        width: 10,
-        height: 10,
+        width: 100/board.cols,
+        height: 100/board.rows,
         xPercent: xPercent,
         yPercent: yPercent,
         active: true
