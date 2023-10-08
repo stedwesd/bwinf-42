@@ -2,6 +2,7 @@ var board;
 var markers = [];
 var sources = [];
 var snapX, snapY;
+var lightMap = []; // 0: nothing, 1: obstacle, 2: horizontal light, 3: vertical light, 4: crossing lights
 
 var input = {
     snapX: $("#snap-x"),
@@ -23,6 +24,8 @@ function init(/*event*/) {
 
     createGrid();
     updateSize();
+
+    console.log("init");
 }
 
 function initMarker(marker) {
@@ -136,9 +139,8 @@ function initSource(source) {
     return (source);
 }
 
-function onDrag(/*event, ui, */marker) {
+function onDrag(marker) { // is used for both markers and sources
     // Snap the marker to the nearest grid cell within the board
-    // var xGrid = Math.round(ui.position.left / board.width * board.cols) * (100 / board.cols);
     var xGrid = Math.round(parseFloat(marker.target.css('left')) / board.width * board.cols) * (100 / board.cols);
     var yGrid = Math.round(parseFloat(marker.target.css('top')) / board.height * board.rows) * (100 / board.rows);
 
@@ -149,8 +151,52 @@ function onDrag(/*event, ui, */marker) {
     });
 
     // Update the marker's xPercent and yPercent
-    marker.xPercent = xGrid;
-    marker.yPercent = yGrid;
+    if(marker.xPercent != xGrid || marker.yPercent != yGrid) {
+        marker.xPercent = xGrid;
+        marker.yPercent = yGrid;
+        updateLightMap();
+    }
+}
+
+function resetLightMap() {
+    lightMap = [];
+    for(var y=0; y<board.rows; y++) {
+        var subList = [];
+        for(var x=0; x<board.cols; x++) {
+            subList.push(0);
+        }
+        lightMap.push(subList);
+    }
+}
+
+function updateLightMapObstacles(){
+    markers.forEach(function (marker) {
+        var pos={
+            x: marker.xPercent/board.cols,
+            y: marker.yPercent/board.rows
+        };
+        var size={
+            x: marker.realWidth,
+            y: marker.realHeight
+        };
+        for(var x=pos.x; x<pos.x+size.x; x++) {
+            for(var y=pos.y; y<pos.y+size.y; y++) {
+                lightMap[y][x]=1;
+            }
+        }
+    });
+    sources.forEach(function (source) {
+        lightMap[source.yPercent/board.rows][source.xPercent/board.cols] = 1;
+    });
+    for(var i=0;i<10;i++) {
+        console.log(lightMap[i]);
+    }
+    console.log("Next");
+}
+
+function updateLightMap() {
+    resetLightMap();
+    updateLightMapObstacles();
 }
 
 // SIZING :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -212,6 +258,10 @@ $(document).ready(function () {
         get height() { return this.bounds.height; }
     }
 
+    init(); // Initialize the board
+
+    resetLightMap();
+
     /*
     var markerTargets = board.target.find(".marker");
 
@@ -272,8 +322,6 @@ $(document).ready(function () {
         });
     });
     // Delete until here */
-
-    init(); // Initialize the board
 });
 
 // Function to set the marker's relative position
@@ -445,6 +493,8 @@ function createMarker(type, xPercent, yPercent) {
             setRelative(marker);
         };
     });
+
+    updateLightMap();
 }
 
 function createSource(outs,xPercent,yPercent) {
@@ -455,8 +505,10 @@ function createSource(outs,xPercent,yPercent) {
         target: newSource,
         outs: outs,
         width: 10,
-        height: 10
-    }
+        height: 10,
+        xPercent: xPercent,
+        yPercent: yPercent
+    };
 
     source.target.css({
         left: xPercent + "%",
@@ -497,4 +549,6 @@ function createSource(outs,xPercent,yPercent) {
             setRelative(source);
         };
     });
+
+    updateLightMap();
 }
