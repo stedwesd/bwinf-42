@@ -159,6 +159,16 @@ function onDrag(marker) { // is used for both markers and sources
     }
 }
 
+function arraysEqual(arr1, arr2) {
+    if (arr1.length !== arr2.length) return false;
+    for (let i = 0; i < arr1.length; i++) {
+        if (!arr1[i].every((val, index) => val === arr2[i][index])) {
+            return false;
+        }
+    }
+    return true;
+}
+
 //LightMap:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 function updateLightMap() {
     resetLightMap();
@@ -166,9 +176,10 @@ function updateLightMap() {
     updateLightMapObstacles();
     var oldMap = lightMap;
     updateLightSources();
-    //do{
-        
-    //} while(oldMap != lightMap);
+    do {
+        oldMap = JSON.parse(JSON.stringify(lightMap)); // Deep copy of lightMap
+        extendLights(); // Changes the light map
+    } while (!arraysEqual(oldMap, lightMap));
 }
 
 function resetLightMap() {
@@ -219,7 +230,7 @@ function updateLightSources(){
                     newLight(0,pos);
                 }
                 else {
-                    pos = [xPercent/board.cols,source.yPercent/board.rows+2*i-1];
+                    pos = [source.xPercent/board.cols,source.yPercent/board.rows+2*(i-2)-1];
                     newLight(1,pos);
                 }
             }
@@ -227,14 +238,26 @@ function updateLightSources(){
     });
 }
 
-function newLight(type,pos) { //type: 0 horizontal, 1 vertical
-    console.log(pos);
-    // Check if there is already a building or another light in the same direction on that space
-    if(lightMap[pos[1]][pos[0]]==1 || lightMap[pos[1]][pos[0]]==4 || lightMap[pos[1]][pos[0]]==type+2) {
-        return;
-    }
+function extendLights() {
+    lights.forEach(function (light) {
+        if(light.type==0) {
+            newLight(light.type,[light.x-1,light.y]);
+            newLight(light.type,[light.x+1,light.y]);
+        }
+        if(light.type==1) {
+            newLight(light.type,[light.x,light.y-1]);
+            newLight(light.type,[light.x,light.y+1]);
+        }
+    });
+}
+
+function newLight(type,pos) { //type: 0 horizontal, 1 vertical; pos as array [x,y]
     // Check if the space is inside of the grid
     if(pos[0]<0 || pos[0]>=board.cols || pos[1]<0 || pos[1]>=board.rows) {
+        return;
+    }
+    // Check if there is already a building or another light in the same direction on that space
+    if(lightMap[pos[1]][pos[0]]==1 || lightMap[pos[1]][pos[0]]==4 || lightMap[pos[1]][pos[0]]==type+2) {
         return;
     }
 
