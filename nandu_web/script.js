@@ -1,22 +1,21 @@
 var board;
 var markers = [];
+var snapX, snapY;
 
 var input = {
-    width: $("#marker-width"),
-    height: $("#marker-height"),
     snapX: $("#snap-x"),
     snapY: $("#snap-y"),
     size: $("#board-size")
 };
 
 // INIT :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-function init(event) {
+function init(/*event*/) {
     // prevent when called by submit
-    event && event.preventDefault();
+    //event && event.preventDefault();
 
     // cast input values to numbers
-    var snapX = +input.snapX.val();
-    var snapY = +input.snapY.val();
+    snapX = +input.snapX.val();
+    snapY = +input.snapY.val();
     board.size = +input.size.val();
     board.rows = Math.floor(100 / snapY);
     board.cols = Math.floor(100 / snapX);
@@ -42,6 +41,48 @@ function initMarker(marker) {
             onDrag(event, ui, marker); // Pass the marker to onDrag
         }*/
     });
+
+    //Summon In- and Outputs
+    var s=marker.inOut;
+    console.log(marker.width,marker.realWidth)
+    console.log(marker.height,marker.realHeight)
+    marker.inOutTargets=[[],[],[],[]]
+    for(var c=0; c<4; c++) {
+        for(var i=0; i<s[c].length; i++) {
+            if(s[c][i]!=null) {
+                console.log(c,i,(100*(c-2))-10/marker.realHeight);
+                var target;
+                if(s[c][i][0]=="I") {
+                    target = $("<div class='in' />").appendTo(marker.target);
+                }
+                if(s[c][i][0]=="O") {
+                    target = $("<div class='out' />").appendTo(marker.target);
+                }
+                if(c<=1) {
+                    target.css({
+                        left: (100*c)-10/marker.realWidth + "%",
+                        top: 100/marker.realHeight*i+25/marker.realHeight + "%",
+                        width: 20/marker.realWidth + "%",
+                        height: 50/marker.realHeight + "%"
+                    });
+                }
+                else {
+                    target.css({
+                        left: 100/marker.realWidth*i+25/marker.realWidth + "%",
+                        top: (100*(c-2))-10/marker.realHeight + "%",
+                        width: 50/marker.realWidth + "%",
+                        height: 20/marker.realHeight + "%"
+                    });
+                }
+                marker.inOutTargets[c].push(target);
+                continue;
+            }
+            marker.inOutTargets[c].push(null);
+        }
+    }
+    console.log(marker.inOutTargets);
+    
+
     console.log("initMarker called");
     return (marker);
 }
@@ -105,7 +146,7 @@ function createGrid() {
 
 $(document).ready(function () {
 
-    $("#settings-form").on("submit", function (event) {
+    $("#apply-button").on("click", function (event) {
         event.preventDefault();
         init(event);
     });
@@ -130,11 +171,15 @@ $(document).ready(function () {
             target: $(this),
             width: null,
             height: null,
+            realWidth: 1,
+            realHeight: 2,
             xPercent: 0,
             yPercent: 0,
+            inOut: [["I1","I2"],["O1","O2"],[null],[null]], // left, right, top, bottom
+            inOutTargets: []
         };
-        marker.width = +input.width.val();
-        marker.height = +input.height.val();
+        marker.width = 10;
+        marker.height = 20;
         markers.push(initMarker(marker));
     });
 
@@ -185,18 +230,27 @@ function setRelative(marker) {
 }
 
 // Functions:::::::::::::::::::::::::::::::::
-function createMarker(xPercent, yPercent, width, height) {
+function createMarker(xPercent, yPercent) {
     var newMarker = $("<div class='marker' />").appendTo(board.target);
-
+    
     // Initialize the new marker
     var marker = {
         isDragging: false,
         target: newMarker,
-        width: width,
-        height: height,
+        width: null,
+        height: null,
+        realWidth: null,
+        realHeight: null,
         xPercent: xPercent,
-        yPercent: yPercent
+        yPercent: yPercent,
+        inOut: [["I1","I2"],["O1","O2"],[null],[null]], // left, right, top, bottom
+        inOutTargets: []
     };
+
+    marker.realWidth = $("#marker-width").val();
+    marker.realHeight = $("#marker-height").val();
+    marker.width=snapX*realWidth;
+    marker.height=snapY*realHeight;
 
     // Set the initial position of the new marker using xPercent and yPercent
     marker.target.css({
@@ -205,7 +259,6 @@ function createMarker(xPercent, yPercent, width, height) {
     });
 
     markers.push(initMarker(marker)); // Push the marker object, not the result of initMarker
-    init();
 
     marker.target.on("mousedown", function (event) {
         event.preventDefault();

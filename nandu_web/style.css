@@ -1,44 +1,54 @@
 html, body {
     height: 100%;
     margin: 0;
-  }
+}
   
-  body {
+body {
     background-color: #ddd;
     overflow: hidden;
-  }
+}
   
-  main {
+main {
     background: #ddd;
     position: relative;
     height: 100vh;
-  }
+}
   
-  #board {
+#board {
     position: relative;
     top: 50%;
     left: 50%;
     z-index: 10;
     background: #d7d7d7;
-  }
+}
   
-  .marker {
+.marker {
     position: absolute;
     background: rgba(128, 0, 128, 0.7);
     outline: 1px solid transparent;
     top: 0;
     left: 0;
     z-index: 1000;
-  }
+}
+
+.in {
+    position: absolute;
+    background: #00ff00;
+}
+
+.out {
+    position: absolute;
+    background: #ff0000;
+}
   
-  .cell {
+.cell {
     background: #aeaeae;
     position: absolute;
     top: 0;
     left: 0;
-  }
+}
   
-  #panel {
+#panel {
     position: absolute;
     padding: 10px;
     z-index: 20;
@@ -49,24 +59,24 @@ html, body {
       font-weight: bold;
       font-size: 14px;
     }
-  }
-  
-  input {
+}
+
+input {
     display: block;
-  }
+}
   
-  label {
+label {
     display: block;
     font-size: 12px;
     margin: 6px 0;
-  }
+}
   
-  [type="number"] {
+[type="number"] {
     width: 100px;
     margin-top: 4px;
-  }
+}
   
-  [type="submit"] {
+[type="submit"] {
     background: #ddd;
     box-shadow: none;
     outline: none;
@@ -78,4 +88,4 @@ html, body {
     &:focus {
       outline: none;
     }
-  }
+}
