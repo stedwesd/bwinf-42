@@ -1,5 +1,6 @@
 var board;
 var markers = [];
+var sources = [];
 var snapX, snapY;
 
 var input = {
@@ -86,6 +87,53 @@ function initMarker(marker) {
 
     console.log("initMarker called");
     return (marker);
+}
+
+function initSource(source) {
+    // Set source's size here
+    source.target.css({
+        width: source.width + "%",
+        height: source.height + "%",
+    });
+
+    // Make the marker element draggable
+    source.target.draggable({
+        containment: "parent", // Keep the marker within its parent element (the board)
+        snap: ".cell",         // Snap to elements with the class "cell"
+        snapMode: "both"       // Snap to both the x and y axes
+        /*
+        drag: function (event, ui) {
+            onDrag(event, ui, marker); // Pass the marker to onDrag
+        }*/
+    });
+
+    //Summon In- and Outputs
+    var s=source.outs;
+    for(var c=0; c<4; c++) {
+        if(s[c]) {
+            target = $("<div class='source-out' />").appendTo(source.target);
+            if(c<=1) {
+                target.css({
+                    left: (100*c)-10 + "%",
+                    top: 25 + "%",
+                    width: 20 + "%",
+                    height: 50 + "%"
+                });
+            }
+            else {
+                target.css({
+                    left: 25 + "%",
+                    top: (100*(c-2))-10 + "%",
+                    width: 50 + "%",
+                    height: 20 + "%"
+                });
+            }
+            continue;
+        }
+    }
+    
+    console.log("initSource called");
+    return (source);
 }
 
 function onDrag(/*event, ui, */marker) {
@@ -395,6 +443,58 @@ function createMarker(type, xPercent, yPercent) {
 
             board.bounds = null;
             setRelative(marker);
+        };
+    });
+}
+
+function createSource(outs,xPercent,yPercent) {
+    var newSource = $("<div class='source' />").appendTo(board.target);
+    
+    var source = {
+        isDragging: false,
+        target: newSource,
+        outs: outs,
+        width: 10,
+        height: 10
+    }
+
+    source.target.css({
+        left: xPercent + "%",
+        top: yPercent + "%"
+    });
+
+    sources.push(initSource(source));
+
+    source.target.on("mousedown", function (event) {
+        event.preventDefault();
+        source.isDragging = true;
+
+        var startX = event.clientX;
+        var startY = event.clientY;
+        var startLeft = parseFloat(source.target.css('left')) || 0;
+        var startTop = parseFloat(source.target.css('top')) || 0;
+
+        document.onmousemove = function (e) {
+            if (source.isDragging) {
+                var newX = startLeft + e.clientX - startX;
+                var newY = startTop + e.clientY - startY;
+                // Ensure the source stays within the board
+                newX = Math.min(Math.max(newX, 0), board.width - source.width);
+                newY = Math.min(Math.max(newY, 0), board.height - source.height);
+
+                source.target.css({ left: newX + 'px', top: newY + 'px'});
+
+                onDrag(source);
+            }
+        };
+
+        document.onmouseup = function () {
+            source.isDragging = false;
+            document.onmousemove = null;
+            document.onmouseup = null;
+
+            board.bounds = null;
+            setRelative(source);
         };
     });
 }

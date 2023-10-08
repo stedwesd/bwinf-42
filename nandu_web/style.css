@@ -21,7 +21,7 @@ main {
     z-index: 10;
     background: #d7d7d7;
 }
-  
+
 .marker {
     position: absolute;
     background: rgba(128, 0, 128, 0.7);
@@ -40,7 +40,26 @@ main {
     position: absolute;
     background: #ff0000;
 }
-  
+
+.source {
+    position: absolute;
+    background: darkorange;
+    top: 0;
+    left: 0;
+    width: 10%;
+    height: 10%;
+    z-index: 1000;
+}
+
+.source-out{
+    position: absolute;
+    background: yellow;
+    top: 0;
+    left: 0;
+    width: 10%;
+    height: 10%;
+}
+
 .cell {
     background: #aeaeae;
     position: absolute;
