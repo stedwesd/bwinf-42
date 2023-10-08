@@ -223,6 +223,9 @@ function updateLightMapObstacles(){
 
 function updateLightSources(){
     sources.forEach(function (source) {
+        if(!source.active){
+            return;
+        }
         for(var i=0;i<4;i++) {
             if(source.outs[i]==true) {
                 var pos = [];
@@ -526,6 +529,10 @@ function setRelative(marker) {
         left: marker.xPercent + "%",
         top: marker.yPercent + "%"
     });
+    if(marker.xPercent>=100 || marker.yPercent>=100) {
+        marker.target.remove();
+        markers.splice(markers.indexOf(marker), 1);
+    }
 }
 
 // Functions:::::::::::::::::::::::::::::::::
@@ -716,7 +723,8 @@ function createSource(outs,xPercent,yPercent) {
         width: 10,
         height: 10,
         xPercent: xPercent,
-        yPercent: yPercent
+        yPercent: yPercent,
+        active: true
     };
 
     source.target.css({
@@ -734,6 +742,7 @@ function createSource(outs,xPercent,yPercent) {
         var startY = event.clientY;
         var startLeft = parseFloat(source.target.css('left')) || 0;
         var startTop = parseFloat(source.target.css('top')) || 0;
+        var click = true;
 
         document.onmousemove = function (e) {
             if (source.isDragging) {
@@ -747,15 +756,20 @@ function createSource(outs,xPercent,yPercent) {
 
                 onDrag(source);
             }
+            click=false;
         };
 
         document.onmouseup = function () {
+            if(click) {
+                source.active=!source.active;
+            }
             source.isDragging = false;
             document.onmousemove = null;
             document.onmouseup = null;
 
             board.bounds = null;
             setRelative(source);
+            updateLightMap();
         };
     });
 
