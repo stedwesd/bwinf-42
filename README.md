@@ -14,4 +14,16 @@ The team consists of: @stedwesd, @Roboter09, @Banana2308
 | `N3` Zauberschule      | ✅ Program implemented | @stedwesd
 | `N4` Nandu             | ✅ Program implemented| @stedwesd
 | `N5` Stadtführung      | - | 
-| `Z1` Website für `N4`  | - | @Banan2308
+| `Z1` Website für `N4`  | - | @Banana2308, @Roboter09
+
+## ToDos
+
+Z1
+- Better Textures.
+- Create own pieces.
+
+## Known issues
+
+Z1
+- You currently can't place markers directly next to each other, because the light the left one should emit won't be noticed by the right one, because the light is not visible on the board.
+- The markers do not get loaded in the right order.
