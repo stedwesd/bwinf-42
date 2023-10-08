@@ -25,7 +25,7 @@ main {
 .marker {
     position: absolute;
     background: rgba(128, 0, 128, 0.7);
-    outline: 1px solid transparent;
+    outline: 1px solid black;
     top: 0;
     left: 0;
     z-index: 1000;

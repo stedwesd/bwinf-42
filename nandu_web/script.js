@@ -178,7 +178,8 @@ function updateLightMap() {
     updateLightSources();
     do {
         oldMap = JSON.parse(JSON.stringify(lightMap)); // Deep copy of lightMap
-        extendLights(); // Changes the light map
+        extendLights();
+        updateLightMarkers();
     } while (!arraysEqual(oldMap, lightMap));
 }
 
@@ -239,14 +240,113 @@ function updateLightSources(){
 }
 
 function extendLights() {
-    lights.forEach(function (light) {
-        if(light.type==0) {
-            newLight(light.type,[light.x-1,light.y]);
-            newLight(light.type,[light.x+1,light.y]);
+    do {
+        var oldMap = JSON.parse(JSON.stringify(lightMap));
+        lights.forEach(function (light) {
+            if(light.type==0) {
+                newLight(light.type,[light.x-1,light.y]);
+                newLight(light.type,[light.x+1,light.y]);
+            }
+            if(light.type==1) {
+                newLight(light.type,[light.x,light.y-1]);
+                newLight(light.type,[light.x,light.y+1]);
+            }
+        });
+    } while (!arraysEqual(oldMap,lightMap));
+}
+
+function updateLightMarkers() {
+    markers.forEach(function (marker) {
+        console.log("ihi");
+        var pos={
+            x: marker.xPercent/board.cols,
+            y: marker.yPercent/board.rows
+        };
+        var size={
+            x: marker.realWidth,
+            y: marker.realHeight
+        };
+
+        // Get positions of space at input and output
+        var inOut = marker.inOut;
+        var ins = [];
+        var outs = [];
+        for(var c=0; c<4; c++) {
+            for(var i=0; i<inOut[c].length; i++) {
+                console.log("oho");
+                if(inOut[c][i] != null) {
+                    console.log("aha");
+                    var number;
+                    var match = inOut[c][i].match(/\d+$/); // Regular expression to match one or more digits at the end of the string
+                    if (match) {
+                        number=parseInt(match[0]); // Convert the matched string to an integer
+                    }
+                    else{
+                        console.log("Krise");
+                    }
+                    
+                    var element = [(c-(c%2))/2];
+                    
+                    if(c==0) {
+                        element[1]=pos.x-1;
+                        element[2]=pos.y+i;
+                    }
+                    else if(c==1){
+                        element[1]=pos.x+size.x;
+                        element[2]=pos.y+i;
+                    }
+                    if(c==2) {
+                        element[1]=pos.x+i;
+                        element[2]=pos.y-1;
+                    }
+                    else if(c==3) {
+                        element[1]=pos.x+i;
+                        element[2]=pos.y+size.y;
+                    }
+                    
+                    if(inOut[c][i][0]=="I") {
+                        console.log(number,element);
+                        ins[number-1]=element;
+                    }
+                    else{
+                        outs[number-1]=element;
+                    }
+                }
+            }
         }
-        if(light.type==1) {
-            newLight(light.type,[light.x,light.y-1]);
-            newLight(light.type,[light.x,light.y+1]);
+        
+        for(var i=0; i<10;i++) {
+            console.log(lightMap[i]);
+        }
+
+        // Check which ins are active
+        var activeIns = []; // True: 0, False: 1
+        for(var i=0; i<ins.length; i++) {
+            if(ins[i][1]<0 || ins[i][1]>board.cols || ins[i][2]<0 || ins[i][2]>board.rows) {
+                activeIns[i]=1;
+                continue;
+            }
+            if(lightMap[ins[i][2]][ins[i][1]]==4 || lightMap[ins[i][2]][ins[i][1]]==ins[i][0]+2) {
+                activeIns[i]=0;
+                continue;
+            }
+            activeIns[i]=1;
+        }
+        console.log(activeIns);
+
+        // Use rules to get the active outputs
+        var index = 0;
+        for(var i=0; i<ins.length; i++) {
+            index+=activeIns[i]*(Math.pow(2, ins.length-i-1));
+        }
+        activeOuts = marker.rules[index];
+
+        // Summon new light at active outputs
+        for(var i=0; i<activeOuts.length; i++) {
+            if(activeOuts[i]){
+                console.log(i);
+                newLight(outs[i][0],[outs[i][1],outs[i][2]]);
+            }
         }
     });
 }
@@ -375,9 +475,7 @@ $(document).ready(function () {
             inOut: [["I1","I2"],["O1","O2"],[null],[null]], // left, right, top, bottom
             inOutTargets: [],
             rules: null,
-            color: "purple",
-            activeIns: [],
-            activeOuts: []
+            color: "purple"
         };
         marker.width = 10;
         marker.height = 20;
@@ -447,9 +545,7 @@ function createMarker(xPercent, yPercent) {
         inOut: [["I1","I2"],["O1","O2"],[null],[null]], // left, right, top, bottom
         inOutTargets: [],
         rules: type.rules,
-        color: type.color,
-        activeIns: [],
-        activeOuts: []
+        color: type.color
     };
 
     marker.realWidth = $("#marker-width").val();
@@ -501,15 +597,47 @@ function createMarker(xPercent, yPercent) {
 
 var markerTypes = [
     {
+        color: "white",
+        realWidth: 1,
+        realHeight: 2,
+        inOut: [["I1","I2"],["O1","O2"],[null],[null]],
+        rules: [
+            [false,false], // Inputs: true, true
+            [true,true], // Inputs: true, false
+            [true,true], // Inputs: false, true
+            [true,true] // Inputs: false, false
+        ]
+    },
+    {
+        color: "red",
+        realWidth: 1,
+        realHeight: 2,
+        inOut: [["I1",null],["O1","O2"],[null],[null]],
+        rules: [
+            [false,false], // Input: true
+            [true,true] // Input: false
+        ]
+    },
+    {
+        color: "red",
+        realWidth: 1,
+        realHeight: 2,
+        inOut: [[null,"I1"],["O1","O2"],[null],[null]],
+        rules: [
+            [false,false], // Input: true
+            [true,true] // Input: false
+        ]
+    },
+    {
         color: "blue",
         realWidth: 1,
         realHeight: 2,
         inOut: [["I1","I2"],["O1","O2"],[null],[null]],
         rules: [
-            [true,true],
-            [true,false],
-            [false,true],
-            [false,false]
+            [true,true], // Inputs: true, true
+            [true,false], // Inputs: true, false
+            [false,true], // Inputs: false, true
+            [false,false] // Inputs: false, false
         ]
     }
 ]
@@ -532,23 +660,7 @@ function createMarker(type, xPercent, yPercent) {
         inOutTargets: [],
         rules: type.rules,
         color: type.color,
-        activeIns: [],
-        activeOuts: []
     };
-
-    s=type.inOut;
-    for(var c=0; c<4; c++) {
-        for(var i=0; i<type.inOut[c].length; i++) {
-            if(s[c][i]!=null) {
-                if(s[c][i][0]=="I") {
-                    marker.activeIns.push(false);
-                }
-                if(s[c][i][0]=="O") {
-                    marker.activeOuts.push(false);
-                }
-            }
-        }
-    }
 
     // Set the initial position of the new marker using xPercent and yPercent
     marker.target.css({
