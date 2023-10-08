@@ -1,6 +1,7 @@
 var board;
 var markers = [];
 var sources = [];
+var lights = [];
 var snapX, snapY;
 var lightMap = []; // 0: nothing, 1: obstacle, 2: horizontal light, 3: vertical light, 4: crossing lights
 
@@ -158,6 +159,18 @@ function onDrag(marker) { // is used for both markers and sources
     }
 }
 
+//LightMap:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+function updateLightMap() {
+    resetLightMap();
+    deleteLights();
+    updateLightMapObstacles();
+    var oldMap = lightMap;
+    updateLightSources();
+    //do{
+        
+    //} while(oldMap != lightMap);
+}
+
 function resetLightMap() {
     lightMap = [];
     for(var y=0; y<board.rows; y++) {
@@ -167,6 +180,12 @@ function resetLightMap() {
         }
         lightMap.push(subList);
     }
+}
+
+function deleteLights() {
+    $(".horizontal-light").remove();
+    $(".vertical-light").remove();
+    lights=[];
 }
 
 function updateLightMapObstacles(){
@@ -188,15 +207,70 @@ function updateLightMapObstacles(){
     sources.forEach(function (source) {
         lightMap[source.yPercent/board.rows][source.xPercent/board.cols] = 1;
     });
-    for(var i=0;i<10;i++) {
-        console.log(lightMap[i]);
-    }
-    console.log("Next");
 }
 
-function updateLightMap() {
-    resetLightMap();
-    updateLightMapObstacles();
+function updateLightSources(){
+    sources.forEach(function (source) {
+        for(var i=0;i<4;i++) {
+            if(source.outs[i]==true) {
+                var pos = [];
+                if(i<=1) {
+                    pos = [source.xPercent/board.cols+2*i-1,source.yPercent/board.rows];
+                    newLight(0,pos);
+                }
+                else {
+                    pos = [xPercent/board.cols,source.yPercent/board.rows+2*i-1];
+                    newLight(1,pos);
+                }
+            }
+        }
+    });
+}
+
+function newLight(type,pos) { //type: 0 horizontal, 1 vertical
+    console.log(pos);
+    // Check if there is already a building or another light in the same direction on that space
+    if(lightMap[pos[1]][pos[0]]==1 || lightMap[pos[1]][pos[0]]==4 || lightMap[pos[1]][pos[0]]==type+2) {
+        return;
+    }
+    // Check if the space is inside of the grid
+    if(pos[0]<0 || pos[0]>=board.cols || pos[1]<0 || pos[1]>=board.rows) {
+        return;
+    }
+
+    var newLight;
+    if(type==0) {
+        newLight = $("<div class='horizontal-light' />").appendTo(board.target);
+        newLight.css({
+            left: pos[0]*board.cols + "%",
+            top: (pos[1]+0.4)*board.rows + "%",
+            width: 100/board.cols + "%",
+            height: 0.2*board.rows + "%"
+        })
+    }
+    else {
+        newLight = $("<div class='vertical-light' />").appendTo(board.target);
+        newLight.css({
+            left: (pos[0]+0.4)*board.cols + "%",
+            top: pos[1]*board.rows + "%",
+            width: 0.2*board.cols + "%",
+            height: 100/board.rows + "%"
+        })
+    }
+
+    var light = {
+        x: pos[0],
+        y: pos[1],
+        type: type,
+        target: newLight
+    }
+    if(lightMap[pos[1]][pos[0]]==0) {
+        lightMap[pos[1]][pos[0]]=type+2;
+    }
+    else{
+        lightMap[pos[1]][pos[0]]=4;
+    }
+    lights.push(light);
 }
 
 // SIZING :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
