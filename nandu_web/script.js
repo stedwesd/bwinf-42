@@ -261,7 +261,22 @@ function extendLights() {
 }
 
 function updateLightMarkers() {
-    markers.forEach(function (marker) {
+    l = []
+    for(var i=0;i<markers.length;i++) {
+        l.push({x:markers[i].xPercent,index:i})
+    }
+    for(var i=0;i<markers.length;i++) {
+        for(var j=0;j<markers.length-i-1;j++) {
+            if(l[j].x > l[j+1]) {
+                var temp = l[j];
+                l[j]=l[j+1];
+                l[j+1]=temp;
+            }
+        }
+    }
+    
+    l.forEach(function (element) {
+        var marker = markers[element.index];
         console.log("ihi");
         var pos={
             x: marker.xPercent/100*board.cols,
