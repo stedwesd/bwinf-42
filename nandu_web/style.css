@@ -93,6 +93,63 @@ main {
       font-size: 14px;
     }
 }
+#custom-marker-panel {
+    position: absolute;
+    padding: 10px;
+    z-index: 20;
+    background: #ddd;
+    border: 1px solid #ccc;
+    right: 0;
+    width: 100px;
+  
+    header {
+      font-weight: bold;
+      font-size: 14px;
+    }
+}
+
+.custom-marker-part {
+    width: 50px;
+    height: 50px;
+    background-color: white;
+    border: 1px solid black;
+}
+
+.custom-marker-new-part {
+    width: 25px;
+    height: 25px;
+    background-image: url(Plus.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 25px 25px;
+}
+
+.custom-marker-part-in {
+    position: relative;
+    left: -1px;
+    top: 25%;
+    width: 10%;
+    height: 50%;
+    background: "lightgrey";
+    border: 1px solid black;
+}
+
+.custom-marker-part-out {
+    position: relative;
+    left: 23px;
+    top: 25%;
+    width: 10%;
+    height: 50%;
+    background: "lightgrey";
+    border: 1px solid black;
+}
+
+.custom-marker-color {
+    width: 10px;
+    height: 10px;
+    background-color: #ff0000;
+    border: 1px solid transparent;
+}
 
 input {
     display: block;
