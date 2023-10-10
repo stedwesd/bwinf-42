@@ -7,6 +7,8 @@ var lightMap = []; // 0: nothing, 1: obstacle, 2: horizontal light, 3: vertical 
 var customMarkerTarget;
 var customMarkerParts = [];
 var customMarkerColor = "#ffffff";
+var customMarkerNumberOfInputs = 0;
+var customMarkerNumberOfOutputs = 0;
 
 var input = {
     snapX: $("#snap-x"),
@@ -801,11 +803,12 @@ function customMarkerNewPart() {
     var index = customMarkerParts.length;
     customMarkerTarget=$("#custom-marker-parts");
     $(".custom-marker-new-part").remove();
+    $(".custom-marker-delete-part").remove();
     var target = $("<div class='custom-marker-part'></div>").appendTo(customMarkerTarget);
     var inputTarget = $("<button type='button' class='custom-marker-part-in' onclick='customMarkerActivateInput("+index+")'></button>").appendTo(target);
     var outputTarget = $("<button type='button' class='custom-marker-part-out' onclick='customMarkerActivateOutput("+index+")'></button>").appendTo(target);
     var newCustomMarkerAddPart = $("<button type='button' class='custom-marker-new-part' onclick='customMarkerNewPart()'></button>").appendTo(customMarkerTarget);
-    var newCustomMarkerDeletePart = $("<button type='button' class='custom-marker-new-part' onclick='customMarkerDeletePart()'></button>").appendTo(customMarkerTarget);
+    var newCustomMarkerDeletePart = $("<button type='button' class='custom-marker-delete-part' onclick='customMarkerDeletePart()'></button>").appendTo(customMarkerTarget);
     var newPart = {
         inputTarget: inputTarget,
         outputTarget: outputTarget,
@@ -819,6 +822,16 @@ function customMarkerNewPart() {
 
 function customMarkerDeletePart() {
     console.log("del");
+    var index = customMarkerParts.length-1;
+    customMarkerParts[index].target.remove();
+    if(customMarkerParts[index].input) {
+        customMarkerNumberOfInputs-=1;
+    }
+    if(customMarkerParts[index].output) {
+        customMarkerNumberOfOutputs-=1;
+    }
+    customMarkerParts.pop(index);
+    console.log(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
 }
 
 function customMarkerActivateInput(i) {
@@ -826,10 +839,13 @@ function customMarkerActivateInput(i) {
     customMarkerParts[i].input= !customMarkerParts[i].input;
     if(customMarkerParts[i].input) {
         customMarkerParts[i].inputTarget.css({background: "green"});
+        customMarkerNumberOfInputs+=1;
     }
     else {
         customMarkerParts[i].inputTarget.css({background: "lightgrey"});
+        customMarkerNumberOfInputs-=1;
     }
+    console.log(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
 }
 
 function customMarkerActivateOutput(i) {
@@ -837,11 +853,13 @@ function customMarkerActivateOutput(i) {
     customMarkerParts[i].output= !customMarkerParts[i].output;
     if(customMarkerParts[i].output) {
         customMarkerParts[i].outputTarget.css({background: "red"});
+        customMarkerNumberOfOutputs+=1;
     }
     else {
         customMarkerParts[i].outputTarget.css({background: "lightgrey"});
+        customMarkerNumberOfOutputs-=1;
     }
-    
+    console.log(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
 }
 
 function customMarkerChangeColor(color) {

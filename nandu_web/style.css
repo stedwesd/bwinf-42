@@ -124,6 +124,15 @@ main {
     background-size: 25px 25px;
 }
 
+.custom-marker-delete-part {
+    width: 25px;
+    height: 25px;
+    background-image: url(Minus.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 25px 25px;
+}
+
 .custom-marker-part-in {
     position: relative;
     left: -1px;
