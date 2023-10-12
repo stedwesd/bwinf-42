@@ -745,10 +745,20 @@ function createSource(outs,xPercent,yPercent) {
 }
 
 function customMarkerSetUp() {
+    $(".custom-marker-part").remove();
+    customMarkerParts = [];
+    $(".custom-marker-color").remove();
+    customMarkerNumberOfInputs = 0;
+    customMarkerNumberOfOutputs = 0;
+    customMarkerShowTable(0,0);
+    customMarkerColor = "#ffffff";
     customMarkerShowColors();
 }
 
 function customMarkerAddMarker() {
+    if(customMarkerParts.length==0) {
+        return;
+    }
     var markerType = {
         color: customMarkerColor,
         realWidth: 1,
@@ -761,19 +771,16 @@ function customMarkerAddMarker() {
 
     var div = $("<div> </div>").appendTo($("#marker-setting-form"));
     $("<button type='button' onclick='createMarker("+(markerTypes.length-1)+",0,0)'> Spawn Custom Marker "+ (markerTypes.length-4) +" </button>").appendTo(div);
+    customMarkerSetUp();
 }
 
 
 function customMarkerNewPart() {
     var index = customMarkerParts.length;
     customMarkerTarget=$("#custom-marker-parts");
-    $(".custom-marker-new-part").remove();
-    $(".custom-marker-delete-part").remove();
     var target = $("<div class='custom-marker-part'></div>").appendTo(customMarkerTarget);
     var inputTarget = $("<button type='button' class='custom-marker-part-in' onclick='customMarkerActivateInput("+index+")'></button>").appendTo(target);
     var outputTarget = $("<button type='button' class='custom-marker-part-out' onclick='customMarkerActivateOutput("+index+")'></button>").appendTo(target);
-    var newCustomMarkerAddPart = $("<button type='button' class='custom-marker-new-part' onclick='customMarkerNewPart()'></button>").appendTo(customMarkerTarget);
-    var newCustomMarkerDeletePart = $("<button type='button' class='custom-marker-delete-part' onclick='customMarkerDeletePart()'></button>").appendTo(customMarkerTarget);
     var newPart = {
         inputTarget: inputTarget,
         outputTarget: outputTarget,
@@ -788,7 +795,9 @@ function customMarkerNewPart() {
 }
 
 function customMarkerDeletePart() {
-    console.log("del");
+    if(customMarkerParts.length==0) {
+        return;
+    }
     var index = customMarkerParts.length-1;
     customMarkerParts[index].target.remove();
     if(customMarkerParts[index].input) {
