@@ -31,6 +31,9 @@
             <header>New Marker</header>
             <form id=marker-setting-form>
                 <div>
+                    <button type="button" onclick="createSource([false,true,false,false],0,0)"> Spawn Light source </button>
+                </div>
+                <div>
                     <button type="button" onclick="createMarker(0,0,0)"> Spawn white Marker </button>
                 </div>
                 <div>
@@ -41,9 +44,6 @@
                 </div>
                 <div>
                     <button type="button" onclick="createMarker(3,0,0)"> Spawn blue Marker </button>
-                </div>
-                <div>
-                    <button type="button" onclick="createSource([false,true,false,false],0,0)"> Spawn Light source </button>
                 </div>
             </form>
         </section>
@@ -59,12 +59,10 @@
                 </table>
             </div>
             <div id="custom-marker-choose-colors">
-                <button type="button" class="custom-marker-color" onclick="customMarkerChangeColor('#FF0000')"></button>
-                <button type="button" class="custom-marker-color" onclick="customMarkerChangeColor('#00FF00')"></button>
-                <button type="button" class="custom-marker-color" onclick="customMarkerChangeColor('#0000FF')"></button>
+
             </div>
             <div id="custom-marker-done">
-                <button type="button" id="custom-marker-done-button" onclick="customMarkerGetRules()"></button>
+                <button type="button" id="custom-marker-done-button" onclick="customMarkerAddMarker()">Create Marker</button>
             </div>
         </section>
       

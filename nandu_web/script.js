@@ -181,9 +181,9 @@ function updateLightMap() {
     updateLightMapObstacles();
     var oldMap = lightMap;
     updateLightSources();
+    extendLights();
     do {
         oldMap = JSON.parse(JSON.stringify(lightMap)); // Deep copy of lightMap
-        extendLights();
         updateLightMarkers();
     } while (!arraysEqual(oldMap, lightMap));
 }
@@ -374,6 +374,8 @@ function updateLightMarkers() {
                 newLight(outs[i][0],[outs[i][1],outs[i][2]]);
             }
         }
+
+        extendLights();
     });
 }
 
@@ -485,64 +487,7 @@ $(document).ready(function () {
 
     resetLightMap();
 
-    /*
-    var markerTargets = board.target.find(".marker");
-
-    markerTargets.each(function () {
-        var marker = {
-            isDragging: false,
-            target: $(this),
-            width: null,
-            height: null,
-            realWidth: 1,
-            realHeight: 2,
-            xPercent: 0,
-            yPercent: 0,
-            inOut: [["I1","I2"],["O1","O2"],[null],[null]], // left, right, top, bottom
-            inOutTargets: [],
-            rules: null,
-            color: "purple"
-        };
-        marker.width = 10;
-        marker.height = 20;
-        markers.push(initMarker(marker));
-    });
-
-    markers.forEach(function (marker) {
-        marker.target.on("mousedown", function (event) {
-            event.preventDefault();
-            marker.isDragging = true;
-
-            var startX = event.clientX;
-            var startY = event.clientY;
-            var startLeft = parseFloat(marker.target.css('left')) || 0;
-            var startTop = parseFloat(marker.target.css('top')) || 0;
-
-            document.onmousemove = function (e) {
-                if (marker.isDragging) {
-                    var newX = startLeft + e.clientX - startX;
-                    var newY = startTop + e.clientY - startY;
-                    // Ensure the marker stays within the board
-                    newX = Math.min(Math.max(newX, 0), board.width - marker.width);
-                    newY = Math.min(Math.max(newY, 0), board.height - marker.height);
-
-                    marker.target.css({ left: newX + 'px', top: newY + 'px'});
-
-                    onDrag(marker);
-                }
-            };
-
-            document.onmouseup = function () {
-                marker.isDragging = false;
-                document.onmousemove = null;
-                document.onmouseup = null;
-
-                board.bounds = null;
-                setRelative(marker);
-            };
-        });
-    });
-    // Delete until here */
+    customMarkerSetUp();
 });
 
 // Function to set the marker's relative position
@@ -799,6 +744,26 @@ function createSource(outs,xPercent,yPercent) {
     updateLightMap();
 }
 
+function customMarkerSetUp() {
+    customMarkerShowColors();
+}
+
+function customMarkerAddMarker() {
+    var markerType = {
+        color: customMarkerColor,
+        realWidth: 1,
+        realHeight: customMarkerParts.length,
+        inOut: customMarkerGetInOut(),
+        rules: customMarkerGetRules()
+    }
+
+    markerTypes.push(markerType);
+
+    var div = $("<div> </div>").appendTo($("#marker-setting-form"));
+    $("<button type='button' onclick='createMarker("+(markerTypes.length-1)+",0,0)'> Spawn Custom Marker "+ (markerTypes.length-4) +" </button>").appendTo(div);
+}
+
+
 function customMarkerNewPart() {
     var index = customMarkerParts.length;
     customMarkerTarget=$("#custom-marker-parts");
@@ -868,6 +833,21 @@ function customMarkerActivateOutput(i) {
     console.log(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
 
     customMarkerShowTable(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
+}
+
+function customMarkerShowColors() {
+    var colors = [
+        "#e06666",
+        "#f6b26b",
+        "#ffd966",
+        "#93c47d",
+        "#76a5af"
+    ]
+    var colorSelectionTarget = $("#custom-marker-choose-colors");
+    for(var i=0; i<colors.length; i++) {
+        var target = $("<button type='button' class='custom-marker-color' onclick=\"customMarkerChangeColor('" + colors[i] + "')\"></button>").appendTo(colorSelectionTarget);
+        target.css({background: colors[i]});
+    }
 }
 
 function customMarkerChangeColor(color) {
@@ -968,4 +948,27 @@ function customMarkerGetRules() {
         console.log(rules[r]);
     }
     return(rules);
+}
+
+function customMarkerGetInOut() {
+    inOut=[[],[],[null],[null]];
+    var inCounter = 1;
+    var outCounter= 1;
+    for(var i=0; i<customMarkerParts.length; i++) {
+        if(customMarkerParts[i].input==true) {
+            inOut[0].push("I"+inCounter);
+            inCounter++;
+        }
+        else{
+            inOut[0].push(null);
+        }
+        if(customMarkerParts[i].output==true) {
+            inOut[1].push("O"+outCounter);
+            outCounter++;
+        }
+        else{
+            inOut[1].push(null);
+        }
+    }
+    return(inOut);
 }
