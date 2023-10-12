@@ -27,6 +27,7 @@ function init(/*event*/) {
     board.size = +input.size.val();
     board.rows = Math.floor(100 / snapY);
     board.cols = Math.floor(100 / snapX);
+    console.log(board.cols);
 
     createGrid();
     updateSize();
@@ -208,8 +209,8 @@ function deleteLights() {
 function updateLightMapObstacles(){
     markers.forEach(function (marker) {
         var pos={
-            x: marker.xPercent/100*board.cols,
-            y: marker.yPercent/100*board.rows
+            x: Math.floor(marker.xPercent/100*board.cols),
+            y: Math.floor(marker.yPercent/100*board.rows)
         };
 
         var size={
@@ -224,7 +225,7 @@ function updateLightMapObstacles(){
     });
     
     sources.forEach(function (source) {
-        lightMap[source.yPercent/100*board.rows][source.xPercent/100*board.cols] = 1;
+        lightMap[Math.floor(source.yPercent/100*board.rows)][Math.floor(source.xPercent/100*board.cols)] = 1;
     });
 }
 
@@ -237,11 +238,11 @@ function updateLightSources(){
             if(source.outs[i]==true) {
                 var pos = [];
                 if(i<=1) {
-                    pos = [source.xPercent/100*board.cols+2*i-1,source.yPercent/100*board.rows];
+                    pos = [Math.floor(source.xPercent/100*board.cols+2*i-1),Math.floor(source.yPercent/100*board.rows)];
                     newLight(0,pos);
                 }
                 else {
-                    pos = [source.xPercent/100*board.cols,source.yPercent/100*board.rows+2*(i-2)-1];
+                    pos = [Math.floor(source.xPercent/100*board.cols),Math.floor(source.yPercent/100*board.rows+2*(i-2)-1)];
                     newLight(1,pos);
                 }
             }
@@ -284,8 +285,8 @@ function updateLightMarkers() {
         var marker = markers[element.index];
         console.log("ihi");
         var pos={
-            x: marker.xPercent/100*board.cols,
-            y: marker.yPercent/100*board.rows
+            x: Math.floor(marker.xPercent/100*board.cols),
+            y: Math.floor(marker.yPercent/100*board.rows)
         };
         var size={
             x: marker.realWidth,
