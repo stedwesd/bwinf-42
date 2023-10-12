@@ -99,8 +99,8 @@ main {
     z-index: 20;
     background: #ddd;
     border: 1px solid #ccc;
-    right: 0;
-    width: 100px;
+    left: 0;
+    top: 50%;
   
     header {
       font-weight: bold;
@@ -139,7 +139,7 @@ main {
     top: 25%;
     width: 10%;
     height: 50%;
-    background: "lightgrey";
+    background: lightgray;
     border: 1px solid black;
 }
 
@@ -149,8 +149,28 @@ main {
     top: 25%;
     width: 10%;
     height: 50%;
-    background: "lightgrey";
+    background: lightgrey;
     border: 1px solid black;
+}
+
+.custom-marker-table-elem {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    background-color: lightgray;
+    border: 1px solid black;
+}
+
+.custom-marker-table-button {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    background-color: lightgray;
+    border: 1px solid black;
+}
+
+th.divider, td.divider {
+    border-right: 2px solid black; /* Add a right border to create a line */
 }
 
 .custom-marker-color {

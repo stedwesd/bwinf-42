@@ -818,6 +818,8 @@ function customMarkerNewPart() {
     }
     target.css({background: customMarkerColor});
     customMarkerParts.push(newPart);
+
+    customMarkerShowTable(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
 }
 
 function customMarkerDeletePart() {
@@ -832,6 +834,8 @@ function customMarkerDeletePart() {
     }
     customMarkerParts.pop(index);
     console.log(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
+
+    customMarkerShowTable(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
 }
 
 function customMarkerActivateInput(i) {
@@ -846,6 +850,8 @@ function customMarkerActivateInput(i) {
         customMarkerNumberOfInputs-=1;
     }
     console.log(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
+
+    customMarkerShowTable(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
 }
 
 function customMarkerActivateOutput(i) {
@@ -860,6 +866,8 @@ function customMarkerActivateOutput(i) {
         customMarkerNumberOfOutputs-=1;
     }
     console.log(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
+
+    customMarkerShowTable(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
 }
 
 function customMarkerChangeColor(color) {
@@ -867,4 +875,97 @@ function customMarkerChangeColor(color) {
         customMarkerParts[i].target.css({background: color});
     }
     customMarkerColor=color;
+}
+
+var customMarkerTableOuts = [[
+    {
+        active: true,
+        target: null
+    }
+]]
+
+var customMarkerTableTarget = $("#custom-marker-table").get(0);
+
+function getCombinations(count) {
+    if (count <= 0) return [[]]; // Edge case: an empty combination
+    if (count === 1) return [[true], [false]]; // Base case
+
+    // Recursive call to generate combinations
+    const smallerCombinations = getCombinations(count - 1);
+    
+    // Combine with 'true' and 'false' for each smaller combination
+    const combinations = [];
+    for (const smallerCombination of smallerCombinations) {
+        combinations.push([...smallerCombination, true]);
+        combinations.push([...smallerCombination, false]);
+    }
+
+    return combinations;
+}
+
+function customMarkerShowTable(ins,outs) { // number of inputs and outputs
+    // Clears table
+    for (var i = customMarkerTableTarget.rows.length-1; i > -1; i--) {
+        customMarkerTableTarget.deleteRow(i);
+    }
+
+    var head = $("<tr> </tr>").appendTo(customMarkerTableTarget);
+
+    for(var i=0; i<ins; i++) {
+        var elem = $("<th>I"+(i+1)+"</th>").appendTo(head);
+    }
+    for(var i=0; i<outs; i++) {
+        var elem = $("<th>O"+(i+1)+"</th>").appendTo(head);
+    }
+    var insCombinations = getCombinations(ins);
+    customMarkerTableOuts = [];
+    for(var r=0; r<insCombinations.length; r++) {
+        var row = $("<tr> </tr>").appendTo(customMarkerTableTarget);
+        for(var i=0; i<ins; i++) {
+            var elem;
+            if(i<ins-1) {
+                elem = $("<td> </td>").appendTo(row);
+            }
+            else{
+                elem = $("<td class='divider'> </td>").appendTo(row);
+            }
+            var activeTarget = $("<div class='custom-marker-table-elem'></div>").appendTo(elem);
+            if(insCombinations[r][i]) {
+                activeTarget.css({background: "yellow"});
+            }
+        }
+        customMarkerTableOuts.push([]);
+        for(var o=0; o<outs; o++){
+            var elem = $("<td> </td>").appendTo(row);
+            var activeTarget = $("<button type='button' class='custom-marker-table-button' onclick='customMarkerTableChangeOutput("+o+","+r+")'></button>").appendTo(elem);
+            customMarkerTableOuts[r].push({
+                active: false,
+                target: activeTarget
+            })
+        }
+    }
+}
+
+function customMarkerTableChangeOutput(out,row) {
+    console.log(out,row);
+    if(customMarkerTableOuts[row][out].active) {
+        customMarkerTableOuts[row][out].target.css({background: "lightgray"});
+        customMarkerTableOuts[row][out].active = false;
+    }
+    else {
+        customMarkerTableOuts[row][out].target.css({background: "yellow"});
+        customMarkerTableOuts[row][out].active = true;
+    }
+}
+
+function customMarkerGetRules() {
+    var rules = [];
+    for(var r=0; r<customMarkerTableOuts.length; r++) {
+        rules.push([]);
+        for(var o=0; o<customMarkerTableOuts[0].length; o++) {
+            rules[r].push(customMarkerTableOuts[r][o].active);
+        }
+        console.log(rules[r]);
+    }
+    return(rules);
 }

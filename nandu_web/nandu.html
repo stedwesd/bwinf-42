@@ -53,11 +53,18 @@
                 <button type="button" class="custom-marker-new-part" onclick="customMarkerNewPart()"></button>
                 <button type="button" class="custom-marker-delete-part" onclick="customMarkerDeletePart()"></button>
             </div>
+            <div>
+                <table id="custom-marker-table">
+
+                </table>
+            </div>
             <div id="custom-marker-choose-colors">
                 <button type="button" class="custom-marker-color" onclick="customMarkerChangeColor('#FF0000')"></button>
+                <button type="button" class="custom-marker-color" onclick="customMarkerChangeColor('#00FF00')"></button>
+                <button type="button" class="custom-marker-color" onclick="customMarkerChangeColor('#0000FF')"></button>
             </div>
             <div id="custom-marker-done">
-                <button type="button" id="custom-marker-done-button" onclick="customMarkerChangeColor('#FF0000')"></button>
+                <button type="button" id="custom-marker-done-button" onclick="customMarkerGetRules()"></button>
             </div>
         </section>
       

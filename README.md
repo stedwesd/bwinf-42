@@ -26,4 +26,3 @@ Z1
 
 Z1
 - You currently can't place markers directly next to each other, because the light the left one should emit won't be noticed by the right one, because the light is not visible on the board.
-- The markers do not get loaded in the right order.
