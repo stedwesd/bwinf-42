@@ -72,7 +72,7 @@ function initMarker(marker) {
                 }
                 if(c<=1) {
                     target.css({
-                        left: (100*c)-10/marker.realWidth + "%",
+                        left: (80*c)/*-10/marker.realWidth*/ + "%",
                         top: 100/marker.realHeight*i+25/marker.realHeight + "%",
                         width: 20/marker.realWidth + "%",
                         height: 50/marker.realHeight + "%"
@@ -81,7 +81,7 @@ function initMarker(marker) {
                 else {
                     target.css({
                         left: 100/marker.realWidth*i+25/marker.realWidth + "%",
-                        top: (100*(c-2))-10/marker.realHeight + "%",
+                        top: (80*(c-2))/*-10/marker.realHeight*/ + "%",
                         width: 50/marker.realWidth + "%",
                         height: 20/marker.realHeight + "%"
                     });
@@ -124,7 +124,7 @@ function initSource(source) {
             target = $("<div class='source-out' />").appendTo(source.target);
             if(c<=1) {
                 target.css({
-                    left: (100*c)-10 + "%",
+                    left: (80*c)/*-10*/ + "%",
                     top: 25 + "%",
                     width: 20 + "%",
                     height: 50 + "%"
@@ -133,7 +133,7 @@ function initSource(source) {
             else {
                 target.css({
                     left: 25 + "%",
-                    top: (100*(c-2))-10 + "%",
+                    top: (80*(c-2))/*-10*/ + "%",
                     width: 50 + "%",
                     height: 20 + "%"
                 });
@@ -585,7 +585,7 @@ var markerTypes = [
         ]
     },
     {
-        color: "red",
+        color: "#F94144",
         realWidth: 1,
         realHeight: 2,
         inOut: [["I1",null],["O1","O2"],[null],[null]],
@@ -595,7 +595,7 @@ var markerTypes = [
         ]
     },
     {
-        color: "red",
+        color: "#F94144",
         realWidth: 1,
         realHeight: 2,
         inOut: [[null,"I1"],["O1","O2"],[null],[null]],
@@ -605,7 +605,7 @@ var markerTypes = [
         ]
     },
     {
-        color: "blue",
+        color: "#577590",
         realWidth: 1,
         realHeight: 2,
         inOut: [["I1","I2"],["O1","O2"],[null],[null]],
@@ -754,6 +754,7 @@ function customMarkerSetUp() {
     customMarkerShowTable(0,0);
     customMarkerColor = "#ffffff";
     customMarkerShowColors();
+    customMarkerNewPart();
 }
 
 function customMarkerAddMarker() {
@@ -789,14 +790,20 @@ function customMarkerNewPart() {
         input: false,
         output: false
     }
-    target.css({background: customMarkerColor});
+    if(customMarkerParts.length==0) {
+        target.css({borderTop: "1px solid black"});
+    }
+    else {
+        customMarkerParts[customMarkerParts.length-1].target.css({borderBottom: 0});
+    }
+    target.css({background: customMarkerColor, borderBottom: "1px solid black"});
     customMarkerParts.push(newPart);
 
     customMarkerShowTable(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
 }
 
 function customMarkerDeletePart() {
-    if(customMarkerParts.length==0) {
+    if(customMarkerParts.length<=1) {
         return;
     }
     var index = customMarkerParts.length-1;
@@ -853,6 +860,22 @@ function customMarkerShowColors() {
         "#93c47d",
         "#76a5af"
     ]
+
+    colors = [
+        "#F94144", // Salmon Red
+        "#F3722C", // Orange
+        "#F8961E", // Orange Yellow
+        "#F9C74F", // Pastel Yellow
+        "#90BE6D", // Pastel Green
+        "#43AA8B", // Teal
+        "#577590", // Slate Blue
+        "#8A58B5",  // Dark Purple
+        "#F06292",   // Pastel Pink
+        "#FFFFFF", // White
+        "#000000", // Black
+        "#808080"  // Gray
+    ];
+
     var colorSelectionTarget = $("#custom-marker-choose-colors");
     for(var i=0; i<colors.length; i++) {
         var target = $("<button type='button' class='custom-marker-color' onclick=\"customMarkerChangeColor('" + colors[i] + "')\"></button>").appendTo(colorSelectionTarget);
