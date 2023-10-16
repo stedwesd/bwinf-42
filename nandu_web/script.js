@@ -9,6 +9,7 @@ var customMarkerParts = [];
 var customMarkerColor = "#ffffff";
 var customMarkerNumberOfInputs = 0;
 var customMarkerNumberOfOutputs = 0;
+var customMarkerIndex = -1;
 
 var input = {
     snapX: $("#snap-x"),
@@ -56,13 +57,10 @@ function initMarker(marker) {
 
     //Summon In- and Outputs
     var s=marker.inOut;
-    console.log(marker.width,marker.realWidth)
-    console.log(marker.height,marker.realHeight)
     marker.inOutTargets=[[],[],[],[]]
     for(var c=0; c<4; c++) {
         for(var i=0; i<s[c].length; i++) {
             if(s[c][i]!=null) {
-                console.log(c,i,(100*(c-2))-10/marker.realHeight);
                 var target;
                 if(s[c][i][0]=="I") {
                     target = $("<div class='in' />").appendTo(marker.target);
@@ -92,8 +90,6 @@ function initMarker(marker) {
             marker.inOutTargets[c].push(null);
         }
     }
-    console.log(marker.inOutTargets);
-    
 
     console.log("initMarker called");
     return (marker);
@@ -283,7 +279,6 @@ function updateLightMarkers() {
     
     l.forEach(function (element) {
         var marker = markers[element.index];
-        console.log("ihi");
         var pos={
             x: Math.floor(marker.xPercent/100*board.cols),
             y: Math.floor(marker.yPercent/100*board.rows)
@@ -292,7 +287,6 @@ function updateLightMarkers() {
             x: marker.realWidth,
             y: marker.realHeight
         };
-        console.log(pos);
 
         // Get positions of space at input and output
         var inOut = marker.inOut;
@@ -300,9 +294,7 @@ function updateLightMarkers() {
         var outs = [];
         for(var c=0; c<4; c++) {
             for(var i=0; i<inOut[c].length; i++) {
-                console.log("oho");
                 if(inOut[c][i] != null) {
-                    console.log("aha");
                     var number;
                     var match = inOut[c][i].match(/\d+$/); // Regular expression to match one or more digits at the end of the string
                     if (match) {
@@ -332,7 +324,6 @@ function updateLightMarkers() {
                     }
                     
                     if(inOut[c][i][0]=="I") {
-                        console.log(number,element);
                         ins[number-1]=element;
                     }
                     else{
@@ -340,10 +331,6 @@ function updateLightMarkers() {
                     }
                 }
             }
-        }
-        
-        for(var i=0; i<10;i++) {
-            console.log(lightMap[i]);
         }
 
         // Check which ins are active
@@ -359,7 +346,6 @@ function updateLightMarkers() {
             }
             activeIns[i]=1;
         }
-        console.log(activeIns);
 
         // Use rules to get the active outputs
         var index = 0;
@@ -371,7 +357,6 @@ function updateLightMarkers() {
         // Summon new light at active outputs
         for(var i=0; i<activeOuts.length; i++) {
             if(activeOuts[i]){
-                console.log(i);
                 newLight(outs[i][0],[outs[i][1],outs[i][2]]);
             }
         }
@@ -585,7 +570,7 @@ var markerTypes = [
         ]
     },
     {
-        color: "#F94144",
+        color: "#FF0000",
         realWidth: 1,
         realHeight: 2,
         inOut: [["I1",null],["O1","O2"],[null],[null]],
@@ -595,7 +580,7 @@ var markerTypes = [
         ]
     },
     {
-        color: "#F94144",
+        color: "#FF0000",
         realWidth: 1,
         realHeight: 2,
         inOut: [[null,"I1"],["O1","O2"],[null],[null]],
@@ -605,7 +590,7 @@ var markerTypes = [
         ]
     },
     {
-        color: "#577590",
+        color: "#0000FF",
         realWidth: 1,
         realHeight: 2,
         inOut: [["I1","I2"],["O1","O2"],[null],[null]],
@@ -746,6 +731,8 @@ function createSource(outs,xPercent,yPercent) {
 }
 
 function customMarkerSetUp() {
+    customMarkerIndex = -1;
+
     $(".custom-marker-part").remove();
     customMarkerParts = [];
     $(".custom-marker-color").remove();
@@ -755,6 +742,52 @@ function customMarkerSetUp() {
     customMarkerColor = "#ffffff";
     customMarkerShowColors();
     customMarkerNewPart();
+
+    $("#custom-marker-header").html("Create custom Marker");
+}
+
+function customMarkerLoad(index) {
+    customMarkerIndex = index;
+
+    $(".custom-marker-part").remove();
+    customMarkerParts = [];
+    $(".custom-marker-color").remove();
+    customMarkerColor = markerTypes[index].color;
+    customMarkerShowColors();
+
+    customMarkerNumberOfInputs = 0;
+    customMarkerNumberOfOutputs = 0;
+    for(var i=0;i<markerTypes[index].realHeight;i++) {
+        customMarkerNewPart();
+    }
+
+    customMarkerShowTable(0,0);
+    for(var i=0;i<markerTypes[index].realHeight;i++) {
+        if(markerTypes[index].inOut[0][i]) {
+            customMarkerActivateInput(i);
+        }
+        if(markerTypes[index].inOut[1][i]) {
+            customMarkerActivateOutput(i);
+        }
+    }
+    customMarkerShowTable(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
+
+    var rules = markerTypes[index].rules;
+    if(rules != []) {
+        for(var a=0;a<rules.length;a++) {
+            for(var b=0;b<rules[0].length;b++) {
+                customMarkerTableOuts[a][b].active = rules[a][b];
+                if(customMarkerTableOuts[a][b].active) {
+                    customMarkerTableOuts[a][b].target.css({background: "yellow"});
+                }
+                else {
+                    customMarkerTableOuts[a][b].target.css({background: "lightgray"});
+                }
+            }
+        }
+    }
+
+    $("#custom-marker-header").html("Edit Marker");
 }
 
 function customMarkerAddMarker() {
@@ -768,11 +801,17 @@ function customMarkerAddMarker() {
         inOut: customMarkerGetInOut(),
         rules: customMarkerGetRules()
     }
+    if(customMarkerIndex==-1) {
+        markerTypes.push(markerType);
+        var div = $("<div> </div>").appendTo($("#marker-setting-form"));
+        $("<button type='button' onclick='createMarker("+(markerTypes.length-1)+",0,0)'> Spawn Custom Marker "+ (markerTypes.length-4) +" </button>").appendTo(div);
+        $("<button type='button' onclick='customMarkerLoad("+(markerTypes.length-1)+")'> Edit </button>").appendTo(div);
+    }
+    else {
+        markerTypes[customMarkerIndex] = markerType;
+    }
 
-    markerTypes.push(markerType);
 
-    var div = $("<div> </div>").appendTo($("#marker-setting-form"));
-    $("<button type='button' onclick='createMarker("+(markerTypes.length-1)+",0,0)'> Spawn Custom Marker "+ (markerTypes.length-4) +" </button>").appendTo(div);
     customMarkerSetUp();
 }
 
@@ -871,6 +910,18 @@ function customMarkerShowColors() {
         "#577590", // Slate Blue
         "#8A58B5",  // Dark Purple
         "#F06292",   // Pastel Pink
+        "#FFFFFF", // White
+        "#000000", // Black
+        "#808080"  // Gray
+    ];
+
+    colors = [
+        "#EE0000", // Red
+        "#FF7F00", // Orange
+        "#FFFF00", // Yellow
+        "#00DD00", // Green
+        "#0066FF", // Blue
+        "#8A2BE2",  // Violet
         "#FFFFFF", // White
         "#000000", // Black
         "#808080"  // Gray

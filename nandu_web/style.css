@@ -33,7 +33,7 @@ main {
 
 .in {
     position: absolute;
-    background: #00ff00;
+    background: green;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
     border-right: 1px solid black;
@@ -49,7 +49,7 @@ main {
 
 .source {
     position: absolute;
-    background: darkorange;
+    background: #FF7F00;
     top: 0;
     left: 0;
     width: 10%;
