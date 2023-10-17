@@ -1,6 +1,7 @@
 var board;
 var markers = [];
 var sources = [];
+var sensors = [];
 var lights = [];
 var snapX, snapY;
 var lightMap = []; // 0: nothing, 1: obstacle, 2: horizontal light, 3: vertical light, 4: crossing lights
@@ -183,6 +184,8 @@ function updateLightMap() {
         oldMap = JSON.parse(JSON.stringify(lightMap)); // Deep copy of lightMap
         updateLightMarkers();
     } while (!arraysEqual(oldMap, lightMap));
+
+    updateLightSensors();
 }
 
 function resetLightMap() {
@@ -365,6 +368,23 @@ function updateLightMarkers() {
     });
 }
 
+function updateLightSensors() {
+    sensors.forEach(function(sensor) {
+        var pos={
+            x: Math.floor(sensor.xPercent/100*board.cols),
+            y: Math.floor(sensor.yPercent/100*board.rows)
+        };
+        if(lightMap[pos.y][pos.x] == 2 || lightMap[pos.y][pos.x] == 3 || lightMap[pos.y][pos.x] == 4) {
+            sensor.active = true;
+            sensor.target.find(".sensor-lamp").css({background: "yellow"});
+        }
+        else {
+            sensor.active = false;
+            sensor.target.find(".sensor-lamp").css({background: "lightgray"});
+        }
+    })
+}
+
 function newLight(type,pos) { //type: 0 horizontal, 1 vertical; pos as array [x,y]
     // Check if the space is inside of the grid
     if(pos[0]<0 || pos[0]>=board.cols || pos[1]<0 || pos[1]>=board.rows) {
@@ -477,7 +497,7 @@ $(document).ready(function () {
 });
 
 // Function to set the marker's relative position
-function setRelative(marker) {
+function setRelativeMarker(marker) {
     TweenLite.set(board.target, { zIndex: 10 });
     TweenLite.set(marker.target, {
         left: marker.xPercent + "%",
@@ -489,73 +509,31 @@ function setRelative(marker) {
     }
 }
 
-// Functions:::::::::::::::::::::::::::::::::
-function createMarker(xPercent, yPercent) {
-    var newMarker = $("<div class='marker' />").appendTo(board.target);
-    
-    // Initialize the new marker
-    var marker = {
-        isDragging: false,
-        target: newMarker,
-        width: null,
-        height: null,
-        realWidth: null,
-        realHeight: null,
-        xPercent: xPercent,
-        yPercent: yPercent,
-        inOut: [["I1","I2"],["O1","O2"],[null],[null]], // left, right, top, bottom
-        inOutTargets: [],
-        rules: type.rules,
-        color: type.color
-    };
-
-    marker.realWidth = $("#marker-width").val();
-    marker.realHeight = $("#marker-height").val();
-    marker.width=snapX*realWidth;
-    marker.height=snapY*realHeight;
-
-    // Set the initial position of the new marker using xPercent and yPercent
-    marker.target.css({
-        left: xPercent + "%",
-        top: yPercent + "%"
+function setRelativeSource(marker) {
+    TweenLite.set(board.target, { zIndex: 10 });
+    TweenLite.set(marker.target, {
+        left: marker.xPercent + "%",
+        top: marker.yPercent + "%"
     });
-
-    markers.push(initMarker(marker)); // Push the marker object, not the result of initMarker
-
-    marker.target.on("mousedown", function (event) {
-        event.preventDefault();
-        marker.isDragging = true;
-
-        var startX = event.clientX;
-        var startY = event.clientY;
-        var startLeft = parseFloat(marker.target.css('left')) || 0;
-        var startTop = parseFloat(marker.target.css('top')) || 0;
-
-        document.onmousemove = function (e) {
-            if (marker.isDragging) {
-                var newX = startLeft + e.clientX - startX;
-                var newY = startTop + e.clientY - startY;
-                // Ensure the marker stays within the board
-                newX = Math.min(Math.max(newX, 0), board.width - marker.width);
-                newY = Math.min(Math.max(newY, 0), board.height - marker.height);
-
-                marker.target.css({ left: newX + 'px', top: newY + 'px'});
-
-                onDrag(marker);
-            }
-        };
-
-        document.onmouseup = function () {
-            marker.isDragging = false;
-            document.onmousemove = null;
-            document.onmouseup = null;
-
-            board.bounds = null;
-            setRelative(marker);
-        };
-    });
+    if(marker.xPercent>=100 || marker.yPercent>=100) {
+        marker.target.remove();
+        sources.splice(sources.indexOf(marker), 1);
+    }
 }
 
+function setRelativeSensor(marker) {
+    TweenLite.set(board.target, { zIndex: 10 });
+    TweenLite.set(marker.target, {
+        left: marker.xPercent + "%",
+        top: marker.yPercent + "%"
+    });
+    if(marker.xPercent>=100 || marker.yPercent>=100) {
+        marker.target.remove();
+        sensors.splice(sensors.indexOf(marker), 1);
+    }
+}
+
+// Functions:::::::::::::::::::::::::::::::::
 var markerTypes = [
     {
         color: "white",
@@ -660,7 +638,7 @@ function createMarker(type, xPercent, yPercent) {
             document.onmouseup = null;
 
             board.bounds = null;
-            setRelative(marker);
+            setRelativeMarker(marker);
         };
     });
 
@@ -722,13 +700,91 @@ function createSource(outs,xPercent,yPercent) {
             document.onmouseup = null;
 
             board.bounds = null;
-            setRelative(source);
+            setRelativeSource(source);
             updateLightMap();
         };
     });
 
     updateLightMap();
 }
+
+function createSensor(ins,xPercent,yPercent) {
+    var newSensor = $("<div class='sensor' />").appendTo(board.target);
+    $("<div class='sensor-lamp'></div>").appendTo(newSensor);
+    
+    var sensor = {
+        isDragging: false,
+        target: newSensor,
+        ins: ins,
+        width: 100/board.cols,
+        height: 100/board.rows,
+        xPercent: xPercent,
+        yPercent: yPercent,
+        active: false
+    };
+
+    sensor.target.css({
+        left: xPercent + "%",
+        top: yPercent + "%"
+    });
+
+    // Set source's size here
+    sensor.target.css({
+        width: sensor.width + "%",
+        height: sensor.height + "%",
+    });
+
+    // Make the marker element draggable
+    sensor.target.draggable({
+        containment: "parent", // Keep the marker within its parent element (the board)
+        snap: ".cell",         // Snap to elements with the class "cell"
+        snapMode: "both"       // Snap to both the x and y axes
+        /*
+        drag: function (event, ui) {
+            onDrag(event, ui, marker); // Pass the marker to onDrag
+        }*/
+    });
+
+    sensors.push(sensor);
+
+    sensor.target.on("mousedown", function (event) {
+        event.preventDefault();
+        sensor.isDragging = true;
+
+        var startX = event.clientX;
+        var startY = event.clientY;
+        var startLeft = parseFloat(sensor.target.css('left')) || 0;
+        var startTop = parseFloat(sensor.target.css('top')) || 0;
+
+        document.onmousemove = function (e) {
+            if (sensor.isDragging) {
+                var newX = startLeft + e.clientX - startX;
+                var newY = startTop + e.clientY - startY;
+                // Ensure the sensor stays within the board
+                newX = Math.min(Math.max(newX, 0), board.width - sensor.width);
+                newY = Math.min(Math.max(newY, 0), board.height - sensor.height);
+
+                sensor.target.css({ left: newX + 'px', top: newY + 'px'});
+
+                onDrag(sensor);
+            }
+        };
+
+        document.onmouseup = function () {
+            sensor.isDragging = false;
+            document.onmousemove = null;
+            document.onmouseup = null;
+
+            board.bounds = null;
+            setRelativeSensor(sensor);
+            updateLightMap();
+        };
+    });
+
+    updateLightMap();
+}
+
+// Custom Markers :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 function customMarkerSetUp() {
     customMarkerIndex = -1;
