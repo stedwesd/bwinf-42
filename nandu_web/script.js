@@ -5,6 +5,8 @@ var sensors = [];
 var lights = [];
 var snapX, snapY;
 var lightMap = []; // 0: nothing, 1: obstacle, 2: horizontal light, 3: vertical light, 4: crossing lights
+var tableTarget = $("#table").get(0);
+var tableOuts = [];
 var customMarkerTarget;
 var customMarkerParts = [];
 var customMarkerColor = "#ffffff";
@@ -186,6 +188,7 @@ function updateLightMap() {
     } while (!arraysEqual(oldMap, lightMap));
 
     updateLightSensors();
+    updateTable();
 }
 
 function resetLightMap() {
@@ -405,7 +408,7 @@ function newLight(type,pos) { //type: 0 horizontal, 1 vertical; pos as array [x,
             height: 20/board.rows + "%"
         })
     }
-    else {
+    if(type==1) {
         newLight = $("<div class='vertical-light' />").appendTo(board.target);
         newLight.css({
             left: (pos[0]+0.4)*100/board.cols + "%",
@@ -518,6 +521,10 @@ function setRelativeSource(marker) {
     if(marker.xPercent>=100 || marker.yPercent>=100) {
         marker.target.remove();
         sources.splice(sources.indexOf(marker), 1);
+        for(var i=0;i<sources.length;i++) {
+            console.log(sources[i].active);
+            sources[i].target.contents()[0].nodeValue = i+1;
+        }
     }
 }
 
@@ -530,6 +537,10 @@ function setRelativeSensor(marker) {
     if(marker.xPercent>=100 || marker.yPercent>=100) {
         marker.target.remove();
         sensors.splice(sensors.indexOf(marker), 1);
+        for(var i=0;i<sensors.length;i++) {
+            console.log(sensors[i].active);
+            sensors[i].target.contents()[0].nodeValue = i+1;
+        }
     }
 }
 
@@ -646,7 +657,7 @@ function createMarker(type, xPercent, yPercent) {
 }
 
 function createSource(outs,xPercent,yPercent) {
-    var newSource = $("<div class='source' />").appendTo(board.target);
+    var newSource = $("<div class='source'>"+(sources.length+1)+"</div>").appendTo(board.target);
     
     var source = {
         isDragging: false,
@@ -709,7 +720,7 @@ function createSource(outs,xPercent,yPercent) {
 }
 
 function createSensor(ins,xPercent,yPercent) {
-    var newSensor = $("<div class='sensor' />").appendTo(board.target);
+    var newSensor = $("<div class='sensor'>"+(sensors.length+1)+"</div>").appendTo(board.target);
     $("<div class='sensor-lamp'></div>").appendTo(newSensor);
     
     var sensor = {
@@ -782,6 +793,57 @@ function createSensor(ins,xPercent,yPercent) {
     });
 
     updateLightMap();
+}
+
+// Table Sources/Sensors :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+function updateTable(){
+    showTable(sources.length,sensors.length);
+
+    
+}
+
+function showTable(ins,outs) { // number of inputs and outputs
+    // Clears table
+    for (var i = tableTarget.rows.length-1; i > -1; i--) {
+        tableTarget.deleteRow(i);
+    }
+
+    var head = $("<tr> </tr>").appendTo(tableTarget);
+
+    for(var i=0; i<ins; i++) {
+        var elem = $("<th>I"+(i+1)+"</th>").appendTo(head);
+    }
+    for(var i=0; i<outs; i++) {
+        var elem = $("<th>O"+(i+1)+"</th>").appendTo(head);
+    }
+    var insCombinations = getCombinations(ins);
+    tableOuts = [];
+    for(var r=0; r<insCombinations.length; r++) {
+        var row = $("<tr> </tr>").appendTo(tableTarget);
+        for(var i=0; i<ins; i++) {
+            var elem;
+            if(i<ins-1) {
+                elem = $("<td> </td>").appendTo(row);
+            }
+            else{
+                elem = $("<td class='divider'> </td>").appendTo(row);
+            }
+            var activeTarget = $("<div class='custom-marker-table-elem'></div>").appendTo(elem);
+            if(insCombinations[r][i]) {
+                activeTarget.css({background: "yellow"});
+            }
+        }
+        tableOuts.push([]);
+        for(var o=0; o<outs; o++){
+            var elem = $("<td> </td>").appendTo(row);
+            var activeTarget = $("<div class='custom-marker-table-elem'></div>").appendTo(elem);
+            tableOuts[r].push({
+                active: false,
+                target: activeTarget
+            })
+        }
+    }
 }
 
 // Custom Markers :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

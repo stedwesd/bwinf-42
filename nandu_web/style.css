@@ -56,6 +56,9 @@ main {
     height: 10%;
     z-index: 1000;
     outline: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .source-out {
@@ -79,6 +82,9 @@ main {
     height: 10%;
     z-index: 1000;
     outline: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sensor-lamp {
@@ -88,6 +94,7 @@ main {
     left: 25%;
     width: 50%;
     height: 50%;
+    z-index: -1;
     outline: 1px solid black;
 }
 
@@ -124,6 +131,21 @@ main {
       font-size: 14px;
     }
 }
+
+#table-panel {
+    position: absolute;
+    padding: 10px;
+    z-index: 20;
+    background: #ddd;
+    border: 1px solid #ccc;
+    right: 0%;
+  
+    header {
+      font-weight: bold;
+      font-size: 14px;
+    }
+}
+
 #custom-marker-panel {
     position: absolute;
     padding: 10px;
