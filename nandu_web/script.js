@@ -4,7 +4,7 @@ var sources = [];
 var sensors = [];
 var lights = [];
 var snapX, snapY;
-var lightMap = []; // 0: nothing, 1: obstacle, 2: horizontal light, 3: vertical light, 4: crossing lights
+var lightMap = []; // 0: nothing, 1: obstacle, 2: horizontal light, 3: vertical light, 4: crossing lights, 5: active obstacle to the right
 var tableTarget = $("#table").get(0);
 var tableOuts = [];
 var showLights = true;
@@ -241,14 +241,13 @@ function updateLightSources(){
         }
         for(var i=0;i<4;i++) {
             if(source.outs[i]==true) {
-                var pos = [];
+                pos = [Math.floor(source.xPercent/100*board.cols),Math.floor(source.yPercent/100*board.rows)];
+                lightMap[pos[1]][pos[0]] = 5;
                 if(i<=1) {
-                    pos = [Math.floor(source.xPercent/100*board.cols+2*i-1),Math.floor(source.yPercent/100*board.rows)];
-                    newLight(0,pos);
+                    newLight(0,[pos[0]+2*i-1,pos[1]]);
                 }
                 else {
-                    pos = [Math.floor(source.xPercent/100*board.cols),Math.floor(source.yPercent/100*board.rows+2*(i-2)-1)];
-                    newLight(1,pos);
+                    newLight(1,[pos[0],pos[1]+2*(i-2)-1]);
                 }
             }
         }
@@ -260,11 +259,11 @@ function extendLights() {
         var oldMap = JSON.parse(JSON.stringify(lightMap));
         lights.forEach(function (light) {
             if(light.type==0) {
-                newLight(light.type,[light.x-1,light.y]);
+                //newLight(light.type,[light.x-1,light.y]);
                 newLight(light.type,[light.x+1,light.y]);
             }
             if(light.type==1) {
-                newLight(light.type,[light.x,light.y-1]);
+                //newLight(light.type,[light.x,light.y-1]);
                 newLight(light.type,[light.x,light.y+1]);
             }
         });
@@ -349,7 +348,7 @@ function updateLightMarkers() {
                 activeIns[i]=1;
                 continue;
             }
-            if(lightMap[ins[i][2]][ins[i][1]]==4 || lightMap[ins[i][2]][ins[i][1]]==ins[i][0]+2) {
+            if(lightMap[ins[i][2]][ins[i][1]]==4 || lightMap[ins[i][2]][ins[i][1]]==ins[i][0]+2 || lightMap[ins[i][2]][ins[i][1]]==5) {
                 activeIns[i]=0;
                 continue;
             }
@@ -366,6 +365,7 @@ function updateLightMarkers() {
         // Summon new light at active outputs
         for(var i=0; i<activeOuts.length; i++) {
             if(activeOuts[i]){
+                lightMap[outs[i][1]-1][outs[i][2]] = 5;
                 newLight(outs[i][0],[outs[i][1],outs[i][2]]);
             }
         }
