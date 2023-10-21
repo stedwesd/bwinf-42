@@ -21,10 +21,8 @@ The team consists of: @stedwesd, @Roboter09, @Banana2308
 Z1
 - Better Textures.
 - Dont move markers out of screen.
-- D'ont place markers on top of each other.
-- Fix in and output highlight thing.
+- Rework marker spawning system.
 
 ## Known issues
 
 Z1
-- You currently can't place markers directly next to each other, because the light the left one should emit won't be noticed by the right one, because the light is not visible on the board.

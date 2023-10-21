@@ -158,11 +158,69 @@ function onDrag(marker) { // is used for both markers and sources
         top: yGrid + "%"
     });
 
+    var xPos = Math.floor(xGrid/100*board.cols);
+    var yPos = Math.floor(yGrid/100*board.rows);
+    var colliding = false;
+
+    var height = 1;
+    if(marker.realHeight) {
+        height=marker.realHeight;
+    }
+    
+    markers.forEach(function (m) {
+        if(m==marker) {
+            return;
+        }
+        var mPosX = Math.floor(m.xPercent/100*board.cols);
+        var mPosY = Math.floor(m.yPercent/100*board.rows);
+        var mHeight=m.realHeight;
+        for(var y=yPos;y<yPos+height;y++) {
+            for(var mY=mPosY;mY<mPosY+mHeight;mY++) {
+                if(y==mY && xPos==mPosX) {
+                    colliding=true;
+                }
+            }
+        }
+    }) 
+    sources.forEach(function (m) {
+        if(m==marker) {
+            return;
+        }
+        var mPosX = Math.floor(m.xPercent/100*board.cols);
+        var mPosY = Math.floor(m.yPercent/100*board.rows);
+        var mHeight=1;
+        for(var y=yPos;y<yPos+height;y++) {
+            for(var mY=mPosY;mY<mPosY+mHeight;mY++) {
+                if(y==mY && xPos==mPosX) {
+                    colliding=true;
+                }
+            }
+        }
+    }) 
+    sensors.forEach(function (m) {
+        if(m==marker) {
+            return;
+        }
+        var mPosX = Math.floor(m.xPercent/100*board.cols);
+        var mPosY = Math.floor(m.yPercent/100*board.rows);
+        var mHeight=1;
+        for(var y=yPos;y<yPos+height;y++) {
+            for(var mY=mPosY;mY<mPosY+mHeight;mY++) {
+                if(y==mY && xPos==mPosX) {
+                    colliding=true;
+                }
+            }
+        }
+    }) 
+
     // Update the marker's xPercent and yPercent
-    if(marker.xPercent != xGrid || marker.yPercent != yGrid) {
+    if((marker.xPercent != xGrid || marker.yPercent != yGrid) && !colliding) {
         marker.xPercent = xGrid;
         marker.yPercent = yGrid;
         updateLightMap();
+    }
+    if(!colliding) {
+        marker.target.css({left: marker.xPercent+"%", top: marker.yPercent+"%",});
     }
 }
 
