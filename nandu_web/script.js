@@ -354,13 +354,18 @@ function updateLightMarkers() {
             }
             activeIns[i]=1;
         }
-        for(var i=0; i<ins.length; i++) {
-            var target = marker.inOutTargets[0][i];
-            if(activeIns[i]==0) {
-                target.css({background: "yellow"});
-            }
-            else {
-                target.css({background: "black"});
+
+        var counter = 0;
+        for(var i=0;i<inOut[0].length;i++) {
+            if(inOut[0][i] != null) {
+                var target = marker.inOutTargets[0][i];
+                if(activeIns[counter]==0) {
+                    target.css({background: "yellow"});
+                }
+                else {
+                    target.css({background: "black"});
+                }
+                counter++;
             }
         }
 
@@ -371,16 +376,19 @@ function updateLightMarkers() {
         }
         activeOuts = marker.rules[index];
         
-        // Summon new light at active outputs
-        for(var i=0; i<activeOuts.length; i++) {
-            var target = marker.inOutTargets[1][i];
-            if(activeOuts[i]){
-                lightMap[outs[i][2]][outs[i][1]-1] = 5;
-                newLight(outs[i][0],[outs[i][1],outs[i][2]]);
-                target.css({background: "yellow"});
-            }
-            else{
-                target.css({background: "black"});
+        var counter = 0;
+        for(var i=0;i<inOut[1].length;i++) {
+            if(inOut[1][i] != null) {
+                var target = marker.inOutTargets[1][i];
+                if(activeOuts[counter]) {
+                    lightMap[outs[counter][2]][outs[counter][1]-1] = 5;
+                    newLight(outs[counter][0],[outs[counter][1],outs[counter][2]]);
+                    target.css({background: "yellow"});
+                }
+                else {
+                    target.css({background: "black"});
+                }
+                counter++;
             }
         }
 

@@ -20,7 +20,9 @@ The team consists of: @stedwesd, @Roboter09, @Banana2308
 
 Z1
 - Better Textures.
-- Table for Outputs in realtionsship to Inputs.
+- Dont move markers out of screen.
+- D'ont place markers on top of each other.
+- Fix in and output highlight thing.
 
 ## Known issues
 
