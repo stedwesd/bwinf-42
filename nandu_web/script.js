@@ -354,6 +354,15 @@ function updateLightMarkers() {
             }
             activeIns[i]=1;
         }
+        for(var i=0; i<ins.length; i++) {
+            var target = marker.inOutTargets[0][i];
+            if(activeIns[i]==0) {
+                target.css({background: "yellow"});
+            }
+            else {
+                target.css({background: "black"});
+            }
+        }
 
         // Use rules to get the active outputs
         var index = 0;
@@ -361,12 +370,17 @@ function updateLightMarkers() {
             index+=activeIns[i]*(Math.pow(2, ins.length-i-1));
         }
         activeOuts = marker.rules[index];
-
+        
         // Summon new light at active outputs
         for(var i=0; i<activeOuts.length; i++) {
+            var target = marker.inOutTargets[1][i];
             if(activeOuts[i]){
-                lightMap[outs[i][1]-1][outs[i][2]] = 5;
+                lightMap[outs[i][2]][outs[i][1]-1] = 5;
                 newLight(outs[i][0],[outs[i][1],outs[i][2]]);
+                target.css({background: "yellow"});
+            }
+            else{
+                target.css({background: "black"});
             }
         }
 
@@ -707,6 +721,14 @@ function createSource(outs,xPercent,yPercent) {
         document.onmouseup = function () {
             if(click) {
                 source.active=!source.active;
+                var outs = source.target.find(".source-out");
+                console.log(outs.length);
+                if(source.active){
+                    outs.css({background: "yellow"});
+                }
+                else{
+                    outs.css({background: "black"});
+                }
             }
             source.isDragging = false;
             document.onmousemove = null;
