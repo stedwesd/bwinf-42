@@ -7,6 +7,8 @@ var snapX, snapY;
 var lightMap = []; // 0: nothing, 1: obstacle, 2: horizontal light, 3: vertical light, 4: crossing lights
 var tableTarget = $("#table").get(0);
 var tableOuts = [];
+var showLights = false;
+
 var customMarkerTarget;
 var customMarkerParts = [];
 var customMarkerColor = "#ffffff";
@@ -176,7 +178,7 @@ function arraysEqual(arr1, arr2) {
 
 //LightMap:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 function updateLightMap() {
-    resetLightMap();
+    lightMap = resetLightMap();
     deleteLights();
     updateLightMapObstacles();
     var oldMap = lightMap;
@@ -192,14 +194,15 @@ function updateLightMap() {
 }
 
 function resetLightMap() {
-    lightMap = [];
+    var myLightMap = [];
     for(var y=0; y<board.rows; y++) {
         var subList = [];
         for(var x=0; x<board.cols; x++) {
             subList.push(0);
         }
-        lightMap.push(subList);
+        myLightMap.push(subList);
     }
+    return(myLightMap);
 }
 
 function deleteLights() {
@@ -368,6 +371,7 @@ function updateLightMarkers() {
         }
 
         extendLights();
+        console.log(lightMap);
     });
 }
 
@@ -380,10 +384,12 @@ function updateLightSensors() {
         if(lightMap[pos.y][pos.x] == 2 || lightMap[pos.y][pos.x] == 3 || lightMap[pos.y][pos.x] == 4) {
             sensor.active = true;
             sensor.target.find(".sensor-lamp").css({background: "yellow"});
+            console.log("true");
         }
         else {
             sensor.active = false;
             sensor.target.find(".sensor-lamp").css({background: "lightgray"});
+            console.log("false");
         }
     })
 }
@@ -398,32 +404,33 @@ function newLight(type,pos) { //type: 0 horizontal, 1 vertical; pos as array [x,
         return;
     }
 
-    var newLight;
-    if(type==0) {
-        newLight = $("<div class='horizontal-light' />").appendTo(board.target);
-        newLight.css({
-            left: pos[0]*100/board.cols + "%",
-            top: (pos[1]+0.4)*100/board.rows + "%",
-            width: 100/board.cols + "%",
-            height: 20/board.rows + "%"
-        })
+    if(showLights) {
+        var newLight;
+        if(type==0) {
+            newLight = $("<div class='horizontal-light' />").appendTo(board.target);
+            newLight.css({
+                left: pos[0]*100/board.cols + "%",
+                top: (pos[1]+0.4)*100/board.rows + "%",
+                width: 100/board.cols + "%",
+                height: 20/board.rows + "%"
+            })
+        }
+        if(type==1) {
+            newLight = $("<div class='vertical-light' />").appendTo(board.target);
+            newLight.css({
+                left: (pos[0]+0.4)*100/board.cols + "%",
+                top: pos[1]*100/board.rows + "%",
+                width: 20/board.cols + "%",
+                height: 100/board.rows + "%"
+            })
+        }
     }
-    if(type==1) {
-        newLight = $("<div class='vertical-light' />").appendTo(board.target);
-        newLight.css({
-            left: (pos[0]+0.4)*100/board.cols + "%",
-            top: pos[1]*100/board.rows + "%",
-            width: 20/board.cols + "%",
-            height: 100/board.rows + "%"
-        })
-    }
-
     var light = {
         x: pos[0],
         y: pos[1],
-        type: type,
-        target: newLight
+        type: type
     }
+    
     if(lightMap[pos[1]][pos[0]]==0) {
         lightMap[pos[1]][pos[0]]=type+2;
     }
@@ -494,7 +501,7 @@ $(document).ready(function () {
 
     init(); // Initialize the board
 
-    resetLightMap();
+    lightMap = resetLightMap();
 
     customMarkerSetUp();
 });
@@ -799,8 +806,37 @@ function createSensor(ins,xPercent,yPercent) {
 
 function updateTable(){
     showTable(sources.length,sensors.length);
+    var saveLightMap = lightMap;
+    var saveActiveLightSources = [];
+    for(var i=0;i<sources.length;i++){
+        saveActiveLightSources.push(sources[i].active);
+    }
 
-    
+    var numberOfIns = sources.length;
+    var combis = getCombinations(numberOfIns);
+    console.log(combis);
+
+    for(var i=0;i<combis.length;i++) {
+        var combi = combis[i];
+        for(var e=0;e<combi.length;e++) {
+            sources[e].active = combi[e];
+            console.log(combi[e]);
+        }
+
+        tableUpdateLightMap();
+        
+        for(var e=0;e<sensors.length;e++) {
+            tableOuts[i][e].active = sensors[e].active;
+            console.log(sensors[e].active);
+        }
+    }
+    console.log("ahh",tableOuts);
+    showTableOuts();
+
+    for(var i=0;i<sources.length;i++){
+        sources[i].active = saveActiveLightSources[i];
+    }
+    lightMap=saveLightMap;
 }
 
 function showTable(ins,outs) { // number of inputs and outputs
@@ -842,6 +878,39 @@ function showTable(ins,outs) { // number of inputs and outputs
                 active: false,
                 target: activeTarget
             })
+        }
+    }
+}
+
+function tableUpdateLightMap() {
+    console.log("before");
+    console.log(lightMap);
+    lightMap = resetLightMap();
+    console.log("adsjkllf");
+    console.log(lightMap);
+    updateLightMapObstacles();
+    var oldMap = lightMap;
+    updateLightSources();
+    extendLights();
+    do {
+        oldMap = JSON.parse(JSON.stringify(lightMap)); // Deep copy of lightMap
+        updateLightMarkers();
+    } while (!arraysEqual(oldMap, lightMap));
+
+    console.log(lightMap);
+
+    updateLightSensors();
+}
+
+function showTableOuts() {
+    for(var row=0;row<tableOuts.length;row++) {
+        for(var out=0;out<tableOuts[0].length;out++) {
+            if(tableOuts[row][out].active) {
+                tableOuts[row][out].target.css({background: "yellow"});
+            }
+            else {
+                tableOuts[row][out].target.css({background: "lightgray"});
+            }
         }
     }
 }
