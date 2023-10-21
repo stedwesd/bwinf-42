@@ -7,7 +7,7 @@ var snapX, snapY;
 var lightMap = []; // 0: nothing, 1: obstacle, 2: horizontal light, 3: vertical light, 4: crossing lights
 var tableTarget = $("#table").get(0);
 var tableOuts = [];
-var showLights = false;
+var showLights = true;
 
 var customMarkerTarget;
 var customMarkerParts = [];
@@ -371,7 +371,6 @@ function updateLightMarkers() {
         }
 
         extendLights();
-        console.log(lightMap);
     });
 }
 
@@ -384,12 +383,10 @@ function updateLightSensors() {
         if(lightMap[pos.y][pos.x] == 2 || lightMap[pos.y][pos.x] == 3 || lightMap[pos.y][pos.x] == 4) {
             sensor.active = true;
             sensor.target.find(".sensor-lamp").css({background: "yellow"});
-            console.log("true");
         }
         else {
             sensor.active = false;
             sensor.target.find(".sensor-lamp").css({background: "lightgray"});
-            console.log("false");
         }
     })
 }
@@ -529,7 +526,6 @@ function setRelativeSource(marker) {
         marker.target.remove();
         sources.splice(sources.indexOf(marker), 1);
         for(var i=0;i<sources.length;i++) {
-            console.log(sources[i].active);
             sources[i].target.contents()[0].nodeValue = i+1;
         }
     }
@@ -545,7 +541,6 @@ function setRelativeSensor(marker) {
         marker.target.remove();
         sensors.splice(sensors.indexOf(marker), 1);
         for(var i=0;i<sensors.length;i++) {
-            console.log(sensors[i].active);
             sensors[i].target.contents()[0].nodeValue = i+1;
         }
     }
@@ -806,7 +801,8 @@ function createSensor(ins,xPercent,yPercent) {
 
 function updateTable(){
     showTable(sources.length,sensors.length);
-    var saveLightMap = lightMap;
+    var saveLightMap = JSON.parse(JSON.stringify(lightMap));
+    var savedLights = JSON.parse(JSON.stringify(lights));
     var saveActiveLightSources = [];
     for(var i=0;i<sources.length;i++){
         saveActiveLightSources.push(sources[i].active);
@@ -814,29 +810,40 @@ function updateTable(){
 
     var numberOfIns = sources.length;
     var combis = getCombinations(numberOfIns);
-    console.log(combis);
 
     for(var i=0;i<combis.length;i++) {
         var combi = combis[i];
         for(var e=0;e<combi.length;e++) {
             sources[e].active = combi[e];
-            console.log(combi[e]);
         }
 
         tableUpdateLightMap();
         
         for(var e=0;e<sensors.length;e++) {
             tableOuts[i][e].active = sensors[e].active;
-            console.log(sensors[e].active);
         }
     }
-    console.log("ahh",tableOuts);
     showTableOuts();
 
     for(var i=0;i<sources.length;i++){
         sources[i].active = saveActiveLightSources[i];
     }
     lightMap=saveLightMap;
+    deleteLights();
+    lights = savedLights;
+
+    //Update Lightmap
+    lightMap = resetLightMap();
+    deleteLights();
+    updateLightMapObstacles();
+    var oldMap = lightMap;
+    updateLightSources();
+    extendLights();
+    do {
+        oldMap = JSON.parse(JSON.stringify(lightMap)); // Deep copy of lightMap
+        updateLightMarkers();
+    } while (!arraysEqual(oldMap, lightMap));
+    updateLightSensors();
 }
 
 function showTable(ins,outs) { // number of inputs and outputs
@@ -883,11 +890,9 @@ function showTable(ins,outs) { // number of inputs and outputs
 }
 
 function tableUpdateLightMap() {
-    console.log("before");
-    console.log(lightMap);
+    showLights = false;
     lightMap = resetLightMap();
-    console.log("adsjkllf");
-    console.log(lightMap);
+    lights=[];
     updateLightMapObstacles();
     var oldMap = lightMap;
     updateLightSources();
@@ -897,9 +902,8 @@ function tableUpdateLightMap() {
         updateLightMarkers();
     } while (!arraysEqual(oldMap, lightMap));
 
-    console.log(lightMap);
-
     updateLightSensors();
+    showLights = true;
 }
 
 function showTableOuts() {

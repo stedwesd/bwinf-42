@@ -55,7 +55,7 @@ if __name__ == "__main__":
         return "".join("1" if val else "0" for val in k)
     
     for i in range(5):
-        with open(f"examples/nandu{i+1}.txt","r") as f:
+        with open(f"files/nandu{i+1}.txt","r") as f:
             data = f.read()
         print(f"\n\nNANDU: {i+1}  \n{data}\n\nRESULTS:")
         print(*[f"{conv(k)} : {conv(v)}" for k, v in generateTable(data).items()],sep="\n")

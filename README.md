@@ -14,13 +14,13 @@ The team consists of: @stedwesd, @Roboter09, @Banana2308
 | `N3` Zauberschule      | ✅ Program implemented | @stedwesd
 | `N4` Nandu             | ✅ Program implemented| @stedwesd
 | `N5` Stadtführung      | - | 
-| `Z1` Website für `N4`  | - | @Banana2308, @Roboter09
+| `Z1` Website für `N4`  | - | @Roboter09
 
 ## ToDos
 
 Z1
 - Better Textures.
-- Create own pieces.
+- Table for Outputs in realtionsship to Inputs.
 
 ## Known issues
 
