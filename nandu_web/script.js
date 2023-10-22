@@ -831,6 +831,7 @@ function setRelativeSensor(marker) {
 // Functions:::::::::::::::::::::::::::::::::
 var markerTypes = [
     {
+        name: "White Marker",
         color: "#EBEBEB",
         realWidth: 1,
         realHeight: 2,
@@ -843,6 +844,7 @@ var markerTypes = [
         ]
     },
     {
+        name: "red Marker 1",
         color: "#E91607",
         realWidth: 1,
         realHeight: 2,
@@ -853,6 +855,7 @@ var markerTypes = [
         ]
     },
     {
+        name: "Red Marker 2",
         color: "#E91607",
         realWidth: 1,
         realHeight: 2,
@@ -863,6 +866,7 @@ var markerTypes = [
         ]
     },
     {
+        name: "Blue Marker",
         color: "#0089FF",
         realWidth: 1,
         realHeight: 2,
@@ -1231,12 +1235,17 @@ function customMarkerSetUp() {
     customMarkerShowColors();
     customMarkerNewPart();
 
+    // Buttons for creating the marker type or canceling
     $("#custom-marker-header").html("Create custom Marker");
-    $("#custom-marker-done-button").textContent = "Create Marker";
+    document.getElementById("custom-marker-done-button").textContent = "Create Marker";
     document.getElementById("custom-marker-revert-changes-button").textContent = "Cancel";
     if(document.getElementById("custom-marker-delete-button") != null) {
         document.getElementById("custom-marker-delete-button").remove();
     }
+
+    // Namefield
+    document.getElementById("custom-marker-name").placeholder = "Custom Marker " + (markerTypes.length-3);
+    document.getElementById("custom-marker-name").value = "";
 }
 
 function customMarkerLoad(index) {
@@ -1281,19 +1290,27 @@ function customMarkerLoad(index) {
     }
 
     $("#custom-marker-header").html("Edit Marker");
-    $("#custom-marker-done-button").textContent = "Apply changes";
+
+    // Buttons for applying/reverting changes and for deleting the marker type
+    document.getElementById("custom-marker-done-button").textContent = "Apply changes";
     document.getElementById("custom-marker-revert-changes-button").textContent = "Revert changes";
     if(document.getElementById("custom-marker-delete-button") == null) {
         var div = $("<div id='custom-marker-delete' />").appendTo($("#custom-marker-panel"));
         $("<button type='button' id='custom-marker-delete-button' onclick='customMarkerDeleteMarker()'>Delete Marker</button>").appendTo(div);
     }
+
+    // Namefield
+    document.getElementById("custom-marker-name").placeholder = "Custom Marker " + (customMarkerIndex-3);
+    document.getElementById("custom-marker-name").value = markerTypes[customMarkerIndex].name;
 }
 
 function customMarkerAddMarker() {
     if(customMarkerParts.length==0) {
         return;
     }
+    var name = document.getElementById("custom-marker-name").value;
     var markerType = {
+        name: name,
         color: customMarkerColor,
         realWidth: 1,
         realHeight: customMarkerParts.length,
@@ -1301,13 +1318,23 @@ function customMarkerAddMarker() {
         rules: customMarkerGetRules()
     }
     if(customMarkerIndex==-1) {
+        if(name == "") {
+            console.log("ah");
+            markerType.name = "Custom Marker " + (markerTypes.length-3);
+        }
+
         markerTypes.push(markerType);
         var div = $("<div> </div>").appendTo($("#marker-setting-form"));
-        $("<button type='button' onclick='createMarker("+(markerTypes.length-1)+",0,0)'> Spawn Custom Marker "+ (markerTypes.length-4) +" </button>").appendTo(div);
+        $("<button type='button' onclick='createMarker("+(markerTypes.length-1)+",0,0)'> Spawn "+markerType.name+" </button>").appendTo(div);
         $("<button type='button' onclick='customMarkerLoad("+(markerTypes.length-1)+")'> Edit </button>").appendTo(div);
     }
     else {
+        if(name == "") {
+            markerType.name = "Custom Marker " + (customMarkerIndex-3);
+        }
+
         markerTypes[customMarkerIndex] = markerType;
+        document.getElementById("marker-setting-form").children[customMarkerIndex+2].children[0].innerHTML = "Spawn " + markerType.name;
         var i=0;
         var counter=0;
         var len = markers.length;
