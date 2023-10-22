@@ -920,7 +920,7 @@ function createMarker(type, xPercent, yPercent) {
                 var newY = startTop + e.clientY - startY;
                 // Ensure the marker stays within the board
                 newX = Math.min(Math.max(newX, 0), board.width - marker.width);
-                newY = Math.min(Math.max(newY, 0), board.height - marker.height - (board.height/board.rows));
+                newY = Math.min(Math.max(newY, 0), board.height - marker.realHeight*(board.height/board.rows));
 
                 marker.target.css({ left: newX + 'px', top: newY + 'px'});
 
@@ -978,7 +978,7 @@ function createSource(outs,xPercent,yPercent) {
                 var newY = startTop + e.clientY - startY;
                 // Ensure the source stays within the board
                 newX = Math.min(Math.max(newX, 0), board.width - source.width);
-                newY = Math.min(Math.max(newY, 0), board.height - source.height - (board.height/board.rows));
+                newY = Math.min(Math.max(newY, 0), board.height - (board.height/board.rows));
 
                 source.target.css({ left: newX + 'px', top: newY + 'px'});
 
@@ -1066,7 +1066,7 @@ function createSensor(ins,xPercent,yPercent) {
                 var newY = startTop + e.clientY - startY;
                 // Ensure the sensor stays within the board
                 newX = Math.min(Math.max(newX, 0), board.width - sensor.width);
-                newY = Math.min(Math.max(newY, 0), board.height - sensor.height - (board.height/board.rows));
+                newY = Math.min(Math.max(newY, 0), board.height - (board.height/board.rows));
 
                 sensor.target.css({ left: newX + 'px', top: newY + 'px'});
 
