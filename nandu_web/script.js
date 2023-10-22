@@ -8,6 +8,7 @@ var lightMap = []; // 0: nothing, 1: obstacle, 2: horizontal light, 3: vertical 
 var tableTarget = $("#table").get(0);
 var tableOuts = [];
 var showLights = true;
+var doLightMapUpdating = true;
 
 var colors = {
     activeInput: "#FFFDBC",
@@ -96,6 +97,7 @@ function init(/*event*/) {
         inputBoard.shift();
         var sourceOrder = [];
         var sensorOrder = [];
+        doLightMapUpdating = false;
         for(var col=0;col<cols;col++) {
             c = inputBoard[col];
             var row=0;
@@ -171,6 +173,7 @@ function init(/*event*/) {
         console.log(sourceOrder);
         console.log(sensorOrder);
 
+        doLightMapUpdating = true;
         updateLightMap();
     });
 }
@@ -432,6 +435,10 @@ function arraysEqual(arr1, arr2) {
 
 //LightMap:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 function updateLightMap() {
+    if(!doLightMapUpdating) {
+        return;
+    }
+
     lightMap = resetLightMap();
     deleteLights();
     updateLightMapObstacles();
