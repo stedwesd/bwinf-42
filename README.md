@@ -20,7 +20,6 @@ The team consists of: @stedwesd, @Roboter09, @Banana2308
 
 Z1
 - Better Textures.
-- Dont move markers out of screen.
 - Rework marker spawning system.
 
 ## Known issues

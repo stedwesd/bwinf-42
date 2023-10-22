@@ -125,6 +125,11 @@ main {
     z-index: 20;
     background: #ddd;
     border: 1px solid #ccc;
+    height: 48%;
+    overflow-y: auto; 
+    padding-right: 15px;
+    min-width: 150px;
+    width: auto;
   
     header {
       font-weight: bold;
@@ -139,6 +144,11 @@ main {
     background: #ddd;
     border: 1px solid #ccc;
     right: 0%;
+    height: 98.5%;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    overflow: auto;
   
     header {
       font-weight: bold;
@@ -154,6 +164,11 @@ main {
     border: 1px solid #ccc;
     left: 0;
     top: 50%;
+    height: 48.5%;
+    overflow-y: auto; 
+    padding-right: 15px;
+    min-width: 150px;
+    width: auto;
   
     header {
       font-weight: bold;

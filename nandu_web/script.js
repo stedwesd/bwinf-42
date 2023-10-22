@@ -1139,10 +1139,10 @@ function showTable(ins,outs) { // number of inputs and outputs
     var head = $("<tr> </tr>").appendTo(tableTarget);
 
     for(var i=0; i<ins; i++) {
-        var elem = $("<th>I"+(i+1)+"</th>").appendTo(head);
+        var elem = $("<th>Q"+(i+1)+"</th>").appendTo(head);
     }
     for(var i=0; i<outs; i++) {
-        var elem = $("<th>O"+(i+1)+"</th>").appendTo(head);
+        var elem = $("<th>L"+(i+1)+"</th>").appendTo(head);
     }
     var insCombinations = getCombinations(ins);
     tableOuts = [];
