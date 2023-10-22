@@ -9,6 +9,11 @@ var tableTarget = $("#table").get(0);
 var tableOuts = [];
 var showLights = true;
 
+var colors = {
+    activeInput: "#FFFDBC",
+    deactiveInput: "#000202"
+}
+
 var customMarkerTarget;
 var customMarkerParts = [];
 var customMarkerColor = "#ffffff";
@@ -418,10 +423,10 @@ function updateLightMarkers() {
             if(inOut[0][i] != null) {
                 var target = marker.inOutTargets[0][i];
                 if(activeIns[counter]==0) {
-                    target.css({background: "yellow"});
+                    target.css({background: colors.activeInput});
                 }
                 else {
-                    target.css({background: "black"});
+                    target.css({background: colors.deactiveInput});
                 }
                 counter++;
             }
@@ -441,10 +446,10 @@ function updateLightMarkers() {
                 if(activeOuts[counter]) {
                     lightMap[outs[counter][2]][outs[counter][1]-1] = 5;
                     newLight(outs[counter][0],[outs[counter][1],outs[counter][2]]);
-                    target.css({background: "yellow"});
+                    target.css({background: colors.activeInput});
                 }
                 else {
-                    target.css({background: "black"});
+                    target.css({background: colors.deactiveInput});
                 }
                 counter++;
             }
@@ -462,7 +467,7 @@ function updateLightSensors() {
         };
         if(lightMap[pos.y][pos.x] == 2 || lightMap[pos.y][pos.x] == 3 || lightMap[pos.y][pos.x] == 4) {
             sensor.active = true;
-            sensor.target.find(".sensor-lamp").css({background: "yellow"});
+            sensor.target.find(".sensor-lamp").css({background: colors.activeInput});
         }
         else {
             sensor.active = false;
@@ -629,7 +634,7 @@ function setRelativeSensor(marker) {
 // Functions:::::::::::::::::::::::::::::::::
 var markerTypes = [
     {
-        color: "white",
+        color: "#EBEBEB",
         realWidth: 1,
         realHeight: 2,
         inOut: [["I1","I2"],["O1","O2"],[null],[null]],
@@ -641,7 +646,7 @@ var markerTypes = [
         ]
     },
     {
-        color: "#FF0000",
+        color: "#E91607",
         realWidth: 1,
         realHeight: 2,
         inOut: [["I1",null],["O1","O2"],[null],[null]],
@@ -651,7 +656,7 @@ var markerTypes = [
         ]
     },
     {
-        color: "#FF0000",
+        color: "#E91607",
         realWidth: 1,
         realHeight: 2,
         inOut: [[null,"I1"],["O1","O2"],[null],[null]],
@@ -661,7 +666,7 @@ var markerTypes = [
         ]
     },
     {
-        color: "#0000FF",
+        color: "#0089FF",
         realWidth: 1,
         realHeight: 2,
         inOut: [["I1","I2"],["O1","O2"],[null],[null]],
@@ -790,10 +795,10 @@ function createSource(outs,xPercent,yPercent) {
                 var outs = source.target.find(".source-out");
                 console.log(outs.length);
                 if(source.active){
-                    outs.css({background: "yellow"});
+                    outs.css({background: colors.activeInput});
                 }
                 else{
-                    outs.css({background: "black"});
+                    outs.css({background: colors.deactiveInput});
                 }
             }
             source.isDragging = false;
@@ -1171,45 +1176,24 @@ function customMarkerActivateOutput(i) {
 }
 
 function customMarkerShowColors() {
-    var colors = [
-        "#e06666",
-        "#f6b26b",
-        "#ffd966",
-        "#93c47d",
-        "#76a5af"
+    var markerColors = [
+        "#941100",
+        "#E91607",
+        "#FF8500",
+        "#F3D214",
+        "#00BC03",
+        "#00C6E5",
+        "#0089FF",
+        "#9A31E0",
+        "#EBEBEB",
+        "#676667",
+        "#212121"
     ]
 
-    colors = [
-        "#F94144", // Salmon Red
-        "#F3722C", // Orange
-        "#F8961E", // Orange Yellow
-        "#F9C74F", // Pastel Yellow
-        "#90BE6D", // Pastel Green
-        "#43AA8B", // Teal
-        "#577590", // Slate Blue
-        "#8A58B5",  // Dark Purple
-        "#F06292",   // Pastel Pink
-        "#FFFFFF", // White
-        "#000000", // Black
-        "#808080"  // Gray
-    ];
-
-    colors = [
-        "#EE0000", // Red
-        "#FF7F00", // Orange
-        "#FFFF00", // Yellow
-        "#00DD00", // Green
-        "#0066FF", // Blue
-        "#8A2BE2",  // Violet
-        "#FFFFFF", // White
-        "#000000", // Black
-        "#808080"  // Gray
-    ];
-
     var colorSelectionTarget = $("#custom-marker-choose-colors");
-    for(var i=0; i<colors.length; i++) {
-        var target = $("<button type='button' class='custom-marker-color' onclick=\"customMarkerChangeColor('" + colors[i] + "')\"></button>").appendTo(colorSelectionTarget);
-        target.css({background: colors[i]});
+    for(var i=0; i<markerColors.length; i++) {
+        var target = $("<button type='button' class='custom-marker-color' onclick=\"customMarkerChangeColor('" + markerColors[i] + "')\"></button>").appendTo(colorSelectionTarget);
+        target.css({background: markerColors[i]});
     }
 }
 

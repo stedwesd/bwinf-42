@@ -63,7 +63,7 @@ main {
 
 .source-out {
     position: absolute;
-    background: yellow;
+    background: #FFFDBC;
     top: 0;
     left: 0;
     width: 10%;
@@ -102,14 +102,14 @@ main {
     position: absolute;
     width: 100%;
     height: 20%;
-    background-color: khaki;
+    background-color: #FFFDD5;
 }
 
 .vertical-light {
     position: absolute;
     width: 20%;
     height: 100%;
-    background-color: khaki;
+    background-color: #FFFDD5;
 }
 
 .cell {
