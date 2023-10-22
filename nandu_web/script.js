@@ -794,8 +794,7 @@ function setRelativeMarker(marker) {
         top: marker.yPercent + "%"
     });
     if(marker.xPercent>=100 || marker.yPercent>=100) {
-        marker.target.remove();
-        markers.splice(markers.indexOf(marker), 1);
+        removeMarker(markers.indexOf(marker));
     }
 }
 
@@ -877,9 +876,10 @@ var markerTypes = [
     }
 ]
 
-function createMarker(type, xPercent, yPercent) {
+function createMarker(typeIndex, xPercent, yPercent) {
     var newMarker = $("<div class='marker' />").appendTo(board.target);
-    var type = markerTypes[type];
+    var type = markerTypes[typeIndex];
+    console.log(typeIndex);
 
     // Initialize the new marker
     var marker = {
@@ -895,6 +895,7 @@ function createMarker(type, xPercent, yPercent) {
         inOutTargets: [],
         rules: type.rules,
         color: type.color,
+        type: typeIndex
     };
 
     // Set the initial position of the new marker using xPercent and yPercent
@@ -1088,6 +1089,11 @@ function createSensor(ins,xPercent,yPercent) {
     updateLightMap();
 }
 
+function removeMarker(index) {
+    markers[index].target.remove();
+    markers.splice(index, 1);
+}
+
 // Table Sources/Sensors :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 function updateTable(){
@@ -1226,6 +1232,11 @@ function customMarkerSetUp() {
     customMarkerNewPart();
 
     $("#custom-marker-header").html("Create custom Marker");
+    $("#custom-marker-done-button").textContent = "Create Marker";
+    document.getElementById("custom-marker-revert-changes-button").textContent = "Cancel";
+    if(document.getElementById("custom-marker-delete-button") != null) {
+        document.getElementById("custom-marker-delete-button").remove();
+    }
 }
 
 function customMarkerLoad(index) {
@@ -1270,6 +1281,12 @@ function customMarkerLoad(index) {
     }
 
     $("#custom-marker-header").html("Edit Marker");
+    $("#custom-marker-done-button").textContent = "Apply changes";
+    document.getElementById("custom-marker-revert-changes-button").textContent = "Revert changes";
+    if(document.getElementById("custom-marker-delete-button") == null) {
+        var div = $("<div id='custom-marker-delete' />").appendTo($("#custom-marker-panel"));
+        $("<button type='button' id='custom-marker-delete-button' onclick='customMarkerDeleteMarker()'>Delete Marker</button>").appendTo(div);
+    }
 }
 
 function customMarkerAddMarker() {
@@ -1291,11 +1308,63 @@ function customMarkerAddMarker() {
     }
     else {
         markerTypes[customMarkerIndex] = markerType;
+        var i=0;
+        var counter=0;
+        var len = markers.length;
+        doLightMapUpdating = false;
+        while(counter<len) {
+            var marker = markers[i];
+            if(marker.type==customMarkerIndex) {
+                var x = marker.xPercent;
+                var y = marker.yPercent;
+                removeMarker(i);
+                createMarker(customMarkerIndex,x,y);
+                i--;
+            }
+            counter++;
+            i++;
+        };
+        doLightMapUpdating = true;
+        updateLightMap();
     }
 
     customMarkerSetUp();
 }
 
+function customMarkerDeleteMarker() {
+    if(customMarkerIndex==-1) {
+        customMarkerSetUp();
+        return;
+    }
+    markerTypes.splice(customMarkerIndex,1);
+    var i = 0
+    while(i<markers.length) {
+        console.log("a");
+        if(markers[i].type == customMarkerIndex) {
+            removeMarker(i);
+            i--;
+        }
+        else if(markers[i].type >= customMarkerIndex) {
+            markers[i].type -= 1;
+        }
+        i++;
+    };
+
+    document.getElementById("marker-setting-form").removeChild(document.getElementById("marker-setting-form").children[customMarkerIndex+2]);
+    console.log(customMarkerIndex,markerTypes.length);
+    for (var i = customMarkerIndex+2; i < markerTypes.length+2; i++) {
+        (function (index) {
+            document.getElementById("marker-setting-form").children[index].children[0].onclick = function () {
+                createMarker(index-2, 0, 0);
+            };
+            document.getElementById("marker-setting-form").children[index].children[0].innerHTML = "Spawn Custom Marker " + (i-5);
+            document.getElementById("marker-setting-form").children[index].children[1].onclick = function () {
+                customMarkerLoad(index-2);
+            };
+        })(i);
+    }
+    customMarkerSetUp();
+}
 
 function customMarkerNewPart() {
     var index = customMarkerParts.length;

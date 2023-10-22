@@ -38,19 +38,15 @@
                 </div>
                 <div>
                     <button type="button" onclick="createMarker(0,0,0)"> Spawn white Marker </button>
-                    <button type="button" onclick="customMarkerLoad(0)"> Edit </button>
                 </div>
                 <div>
                     <button type="button" onclick="createMarker(1,0,0)"> Spawn red Marker 1 </button>
-                    <button type="button" onclick="customMarkerLoad(1)"> Edit </button>
                 </div>
                 <div>
                     <button type="button" onclick="createMarker(2,0,0)"> Spawn red Marker 2 </button>
-                    <button type="button" onclick="customMarkerLoad(2)"> Edit </button>
                 </div>
                 <div>
                     <button type="button" onclick="createMarker(3,0,0)"> Spawn blue Marker </button>
-                    <button type="button" onclick="customMarkerLoad(3)"> Edit </button>
                 </div>
             </form>
 
@@ -61,26 +57,23 @@
         </section>
         <section id="custom-marker-panel">
             <header id="custom-marker-header">Create custom Marker</header>
-            <div id="custom-marker-parts">
-                
-            </div>
+            <div id="custom-marker-parts"></div>
             <div>
                 <button type="button" class="custom-marker-new-part" onclick="customMarkerNewPart()"></button>
                 <button type="button" class="custom-marker-delete-part" onclick="customMarkerDeletePart()"></button>
             </div>
+            <div id="custom-marker-choose-colors"></div>
             <div>
-                <table id="custom-marker-table">
-
-                </table>
-            </div>
-            <div id="custom-marker-choose-colors">
-
+                <table id="custom-marker-table"></table>
             </div>
             <div id="custom-marker-done">
                 <button type="button" id="custom-marker-done-button" onclick="customMarkerAddMarker()">Create Marker</button>
             </div>
+            <div id="custom-marker-revert-changes">
+                <button type="button" id="custom-marker-revert-changes-button" onclick="customMarkerSetUp()">Revert changes</button>
+            </div>
             <div id="custom-marker-delete">
-                <button type="button" id="custom-marker-delete-button" onclick="customMarkerSetUp()">Revert changes</button>
+                <button type="button" id="custom-marker-delete-button" onclick="customMarkerDeleteMarker()">Delete Marker</button>
             </div>
         </section>
         <section id="table-panel">
