@@ -14,6 +14,11 @@ var colors = {
     deactiveInput: "#000202"
 }
 
+// File
+const fileInputTarget = document.getElementById('file-input');
+let fileContent = "";
+const fileApplyTarget = document.getElementById('input-apply');
+
 var customMarkerTarget;
 var customMarkerParts = [];
 var customMarkerColor = "#ffffff";
@@ -38,12 +43,136 @@ function init(/*event*/) {
     board.size = +input.size.val();
     board.rows = Math.floor(100 / snapY);
     board.cols = Math.floor(100 / snapX);
-    console.log(board.cols);
 
     createGrid();
     updateSize();
 
     console.log("init");
+
+    // Input from file
+    fileInputTarget.addEventListener('change', function() {
+        const selectedFile = fileInputTarget.files[0];
+        if (selectedFile) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                fileContent = e.target.result; // Update the fileContent variable
+            };
+
+            reader.readAsText(selectedFile);
+        } else {
+            console.log("No file selected.");
+        }
+    });
+
+    fileApplyTarget.addEventListener("click", function() {
+        if (fileContent === "") { // Check for an empty string
+            console.log("No file chosen");
+            return;
+        }
+        var lines = fileContent.split("\n"); // Use fileContent
+        var inputBoard = [];
+        for (var i = 0; i < lines.length; i++) {
+            var elements = lines[i].split(/\s+/).filter(function(element) {
+                return element !== ""; // Filter out any empty elements
+            });
+            inputBoard.push(elements);
+        }
+        console.log(inputBoard);
+        // Delete all markers 
+        resetBoard();
+
+        // Resize board:
+        var cols = inputBoard[0][1];
+        var rows = inputBoard[0][0];
+        board.cols = Math.max(cols,rows);
+        board.rows = Math.max(cols,rows);
+        snapX = 100/board.rows;
+        snapY = 100/board.cols;
+        createGrid();
+        updateSize();
+        
+        // Load markers onto board
+        inputBoard.shift();
+        var sourceOrder = [];
+        var sensorOrder = [];
+        for(var col=0;col<cols;col++) {
+            c = inputBoard[col];
+            var row=0;
+            while(row < rows) {
+                if(c[row] == "X") {
+                    row++;
+                    continue;
+                }
+                else if(c[row][0] == "Q") {
+                    var number = c[row].slice(1,c[row].length);
+                    createSource([false,true,false,false],100*col/board.cols,100*row/board.rows);
+                    sourceOrder.push(number);
+                }
+                else if(c[row][0] == "L") {
+                    var number = c[row].slice(1,c[row].length);
+                    createSensor([true,true,true,true],100*col/board.cols,100*row/board.rows);
+                    sensorOrder.push(number);
+                }
+                else if(c[row] == "W") {
+                    createMarker(0,100*col/board.cols,100*row/board.rows);
+                    row++;
+                }
+                else if(c[row] == "R") {
+                    createMarker(1,100*col/board.cols,100*row/board.rows);
+                    row++;
+                }
+                else if(c[row] == "r") {
+                    createMarker(2,100*col/board.cols,100*row/board.rows);
+                    row++;
+                }
+                else if(c[row] == "B") {
+                    createMarker(3,100*col/board.cols,100*row/board.rows);
+                    row++;
+                }
+                row++;
+            }
+        }
+
+        // Sort sources 
+        for(var a=0;a<sources.length;a++) {
+            for(b=0; b<a; b++) {
+                if(sourceOrder[a]<sourceOrder[b]) {
+                    var bump = sourceOrder[a];
+                    var bumpSource = sources[a];
+                    sourceOrder[a] = sourceOrder[b];
+                    sourceOrder[b] = bump;
+                    sources[a] = sources[b];
+                    sources[b] = bumpSource;
+                }
+            }
+        }
+        for(var i=0;i<sources.length;i++) {
+            sources[i].target.contents()[0].nodeValue = i+1;
+        }
+
+        // Sort sensors
+        for(var a=0;a<sensors.length;a++) {
+            for(b=0; b<a; b++) {
+                if(sensorOrder[a]<sensorOrder[b]) {
+                    var bump = sensorOrder[a];
+                    var bumpSensor = sensors[a];
+                    sensorOrder[a] = sensorOrder[b];
+                    sensorOrder[b] = bump;
+                    sensors[a] = sensors[b];
+                    sensors[b] = bumpSensor;
+                }
+            }
+        }
+        for(var i=0;i<sensors.length;i++) {
+            sensors[i].target.contents()[0].nodeValue = i+1;
+        }
+
+        console.log(sourceOrder);
+        console.log(sensorOrder);
+
+        updateLightMap();
+    });
 }
 
 function initMarker(marker) {
@@ -151,6 +280,68 @@ function initSource(source) {
     console.log("initSource called");
     return (source);
 }
+
+// Reset Board ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+function resetBoard() {
+    $(".marker").remove();
+    $(".source").remove();
+    $(".sensor").remove();
+    markers = [];
+    sources = [];
+    sensors = [];
+    var defaultMakerTypes = [
+        {
+            color: "#EBEBEB",
+            realWidth: 1,
+            realHeight: 2,
+            inOut: [["I1","I2"],["O1","O2"],[null],[null]],
+            rules: [
+                [false,false], // Inputs: true, true
+                [true,true], // Inputs: true, false
+                [true,true], // Inputs: false, true
+                [true,true] // Inputs: false, false
+            ]
+        },
+        {
+            color: "#E91607",
+            realWidth: 1,
+            realHeight: 2,
+            inOut: [["I1",null],["O1","O2"],[null],[null]],
+            rules: [
+                [false,false], // Input: true
+                [true,true] // Input: false
+            ]
+        },
+        {
+            color: "#E91607",
+            realWidth: 1,
+            realHeight: 2,
+            inOut: [[null,"I1"],["O1","O2"],[null],[null]],
+            rules: [
+                [false,false], // Input: true
+                [true,true] // Input: false
+            ]
+        },
+        {
+            color: "#0089FF",
+            realWidth: 1,
+            realHeight: 2,
+            inOut: [["I1","I2"],["O1","O2"],[null],[null]],
+            rules: [
+                [true,true], // Inputs: true, true
+                [true,false], // Inputs: true, false
+                [false,true], // Inputs: false, true
+                [false,false] // Inputs: false, false
+            ]
+        }
+    ]
+    markerTypes = defaultMakerTypes;
+    updateLightMap();
+}
+
+
+// OnDrag ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 function onDrag(marker) { // is used for both markers and sources
     // Snap the marker to the nearest grid cell within the board
@@ -1094,7 +1285,6 @@ function customMarkerAddMarker() {
     else {
         markerTypes[customMarkerIndex] = markerType;
     }
-
 
     customMarkerSetUp();
 }
