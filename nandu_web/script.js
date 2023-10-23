@@ -1224,6 +1224,7 @@ function showTable(ins,outs) { // number of inputs and outputs
 
     var head = $("<tr> </tr>").appendTo(tableTarget);
 
+    var elem = $("<th></th>").appendTo(head);
     for(var i=0; i<ins; i++) {
         var elem = $("<th>Q"+(i+1)+"</th>").appendTo(head);
     }
@@ -1234,6 +1235,8 @@ function showTable(ins,outs) { // number of inputs and outputs
     tableOuts = [];
     for(var r=0; r<insCombinations.length; r++) {
         var row = $("<tr> </tr>").appendTo(tableTarget);
+        var buttonElem = $("<tr></tr>").appendTo(row);
+        var button = $(`<button type='button' class='table-pick-element' onclick='tablePickElement(${r})'></button>`).appendTo(buttonElem);
         for(var i=0; i<ins; i++) {
             var elem;
             if(i<ins-1) {
@@ -1289,6 +1292,22 @@ function showTableOuts() {
     }
 }
 
+function tablePickElement(index) {
+    var insCombinations = getCombinations(sources.length);
+    var combi = insCombinations[index];
+    for(var i=0;i<sources.length;i++) {
+        sources[i].active = combi[i];
+        var outs = sources[i].target.find(".source-out");
+        if(sources[i].active){
+            outs.css({background: colors.activeInput});
+        }
+        else{
+            outs.css({background: colors.deactiveInput});
+        }
+    }
+    updateLightMap();
+}
+
 // Custom Markers :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 function customMarkerSetUp() {
@@ -1303,6 +1322,7 @@ function customMarkerSetUp() {
     customMarkerColor = "#ffffff";
     customMarkerShowColors();
     customMarkerNewPart();
+    customMarkerShowInOutNumbers();
 
     // Buttons for creating the marker type or canceling
     $("#custom-marker-header").html("Create custom Marker");
@@ -1357,6 +1377,7 @@ function customMarkerLoad(index) {
             }
         }
     }
+    customMarkerShowInOutNumbers();
 
     $("#custom-marker-header").html("Edit Marker");
 
@@ -1466,8 +1487,8 @@ function customMarkerNewPart() {
     var index = customMarkerParts.length;
     customMarkerTarget=$("#custom-marker-parts");
     var target = $("<div class='custom-marker-part'></div>").appendTo(customMarkerTarget);
-    var inputTarget = $("<button type='button' class='custom-marker-part-in' onclick='customMarkerActivateInput("+index+")'></button>").appendTo(target);
-    var outputTarget = $("<button type='button' class='custom-marker-part-out' onclick='customMarkerActivateOutput("+index+")'></button>").appendTo(target);
+    var inputTarget = $("<button type='button' class='custom-marker-part-in' onclick='customMarkerActivateInput("+index+")'> </button>").appendTo(target);
+    var outputTarget = $("<button type='button' class='custom-marker-part-out' onclick='customMarkerActivateOutput("+index+")'> </button>").appendTo(target);
     var newPart = {
         inputTarget: inputTarget,
         outputTarget: outputTarget,
@@ -1516,9 +1537,9 @@ function customMarkerActivateInput(i) {
         customMarkerParts[i].inputTarget.css({background: "lightgrey"});
         customMarkerNumberOfInputs-=1;
     }
-    console.log(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
 
     customMarkerShowTable(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
+    customMarkerShowInOutNumbers();
 }
 
 function customMarkerActivateOutput(i) {
@@ -1532,9 +1553,31 @@ function customMarkerActivateOutput(i) {
         customMarkerParts[i].outputTarget.css({background: "lightgrey"});
         customMarkerNumberOfOutputs-=1;
     }
-    console.log(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
 
     customMarkerShowTable(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
+    customMarkerShowInOutNumbers();
+}
+
+function customMarkerShowInOutNumbers() {
+    var ins = 1;
+    var outs = 1;
+
+    for (var i = 0; i < customMarkerParts.length; i++) {
+        if (customMarkerParts[i].input) {
+            customMarkerParts[i].inputTarget.contents()[0].nodeValue = ins;
+            ins++;
+        }
+        else {
+            customMarkerParts[i].inputTarget.contents()[0].nodeValue = "";
+        }
+        if (customMarkerParts[i].output) {
+            customMarkerParts[i].outputTarget.contents()[0].nodeValue = outs;
+            outs++;
+        }
+        else {
+            customMarkerParts[i].outputTarget.contents()[0].nodeValue = "";
+        }
+    }
 }
 
 function customMarkerShowColors() {
