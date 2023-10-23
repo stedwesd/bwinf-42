@@ -11,22 +11,28 @@
 <body>
     <main>
         <section id="panel">
-            <header>Percentages</header>
+            <header>Settings</header>
             <form id=setting-form>
                 <label>
-                Snap X
-                <input id="snap-x" type="number" value="10" min="5" max="50" step="1" autofocus />
+                Rows
+                <input id="size-x" type="number" value="10" min="5" max="50" step="1" autofocus />
                 </label>
                 <label>
-                Snap Y
-                <input id="snap-y" type="number" value="10" min="5" max="50" step="1" />
+                Collums
+                <input id="size-y" type="number" value="10" min="5" max="50" step="1" />
                 </label>
                 <label>
-                Board Size
-                <input id="board-size" type="number" value="80" min="1" max="100" step="0.1" />
+                Zoom
+                <input id="board-zoom" type="number" value="80" min="1" max="100" step="0.1" />
                 </label>
                 <button id="apply-button">Apply</button>
             </form>
+            <div>
+                <button type="button" onclick="clearBoard()">Delete all markers on the board</button>
+            </div>
+            <div>
+                <button type="button" onclick="resetBoard()">Delete all custom marker types</button>
+            </div>
             <label> </label>
             <header>New Marker</header>
             <form id=marker-setting-form>

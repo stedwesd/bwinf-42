@@ -19,8 +19,8 @@ The team consists of: @stedwesd, @Roboter09, @Banana2308
 ## ToDos Z1
 
 ### Settings
-- "Snap X", "Snap Y" und "Board Size" zu "Size X", "Size Y", "Zoom" aendern (mit expected functionality)
-- reset button waere nice
+- ✅ "Snap X", "Snap Y" und "Board Size" zu "Size X", "Size Y", "Zoom" aendern (mit expected functionality)
+- ✅ reset button waere nice
 
 ### Import/Export File
 - hochgeladene dateien sollten vielleicht direkt auf den feld angezeigt werden, war bisschen verwirrt als ich eine datei hochgeladen habe und nichts passiert ist

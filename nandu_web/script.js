@@ -28,22 +28,16 @@ var customMarkerNumberOfOutputs = 0;
 var customMarkerIndex = -1;
 
 var input = {
-    snapX: $("#snap-x"),
-    snapY: $("#snap-y"),
-    size: $("#board-size")
+    sizeX: $("#size-x"),
+    sizeY: $("#size-y"),
+    zoom: $("#board-zoom")
 };
 
 // INIT :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 function init(/*event*/) {
     // prevent when called by submit
     //event && event.preventDefault();
-
-    // cast input values to numbers
-    snapX = +input.snapX.val();
-    snapY = +input.snapY.val();
-    board.size = +input.size.val();
-    board.rows = Math.floor(100 / snapY);
-    board.cols = Math.floor(100 / snapX);
+    changeBoardSize();
 
     createGrid();
     updateSize();
@@ -178,6 +172,71 @@ function init(/*event*/) {
     });
 }
 
+function changeBoardSize() {
+    // cast input values to numbers
+    board.rows = +input.sizeX.val();
+    board.cols = +input.sizeY.val();
+    snapX = 100/board.cols;
+    snapY = 100/board.rows;
+    board.size = +input.zoom.val();
+
+    var i=0;
+    while(i<markers.length) {
+        if(markers[i].x >= board.cols || markers[i].y >= board.rows) {
+            removeMarker(i);
+            continue;
+        }
+        markers[i].width = snapX*markers[i].realWidth;
+        markers[i].height = snapY*markers[i].realHeight;
+        markers[i].xPercent = markers[i].x*100/board.cols;
+        markers[i].yPercent = markers[i].y*100/board.rows;
+        markers[i].target.css({
+            left: markers[i].xPercent + "%",
+            top: markers[i].yPercent + "%",
+            width: markers[i].width + "%",
+            height: markers[i].height + "%"
+        });
+        i++;
+    }
+    var i=0;
+    while(i<sources.length) {
+        if(sources[i].x >= board.cols || sources[i].y >= board.rows) {
+            removeSource(i);
+            continue;
+        }
+        sources[i].width = snapX;
+        sources[i].height = snapY;
+        sources[i].xPercent = sources[i].x*100/board.cols;
+        sources[i].yPercent = sources[i].y*100/board.rows;
+        sources[i].target.css({
+            left: sources[i].xPercent + "%",
+            top: sources[i].yPercent + "%",
+            width: sources[i].width + "%",
+            height: sources[i].height + "%"
+        });
+        i++;
+    }
+    var i=0;
+    while(i<sensors.length) {
+        if(sensors[i].x >= board.cols || sensors[i].y >= board.rows) {
+            removeSensor(i);
+            continue;
+        }
+        sensors[i].width = snapX;
+        sensors[i].height = snapY;
+        sensors[i].xPercent = sensors[i].x*100/board.cols;
+        sensors[i].yPercent = sensors[i].y*100/board.rows;
+        sensors[i].target.css({
+            left: sensors[i].xPercent + "%",
+            top: sensors[i].yPercent + "%",
+            width: sensors[i].width + "%",
+            height: sensors[i].height + "%"
+        });
+        i++;
+    }
+    updateLightMap();
+}
+
 function initMarker(marker) {
     // Set marker's size here
     marker.target.css({
@@ -287,12 +346,8 @@ function initSource(source) {
 // Reset Board ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 function resetBoard() {
-    $(".marker").remove();
-    $(".source").remove();
-    $(".sensor").remove();
-    markers = [];
-    sources = [];
-    sensors = [];
+    clearBoard();
+
     var defaultMakerTypes = [
         {
             color: "#EBEBEB",
@@ -339,10 +394,21 @@ function resetBoard() {
             ]
         }
     ]
+    for(var i=6;i<markerTypes.length+2;i++) {
+        document.getElementById("marker-setting-form").children[6].remove();
+    }
     markerTypes = defaultMakerTypes;
-    updateLightMap();
 }
 
+function clearBoard() {
+    $(".marker").remove();
+    $(".source").remove();
+    $(".sensor").remove();
+    markers = [];
+    sources = [];
+    sensors = [];
+    updateLightMap();
+}
 
 // OnDrag ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -370,8 +436,8 @@ function onDrag(marker) { // is used for both markers and sources
         if(m==marker) {
             return;
         }
-        var mPosX = Math.floor(m.xPercent/100*board.cols);
-        var mPosY = Math.floor(m.yPercent/100*board.rows);
+        var mPosX = m.x;
+        var mPosY = m.y;
         var mHeight=m.realHeight;
         for(var y=yPos;y<yPos+height;y++) {
             for(var mY=mPosY;mY<mPosY+mHeight;mY++) {
@@ -416,6 +482,8 @@ function onDrag(marker) { // is used for both markers and sources
     if((marker.xPercent != xGrid || marker.yPercent != yGrid) && !colliding) {
         marker.xPercent = xGrid;
         marker.yPercent = yGrid;
+        marker.x = xPos;
+        marker.y = yPos;
         updateLightMap();
     }
     if(!colliding) {
@@ -474,24 +542,19 @@ function deleteLights() {
 
 function updateLightMapObstacles(){
     markers.forEach(function (marker) {
-        var pos={
-            x: Math.floor(marker.xPercent/100*board.cols),
-            y: Math.floor(marker.yPercent/100*board.rows)
-        };
-
         var size={
             x: marker.realWidth,
             y: marker.realHeight
         };
-        for(var x=pos.x; x<pos.x+size.x; x++) {
-            for(var y=pos.y; y<pos.y+size.y; y++) {
+        for(var x=marker.x; x<marker.x+size.x; x++) {
+            for(var y=marker.y; y<marker.y+size.y; y++) {
                 lightMap[y][x]=1;
             }
         }
     });
     
     sources.forEach(function (source) {
-        lightMap[Math.floor(source.yPercent/100*board.rows)][Math.floor(source.xPercent/100*board.cols)] = 1;
+        lightMap[source.y][source.x] = 1;
     });
 }
 
@@ -502,7 +565,7 @@ function updateLightSources(){
         }
         for(var i=0;i<4;i++) {
             if(source.outs[i]==true) {
-                pos = [Math.floor(source.xPercent/100*board.cols),Math.floor(source.yPercent/100*board.rows)];
+                pos = [source.x,source.y];
                 lightMap[pos[1]][pos[0]] = 5;
                 if(i<=1) {
                     newLight(0,[pos[0]+2*i-1,pos[1]]);
@@ -548,10 +611,6 @@ function updateLightMarkers() {
     
     l.forEach(function (element) {
         var marker = markers[element.index];
-        var pos={
-            x: Math.floor(marker.xPercent/100*board.cols),
-            y: Math.floor(marker.yPercent/100*board.rows)
-        };
         var size={
             x: marker.realWidth,
             y: marker.realHeight
@@ -576,20 +635,20 @@ function updateLightMarkers() {
                     var element = [(c-(c%2))/2];
                     
                     if(c==0) {
-                        element[1]=pos.x-1;
-                        element[2]=pos.y+i;
+                        element[1]=marker.x-1;
+                        element[2]=marker.y+i;
                     }
                     else if(c==1){
-                        element[1]=pos.x+size.x;
-                        element[2]=pos.y+i;
+                        element[1]=marker.x+size.x;
+                        element[2]=marker.y+i;
                     }
                     if(c==2) {
-                        element[1]=pos.x+i;
-                        element[2]=pos.y-1;
+                        element[1]=marker.x+i;
+                        element[2]=marker.y-1;
                     }
                     else if(c==3) {
-                        element[1]=pos.x+i;
-                        element[2]=pos.y+size.y;
+                        element[1]=marker.x+i;
+                        element[2]=marker.y+size.y;
                     }
                     
                     if(inOut[c][i][0]=="I") {
@@ -659,11 +718,7 @@ function updateLightMarkers() {
 
 function updateLightSensors() {
     sensors.forEach(function(sensor) {
-        var pos={
-            x: Math.floor(sensor.xPercent/100*board.cols),
-            y: Math.floor(sensor.yPercent/100*board.rows)
-        };
-        if(lightMap[pos.y][pos.x] == 2 || lightMap[pos.y][pos.x] == 3 || lightMap[pos.y][pos.x] == 4) {
+        if(lightMap[sensor.y][sensor.x] == 2 || lightMap[sensor.y][sensor.x] == 3 || lightMap[sensor.y][sensor.x] == 4) {
             sensor.active = true;
             sensor.target.find(".sensor-lamp").css({background: colors.activeInput});
         }
@@ -895,6 +950,8 @@ function createMarker(typeIndex, xPercent, yPercent) {
         realHeight: type.realHeight,
         xPercent: xPercent,
         yPercent: yPercent,
+        x: Math.floor(xPercent/100*board.cols),
+        y: Math.floor(yPercent/100*board.rows),
         inOut: type.inOut, // left, right, top, bottom
         inOutTargets: [],
         rules: type.rules,
@@ -957,6 +1014,8 @@ function createSource(outs,xPercent,yPercent) {
         height: 100/board.rows,
         xPercent: xPercent,
         yPercent: yPercent,
+        x: Math.floor(xPercent/100*board.cols),
+        y: Math.floor(yPercent/100*board.rows),
         active: true
     };
 
@@ -1029,6 +1088,8 @@ function createSensor(ins,xPercent,yPercent) {
         height: 100/board.rows,
         xPercent: xPercent,
         yPercent: yPercent,
+        x: Math.floor(xPercent/100*board.cols),
+        y: Math.floor(yPercent/100*board.rows),
         active: false
     };
 
@@ -1096,6 +1157,14 @@ function createSensor(ins,xPercent,yPercent) {
 function removeMarker(index) {
     markers[index].target.remove();
     markers.splice(index, 1);
+}
+function removeSource(index) {
+    sources[index].target.remove();
+    sources.splice(index, 1);
+}
+function removeSensor(index) {
+    sensors[index].target.remove();
+    sensors.splice(index, 1);
 }
 
 // Table Sources/Sensors :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
