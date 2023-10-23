@@ -182,7 +182,7 @@ function changeBoardSize() {
 
     var i=0;
     while(i<markers.length) {
-        if(markers[i].x >= board.cols || markers[i].y >= board.rows) {
+        if(markers[i].x >= board.cols || markers[i].y+markers[i].realHeight-1 >= board.rows) {
             removeMarker(i);
             continue;
         }
@@ -423,8 +423,8 @@ function onDrag(marker) { // is used for both markers and sources
         top: yGrid + "%"
     });
 
-    var xPos = Math.floor(xGrid/100*board.cols);
-    var yPos = Math.floor(yGrid/100*board.rows);
+    var xPos = Math.round(xGrid/100*board.cols);
+    var yPos = Math.round(yGrid/100*board.rows);
     var colliding = false;
 
     var height = 1;
@@ -451,8 +451,8 @@ function onDrag(marker) { // is used for both markers and sources
         if(m==marker) {
             return;
         }
-        var mPosX = Math.floor(m.xPercent/100*board.cols);
-        var mPosY = Math.floor(m.yPercent/100*board.rows);
+        var mPosX = m.x;
+        var mPosY = m.y;
         var mHeight=1;
         for(var y=yPos;y<yPos+height;y++) {
             for(var mY=mPosY;mY<mPosY+mHeight;mY++) {
@@ -466,8 +466,8 @@ function onDrag(marker) { // is used for both markers and sources
         if(m==marker) {
             return;
         }
-        var mPosX = Math.floor(m.xPercent/100*board.cols);
-        var mPosY = Math.floor(m.yPercent/100*board.rows);
+        var mPosX = m.x;
+        var mPosY = m.y;
         var mHeight=1;
         for(var y=yPos;y<yPos+height;y++) {
             for(var mY=mPosY;mY<mPosY+mHeight;mY++) {
@@ -950,8 +950,8 @@ function createMarker(typeIndex, xPercent, yPercent) {
         realHeight: type.realHeight,
         xPercent: xPercent,
         yPercent: yPercent,
-        x: Math.floor(xPercent/100*board.cols),
-        y: Math.floor(yPercent/100*board.rows),
+        x: Math.round(xPercent/100*board.cols),
+        y: Math.round(yPercent/100*board.rows),
         inOut: type.inOut, // left, right, top, bottom
         inOutTargets: [],
         rules: type.rules,
@@ -1014,8 +1014,8 @@ function createSource(outs,xPercent,yPercent) {
         height: 100/board.rows,
         xPercent: xPercent,
         yPercent: yPercent,
-        x: Math.floor(xPercent/100*board.cols),
-        y: Math.floor(yPercent/100*board.rows),
+        x: Math.round(xPercent/100*board.cols),
+        y: Math.round(yPercent/100*board.rows),
         active: true
     };
 
@@ -1088,8 +1088,8 @@ function createSensor(ins,xPercent,yPercent) {
         height: 100/board.rows,
         xPercent: xPercent,
         yPercent: yPercent,
-        x: Math.floor(xPercent/100*board.cols),
-        y: Math.floor(yPercent/100*board.rows),
+        x: Math.round(xPercent/100*board.cols),
+        y: Math.round(yPercent/100*board.rows),
         active: false
     };
 
