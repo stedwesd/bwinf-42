@@ -25,7 +25,7 @@ The team consists of: @stedwesd, @Roboter09, @Banana2308
 ### Import/Export File
 - hochgeladene dateien sollten vielleicht direkt auf den feld angezeigt werden, war bisschen verwirrt als ich eine datei hochgeladen habe und nichts passiert ist
 - eine error-ausgabe falls das importieren durchgefallen ist? -> nicht laden
-- circuit-export?
+- ✅ circuit-export?
 - tabelle-export?
 
 ### Tabelle

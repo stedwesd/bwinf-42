@@ -56,10 +56,20 @@
                 </div>
             </form>
 
-            <!-- File Uploader HTML-->
-            Upload File
-            <input id="file-input" accept=".txt" name="fileToUpload" type="file" /> 
-            <button id="input-apply"> Apply file </button>
+            <div>
+                <!-- File Uploader HTML-->
+                Upload File
+                <input id="file-input" accept=".txt" name="fileToUpload" type="file" /> 
+                <button id="input-apply"> Apply file </button>
+            </div>
+            
+            <div>
+                <!-- File Downloader HTML-->
+                Download File
+                <div>
+                    <button type="button" onclick="downloadBoard()">Download board as Text File</button>
+                </div>
+            </div>
         </section>
         <section id="custom-marker-panel">
             <header id="custom-marker-header">Create custom Marker</header>

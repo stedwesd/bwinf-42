@@ -78,14 +78,19 @@ function init(/*event*/) {
         resetBoard();
 
         // Resize board:
-        var cols = inputBoard[0][1];
-        var rows = inputBoard[0][0];
-        board.cols = Math.max(cols,rows);
-        board.rows = Math.max(cols,rows);
-        snapX = 100/board.rows;
-        snapY = 100/board.cols;
+        var cols = parseInt(inputBoard[0][1]);
+        var rows = parseInt(inputBoard[0][0]);
+        board.cols = cols;
+        board.rows = rows;
+        snapX = 100/board.cols;
+        snapY = 100/board.rows;
         createGrid();
         updateSize();
+        var customTypeStrings = lines.slice(cols+2, lines.length);
+        for(var i=0;i<customTypeStrings.length;i++) {
+            addNewMarkerType(JSON.parse(customTypeStrings[i]));
+        }
+        console.log(markerTypes);
         
         // Load markers onto board
         inputBoard.shift();
@@ -125,6 +130,11 @@ function init(/*event*/) {
                 else if(c[row] == "B") {
                     createMarker(3,100*col/board.cols,100*row/board.rows);
                     row++;
+                }
+                else if(c[row][0] == "M") {
+                    var number = parseInt(c[row].slice(1,c[row].length))+3;
+                    createMarker(number,100*col/board.cols,100*row/board.rows);
+                    row+=markerTypes[number].realHeight-1;
                 }
                 row++;
             }
@@ -170,6 +180,102 @@ function init(/*event*/) {
         doLightMapUpdating = true;
         updateLightMap();
     });
+}
+
+function downloadBoard() {
+    var sizeString = board.rows + " " + board.cols;
+    var boardContent = [];
+    for(var col=0;col<board.cols;col++) {
+        var list = [];
+        for(var row=0;row<board.rows;row++) {
+            list.push("X");
+        }
+        boardContent.push(list);
+    }
+    for(var i=0;i<sources.length;i++) {
+        var source=sources[i];
+        boardContent[source.x][source.y] = "Q" + (i+1);
+    }
+    for(var i=0;i<sensors.length;i++) {
+        var sensor=sensors[i];
+        boardContent[sensor.x][sensor.y] = "L" + (i+1);
+    }
+    for(var i=0;i<markers.length;i++) {
+        var marker=markers[i];
+        var typeName = marker.type;
+        if(typeName == 1) {
+            boardContent[marker.x][marker.y] = "R";
+            boardContent[marker.x][marker.y+1] = "r";
+            continue;
+        }
+        if(typeName == 2) {
+            boardContent[marker.x][marker.y] = "r";
+            boardContent[marker.x][marker.y+1] = "R";
+            continue;
+        }
+
+        if(typeName == 0) {
+            typeName = "W";
+        }
+        else if(typeName == 3) {
+            typeName = "B";
+        }
+        else {
+            typeName = "M" + (typeName-3);
+        }
+        
+        for(var j=0;j<marker.realHeight;j++) {
+            boardContent[marker.x][marker.y+j] = typeName;
+        }
+    }
+    // Custom marker types
+    var customMarkerTypeStrings = [];
+    for(var i=0;i<markerTypes.length-4;i++) {
+        customMarkerTypeStrings.push(JSON.stringify(markerTypes[i+4]));
+    }
+    
+    for(var i=0;i<boardContent.length;i++) {
+        console.log(boardContent[i]);
+    }
+    for(var i=0;i<customMarkerTypeStrings.length;i++) {
+        console.log(customMarkerTypeStrings[i]);
+    }
+
+    var fileContent = sizeString + "\n";
+    for(var i=0;i<boardContent.length;i++) {
+        var string = ""
+        for(var j=0;j<boardContent[i].length-1;j++) {
+            string += boardContent[i][j] + " ";
+            if(boardContent[i][j].length == 1) {
+                string += " ";
+            }
+        }
+        string += boardContent[i][boardContent[i].length-1] + "\n";
+        fileContent += string;
+    }
+    for(var i=0;i<customMarkerTypeStrings.length;i++) {
+        fileContent += "\n" + customMarkerTypeStrings[i];
+
+    }
+
+    console.log(fileContent);
+    downloadFile("nandu.txt", fileContent);
+}
+
+function downloadFile(fileName, fileContent) {
+    // Create a Blob containing the content
+    var blob = new Blob([fileContent], { type: "text/plain" });
+
+    // Create a temporary anchor element
+    var link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName; // Specify the desired file name
+
+    // Trigger a click event on the anchor element to initiate the download
+    link.click();
+
+    // Clean up the temporary anchor element
+    document.body.removeChild(link);
 }
 
 function changeBoardSize() {
@@ -350,6 +456,7 @@ function resetBoard() {
 
     var defaultMakerTypes = [
         {
+            name: "White Marker",
             color: "#EBEBEB",
             realWidth: 1,
             realHeight: 2,
@@ -362,6 +469,7 @@ function resetBoard() {
             ]
         },
         {
+            name: "red Marker 1",
             color: "#E91607",
             realWidth: 1,
             realHeight: 2,
@@ -372,6 +480,7 @@ function resetBoard() {
             ]
         },
         {
+            name: "Red Marker 2",
             color: "#E91607",
             realWidth: 1,
             realHeight: 2,
@@ -382,6 +491,7 @@ function resetBoard() {
             ]
         },
         {
+            name: "Blue Marker",
             color: "#0089FF",
             realWidth: 1,
             realHeight: 2,
@@ -1310,6 +1420,13 @@ function tablePickElement(index) {
 
 // Custom Markers :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+function addNewMarkerType(markerType) {
+    markerTypes.push(markerType);
+    var div = $("<div> </div>").appendTo($("#marker-setting-form"));
+    $("<button type='button' onclick='createMarker("+(markerTypes.length-1)+",0,0)'> Spawn "+markerType.name+" </button>").appendTo(div);
+    $("<button type='button' onclick='customMarkerLoad("+(markerTypes.length-1)+")'> Edit </button>").appendTo(div);
+}
+
 function customMarkerSetUp() {
     customMarkerIndex = -1;
 
@@ -1413,10 +1530,7 @@ function customMarkerAddMarker() {
             markerType.name = "Custom Marker " + (markerTypes.length-3);
         }
 
-        markerTypes.push(markerType);
-        var div = $("<div> </div>").appendTo($("#marker-setting-form"));
-        $("<button type='button' onclick='createMarker("+(markerTypes.length-1)+",0,0)'> Spawn "+markerType.name+" </button>").appendTo(div);
-        $("<button type='button' onclick='customMarkerLoad("+(markerTypes.length-1)+")'> Edit </button>").appendTo(div);
+        addNewMarkerType(markerType);
     }
     else {
         if(name == "") {
