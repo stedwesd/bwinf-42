@@ -565,9 +565,13 @@ function onDrag(marker) { // is used for both markers and sources
         marker.yPercent = yGrid;
         marker.x = xPos;
         marker.y = yPos;
+        marker.inBounds = true;
         updateLightMap();
     }
     if(colliding) {
+        if(!marker.inBounds) {
+            return;
+        }
         marker.target.css({left: marker.xPercent+"%", top: marker.yPercent+"%"});
         if(marker.xPercent<0 || marker.yPercent>=100 || marker.yPercent<0 || marker.yPercent>=100) {
             removeElement(marker);
@@ -1182,9 +1186,34 @@ function createSource(outs,xPercent,yPercent) {
         document.onmousemove = function (e) {
             
             if (source.isDragging) {
+                var lastL = parseInt(source.target.css('left'));
+                var lastT = parseInt(source.target.css('top'));
                 var newX = startLeft + e.clientX - startX;
                 var newY = startTop + e.clientY - startY;
                 
+                if(!source.inBounds) {
+                    var left = newX;
+                    var top = newY;
+                    //console.log(left,top);
+                    if((left >= -board.width/board.cols && left <= board.width) && (top >= -board.height/board.rows && top <= board.height)) {
+                        // Ensure the source stays within the board
+                        var x = Math.min(Math.max(newX, 0), board.width - source.width);
+                        var y = Math.min(Math.max(newY, 0), board.height - (board.height/board.rows));
+
+                        source.target.css({ left: x + 'px', top: y + 'px'});
+
+                        onDrag(source);
+
+                        if(source.inBounds) {
+                            //initSource(source);
+                            sources.push(source);
+                        }
+                        else {
+                            source.target.css({ left: lastL + 'px', top: lastT + 'px'});
+                        }
+                    }
+                }
+
                 if(source.inBounds) {
                     // Ensure the source stays within the board
                     newX = Math.min(Math.max(newX, 0), board.width - source.width);
@@ -1217,33 +1246,12 @@ function createSource(outs,xPercent,yPercent) {
             document.onmouseup = null;
 
             board.bounds = null;
-            var left = parseFloat(source.target.css('left'));
-            var top = parseFloat(source.target.css('top'));
-            console.log(source.inBounds);
-            if(!source.inBounds) {
-                var newLeft = Math.min(Math.max(left, 0), board.width - source.width);
-                var newTop = Math.min(Math.max(top, 0), board.height - (board.height/board.rows));
 
-                if(newLeft==left && newTop==top) {
-                    source.inBounds = true;
-                    //initSource(source);
-                    sources.push(source);
-
-                    var newX = Math.min(Math.max(newX, 0), board.width - source.width);
-                    var newY = Math.min(Math.max(newY, 0), board.height - (board.height/board.rows));
-
-                    source.target.css({ left: newX + 'px', top: newY + 'px'});
-
-                    onDrag(source);
-                    console.log("true");
-                }
-                else {
-                    source.target.remove();
-                }
-            }
-            
             if(source.inBounds) {
                 setRelativeSource(source);
+            }
+            else {
+                source.target.remove();
             }
             updateLightMap();
             updateTable();
