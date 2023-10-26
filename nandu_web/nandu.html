@@ -14,12 +14,16 @@
             <div class="source-add">
                 Source
                 <div class="source-add-i">i</div>
-                <button id="source-add-source" type="button"></button>  
+                <button id="source-add-source" type="button">
+                    <div class="source-out"></div>
+                </button>  
             </div>
             <div class="sensor-add">
                 Sensor
                 <div class="sensor-add-i">i</div>
-                <button id="sensor-add-sensor" type="button"></button>  
+                <button id="sensor-add-sensor" type="button">
+                    <div class="sensor-add-sensor-lamp"></div>
+                </button>  
             </div>
             <div class="marker-add">
                 Marker
@@ -47,6 +51,7 @@
                 </label>
                 <button id="apply-button" onclick="changeBoardSize()">Apply</button>
             </form>
+            <label> </label>
             <div>
                 Automatically update table
                 <div>
@@ -66,6 +71,7 @@
                     <button id="calculate-table-2" type="button" onclick="">... when clicked on reload.</button>
                 </div>
             </div>
+            <label> </label>
             <div>
                 Delete Stuff
                 <div>
@@ -76,35 +82,13 @@
                 </div>
             </div>
             <label> </label>
-            <header>New Marker</header>
-            <form id=marker-setting-form>
-                <div>
-                    <button type="button" onclick="createSource([false,true,false,false],-10,0)"> Spawn Light source</button>
-                </div>
-                <div>
-                    <button type="button" onclick="createSensor([true,true,true,true],0,0)"> Spawn Light sensor</button>
-                </div>
-                <div>
-                    <button type="button" onclick="createMarker(0,0,0)"> Spawn White Marker </button>
-                </div>
-                <div>
-                    <button type="button" onclick="createMarker(1,0,0)"> Spawn Red Marker 1 </button>
-                </div>
-                <div>
-                    <button type="button" onclick="createMarker(2,0,0)"> Spawn Red Marker 2 </button>
-                </div>
-                <div>
-                    <button type="button" onclick="createMarker(3,0,0)"> Spawn Blue Marker </button>
-                </div>
-            </form>
-
             <div>
                 <!-- File Uploader HTML-->
                 Upload File
                 <input id="file-input" accept=".txt" name="fileToUpload" type="file" /> 
                 <button id="input-apply"> Apply file </button>
             </div>
-            
+            <label> </label>
             <div>
                 <!-- File Downloader HTML-->
                 Download File

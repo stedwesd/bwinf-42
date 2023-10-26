@@ -64,10 +64,10 @@ main {
 .source-out {
     position: absolute;
     background: #FFFDBC;
-    top: 0;
-    left: 0;
-    width: 10%;
-    height: 10%;
+    top: 25%;
+    left: 80%;
+    width: 20%;
+    height: 50%;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
     border-left: 1px solid black;
@@ -140,9 +140,11 @@ main {
 
 #add-elements {
     position: absolute;
-    width: 100px;
+    width: 117px;
     left: 300px;
     top: 0px;
+    height: 98%;
+    overflow-y: auto; 
 }
 
 .source-add {
@@ -170,7 +172,7 @@ main {
     top: 20px;
     width: 65px;
     height: 65px;
-    background-color: orange;
+    background-color: #FF8500;
     border: 1px solid black;
 }
 
@@ -201,6 +203,16 @@ main {
     height: 65px;
     background-color: grey;
     border: 1px solid black;
+}
+
+.sensor-add-sensor-lamp {
+    position: absolute;
+    background: lightgray;
+    top: 25%;
+    left: 25%;
+    width: 50%;
+    height: 50%;
+    outline: 1px solid black;
 }
 
 .marker-add {
