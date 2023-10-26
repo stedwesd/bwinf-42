@@ -154,8 +154,8 @@ main {
 
 .source-add-i {
     position: absolute;
-    right: 0px;
-    top: 0px;
+    right: -1px;
+    top: -1px;
     width: 15px;
     height: 15px;
     border: 1px solid black;
@@ -183,8 +183,8 @@ main {
 
 .sensor-add-i {
     position: absolute;
-    right: 0px;
-    top: 0px;
+    right: -1px;
+    top: -1px;
     width: 15px;
     height: 15px;
     border: 1px solid black;
@@ -198,6 +198,37 @@ main {
     left: 17px;
     top: 20px;
     width: 65px;
+    height: 65px;
+    background-color: grey;
+    border: 1px solid black;
+}
+
+.marker-add {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border: 1px solid black;
+    font-size: small;
+    overflow: hidden;
+}
+
+.marker-add-i {
+    position: absolute;
+    right: -1px;
+    top: -1px;
+    width: 15px;
+    height: 15px;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.marker-add-marker {
+    position: absolute;
+    left: 33.25px;
+    top: 20px;
+    width: 32.5px;
     height: 65px;
     background-color: grey;
     border: 1px solid black;

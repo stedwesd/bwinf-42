@@ -342,17 +342,11 @@ function changeBoardSize() {
         });
         i++;
     }
+    console.log(sources,sensors);
     updateLightMap();
 }
 
 function initMarker(marker) {
-    // Set marker's size here
-    marker.target.css({
-        width: marker.width + "%",
-        height: marker.height + "%",
-        background: marker.color
-    });
-
     // Make the marker element draggable
     marker.target.draggable({
         containment: "parent", // Keep the marker within its parent element (the board)
@@ -363,42 +357,6 @@ function initMarker(marker) {
             onDrag(event, ui, marker); // Pass the marker to onDrag
         }*/
     });
-
-    //Summon In- and Outputs
-    var s=marker.inOut;
-    marker.inOutTargets=[[],[],[],[]]
-    for(var c=0; c<4; c++) {
-        for(var i=0; i<s[c].length; i++) {
-            if(s[c][i]!=null) {
-                var target;
-                if(s[c][i][0]=="I") {
-                    target = $("<div class='in' />").appendTo(marker.target);
-                }
-                if(s[c][i][0]=="O") {
-                    target = $("<div class='out' />").appendTo(marker.target);
-                }
-                if(c<=1) {
-                    target.css({
-                        left: (80*c)/*-10/marker.realWidth*/ + "%",
-                        top: 100/marker.realHeight*i+25/marker.realHeight + "%",
-                        width: 20/marker.realWidth + "%",
-                        height: 50/marker.realHeight + "%"
-                    });
-                }
-                else {
-                    target.css({
-                        left: 100/marker.realWidth*i+25/marker.realWidth + "%",
-                        top: (80*(c-2))/*-10/marker.realHeight*/ + "%",
-                        width: 50/marker.realWidth + "%",
-                        height: 20/marker.realHeight + "%"
-                    });
-                }
-                marker.inOutTargets[c].push(target);
-                continue;
-            }
-            marker.inOutTargets[c].push(null);
-        }
-    }
 
     console.log("initMarker called");
     return (marker);
@@ -440,7 +398,7 @@ function resetBoard() {
             ]
         },
         {
-            name: "red Marker 1",
+            name: "Red Marker 1",
             color: "#E91607",
             realWidth: 1,
             realHeight: 2,
@@ -927,7 +885,7 @@ $(document).ready(function () {
 
     customMarkerSetUp();
 
-    markerButtonsSetUp();
+    elementButtonsSetUp();
 });
 
 // Function to set the marker's relative position
@@ -959,7 +917,7 @@ function setRelativeSensor(sensor) {
         left: sensor.xPercent + "%",
         top: sensor.yPercent + "%"
     });
-    if(sensor.xPercent>=100 || marker.yPercent>=100) {
+    if(sensor.xPercent>=100 || sensor.yPercent>=100) {
         removeSensor(sensors.indexOf(sensor));
     }
 }
@@ -980,7 +938,7 @@ var markerTypes = [
         ]
     },
     {
-        name: "red Marker 1",
+        name: "Red Marker 1",
         color: "#E91607",
         realWidth: 1,
         realHeight: 2,
@@ -1016,11 +974,114 @@ var markerTypes = [
     }
 ];
 
-function markerButtonsSetUp() {
+function elementButtonsSetUp() {
     var sourceButton = document.getElementById("source-add-source");
     sourceButton.addEventListener("mousedown", newSource);
     var sensorButton = document.getElementById("sensor-add-sensor");
     sensorButton.addEventListener("mousedown", newSensor);
+    markerButtonsSetUp();
+}
+
+function markerButtonsSetUp() {
+    spawnMarkerButtons();
+
+    var markerButtons = document.getElementsByClassName("marker-add-marker");
+    for (var i = 0; i < markerButtons.length; i++) {
+        (function (index) {
+            markerButtons[i].addEventListener("mousedown", function (event) {
+                newMarker(event, index);
+            });
+        })(i);
+    }
+}
+
+function spawnMarkerButtons() {
+    // Delete all old marker buttons
+    console.log("hae");
+    var oldButtons = document.getElementsByClassName("marker-add");
+    for (var i = oldButtons.length - 1; i >= 0; i--) {
+        oldButtons[i].remove();
+    }
+
+    for (var index=0; index<markerTypes.length; index++) {
+        var type = markerTypes[index];
+        var div = $("<div class='marker-add'> </div>").appendTo(document.getElementById("add-elements"));
+        
+        // Name
+        div.text(type.name);
+
+        var fontSize = 11;
+        div.css('font-size', fontSize + 'px');
+        // ToDo: Automatically adjust text size
+
+        var marker = $("<button class='marker-add-marker' type='button'></button>").appendTo(div);
+        var info = $("<div class='marker-add-i'>i</div>").appendTo(div);
+
+        marker.css({
+            background: type.color,
+            width: (65/type.realHeight) + "%",
+            left: (100-(65/type.realHeight))/2 + "%"
+        });
+
+        
+        var s=type.inOut;
+        for(var c=0; c<4; c++) {
+            for(var i=0; i<s[c].length; i++) {
+                if(s[c][i]!=null) {
+                    var target;
+                    if(s[c][i][0]=="I") {
+                        target = $("<div class='in' />").appendTo(marker);
+                    }
+                    if(s[c][i][0]=="O") {
+                        target = $("<div class='out' />").appendTo(marker);
+                    }
+                    if(c<=1) {
+                        target.css({
+                            left: (80*c) + "%",
+                            top: 100/type.realHeight*i+25/type.realHeight + "%",
+                            width: 20/type.realWidth + "%",
+                            height: 50/type.realHeight + "%"
+                        });
+                    }
+                    else {
+                        target.css({
+                            left: 100/type.realWidth*i+25/type.realWidth + "%",
+                            top: (80*(c-2)) + "%",
+                            width: 50/type.realWidth + "%",
+                            height: 20/type.realHeight + "%"
+                        });
+                    }
+                    continue;
+                }
+            }
+        }
+    }
+}
+
+function newMarker(event,index) {
+    console.log(index)
+    if (!event) {
+        event = window.event; // For older IE compatibility
+    }
+
+    const posX = event.pageX;
+    const posY = event.pageY;
+    
+    var boardTarget = $("#board");
+    var boardPosition = boardTarget.offset();
+
+    var distanceX = posX - boardPosition.left;
+    var xPercent = (distanceX / boardTarget.width()) * 100 - snapX / 2;
+    var distanceY = posY - boardPosition.top;
+    var yPercent = (distanceY / (boardTarget.width()/board.cols*board.rows)) * 100 - markerTypes[index].realHeight * snapY / 2;
+
+    var marker = createMarker(index, xPercent, yPercent);
+    var event = $.Event('mousedown', {
+        clientX: posX,
+        clientY: posY
+    });
+    
+    marker.target.trigger(event);
 }
 
 function newSource(event) {
@@ -1090,6 +1151,7 @@ function createMarker(typeIndex, xPercent, yPercent) {
         yPercent: yPercent,
         x: Math.round(xPercent/100*board.cols),
         y: Math.round(yPercent/100*board.rows),
+        inBounds: false,
         inOut: type.inOut, // left, right, top, bottom
         inOutTargets: [],
         rules: type.rules,
@@ -1100,11 +1162,47 @@ function createMarker(typeIndex, xPercent, yPercent) {
     // Set the initial position of the new marker using xPercent and yPercent
     marker.target.css({
         left: xPercent + "%",
-        top: yPercent + "%"
+        top: yPercent + "%",
+        width: marker.width + "%",
+        height: marker.height + "%",
+        background: marker.color
     });
 
-    markers.push(initMarker(marker));
-    updateTable();
+    //Summon In- and Outputs
+    var s=marker.inOut;
+    marker.inOutTargets=[[],[],[],[]]
+    for(var c=0; c<4; c++) {
+        for(var i=0; i<s[c].length; i++) {
+            if(s[c][i]!=null) {
+                var target;
+                if(s[c][i][0]=="I") {
+                    target = $("<div class='in' />").appendTo(marker.target);
+                }
+                if(s[c][i][0]=="O") {
+                    target = $("<div class='out' />").appendTo(marker.target);
+                }
+                if(c<=1) {
+                    target.css({
+                        left: (80*c)/*-10/marker.realWidth*/ + "%",
+                        top: 100/marker.realHeight*i+25/marker.realHeight + "%",
+                        width: 20/marker.realWidth + "%",
+                        height: 50/marker.realHeight + "%"
+                    });
+                }
+                else {
+                    target.css({
+                        left: 100/marker.realWidth*i+25/marker.realWidth + "%",
+                        top: (80*(c-2))/*-10/marker.realHeight*/ + "%",
+                        width: 50/marker.realWidth + "%",
+                        height: 20/marker.realHeight + "%"
+                    });
+                }
+                marker.inOutTargets[c].push(target);
+                continue;
+            }
+            marker.inOutTargets[c].push(null);
+        }
+    }
 
     marker.target.on("mousedown", function (event) {
         event.preventDefault();
@@ -1114,19 +1212,53 @@ function createMarker(typeIndex, xPercent, yPercent) {
         var startY = event.clientY;
         var startLeft = parseFloat(marker.target.css('left')) || 0;
         var startTop = parseFloat(marker.target.css('top')) || 0;
+        var click = true;
 
-        document.onmousemove = function (e) {
+        document.onmousemove = function (e) { 
             if (marker.isDragging) {
+                var lastL = parseInt(marker.target.css('left'));
+                var lastT = parseInt(marker.target.css('top'));
                 var newX = startLeft + e.clientX - startX;
                 var newY = startTop + e.clientY - startY;
-                // Ensure the marker stays within the board
-                newX = Math.min(Math.max(newX, 0), board.width - marker.width);
-                newY = Math.min(Math.max(newY, 0), board.height - marker.realHeight*(board.height/board.rows));
+                
+                if(!marker.inBounds) {
+                    var left = newX;
+                    var top = newY;
+                    //console.log(left,top);
+                    if((left >= -board.width/board.cols && left <= board.width) && (top >= -board.height/board.rows && top <= board.height)) {
+                        // Ensure the marker stays within the board
+                        var x = Math.min(Math.max(newX, 0), board.width - marker.width);
+                        var y = Math.min(Math.max(newY, 0), board.height - marker.realHeight*(board.height/board.rows));
 
-                marker.target.css({ left: newX + 'px', top: newY + 'px'});
+                        marker.target.css({ left: x + 'px', top: y + 'px'});
 
-                onDrag(marker);
+                        onDrag(marker);
+
+                        if(marker.inBounds) {
+                            //initMarker(marker);
+                            markers.push(marker);
+                            updateLightMap();
+                        }
+                        else {
+                            marker.target.css({ left: lastL + 'px', top: lastT + 'px'});
+                        }
+                    }
+                }
+
+                if(marker.inBounds) {
+                    // Ensure the marker stays within the board
+                    newX = Math.min(Math.max(newX, 0), board.width - marker.width);
+                    newY = Math.min(Math.max(newY, 0), board.height - marker.realHeight*(board.height/board.rows));
+
+                    marker.target.css({ left: newX + 'px', top: newY + 'px'});
+
+                    onDrag(marker);
+                }
+                else {
+                    marker.target.css({ left: newX + 'px', top: newY + 'px'});
+                }
             }
+            click=false;
         };
 
         document.onmouseup = function () {
@@ -1135,12 +1267,21 @@ function createMarker(typeIndex, xPercent, yPercent) {
             document.onmouseup = null;
 
             board.bounds = null;
-            setRelativeMarker(marker);
+
+            if(marker.inBounds) {
+                setRelativeMarker(marker);
+            }
+            else {
+                marker.target.remove();
+            }
+            updateLightMap();
             updateTable();
         };
     });
 
     updateLightMap();
+
+    return(marker);
 }
 
 function createSource(outs,xPercent,yPercent) {
@@ -1225,6 +1366,7 @@ function createSource(outs,xPercent,yPercent) {
                         if(source.inBounds) {
                             //initSource(source);
                             sources.push(source);
+                            updateLightMap();
                         }
                         else {
                             source.target.css({ left: lastL + 'px', top: lastT + 'px'});
@@ -1390,6 +1532,7 @@ function createSensor(ins,xPercent,yPercent) {
                         if(sensor.inBounds) {
                             //initSensor(sensor);
                             sensors.push(sensor);
+                            updateLightMap();
                         }
                         else {
                             sensor.target.css({ left: lastL + 'px', top: lastT + 'px'});
@@ -1760,6 +1903,7 @@ function customMarkerAddMarker() {
     }
 
     customMarkerSetUp();
+    markerButtonsSetUp();
 }
 
 function customMarkerDeleteMarker() {
@@ -1795,6 +1939,7 @@ function customMarkerDeleteMarker() {
         })(i);
     }
     customMarkerSetUp();
+    markerButtonsSetUp();
 }
 
 function customMarkerNewPart() {

@@ -40,9 +40,12 @@ The team consists of: @stedwesd, @Roboter09, @Banana2308
     -> Formattieren
 
 ### Rework marker spawning system.
-- wenn man sachen reinspawnt koennen sie sich immer noch uebereinander stacken (weiss nicht wie einfach es waere so zu machen dass man bei den spawn buttons die marker direkt in die maus reinsteckt, ohne dass die geklickt halten muessen. ansonsten einfach denselben algorithmus daraufwenden den du verwendest damit sie sich nicht ueberlappen)
-- vielleicht die New Marker kategorie statt buttons mit den namen anzuzeigen, einfach die bloecke selber anzeigen
+- ✅wenn man sachen reinspawnt koennen sie sich immer noch uebereinander stacken (weiss nicht wie einfach es waere so zu machen dass man bei den spawn buttons die marker direkt in die maus reinsteckt, ohne dass die geklickt halten muessen. ansonsten einfach denselben algorithmus daraufwenden den du verwendest damit sie sich nicht ueberlappen)
+- ✅vielleicht die New Marker kategorie statt buttons mit den namen anzuzeigen, einfach die bloecke selber anzeigen
+- Source und sensor schön machen
+- alte Buttons entfernen
 - keine ahnung vie kompliziert es waere, falls man ueber in der obengenannten kategorie rueberhovered, dann die truth-table angezeigt wird
+- automatically adjust text size of the name
 
 ### Other
 - die row welche die sachen loescht sollte auch rot/roetlich angezeigt sein
