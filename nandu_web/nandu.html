@@ -10,6 +10,11 @@
     </head>
 <body>
     <main>
+        <div class="source-add">
+            Source
+            <div class="source-add-i">i</div>
+            <button id="source-add-source" type="button"></button>  
+        </div>
         <section id="panel">
             <header>Settings</header>
             <form id=setting-form>
@@ -28,16 +33,38 @@
                 <button id="apply-button" onclick="changeBoardSize()">Apply</button>
             </form>
             <div>
-                <button type="button" onclick="clearBoard()">Delete all markers on the board</button>
+                Automatically update table
+                <div>
+                    <label class="switch">
+                        <input type="checkbox" id="mySwitch">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                
+                <div>
+                    <button id="calculate-table-0" type="button" onclick="">... when object moved.</button>
+                </div>
+                <div>
+                    <button id="calculate-table-1" type="button" onclick="">... when object put down.</button>
+                </div>
+                <div>
+                    <button id="calculate-table-2" type="button" onclick="">... when clicked on reload.</button>
+                </div>
             </div>
             <div>
-                <button type="button" onclick="resetBoard()">Delete all custom marker types</button>
+                Delete Stuff
+                <div>
+                    <button type="button" onclick="clearBoard()">Delete all markers on the board</button>
+                </div>
+                <div>
+                    <button type="button" onclick="resetBoard()">Delete all custom marker types</button>
+                </div>
             </div>
             <label> </label>
             <header>New Marker</header>
             <form id=marker-setting-form>
                 <div>
-                    <button type="button" onclick="createSource([false,true,false,false],0,0)"> Spawn Light source</button>
+                    <button type="button" onclick="createSource([false,true,false,false],-10,0)"> Spawn Light source</button>
                 </div>
                 <div>
                     <button type="button" onclick="createSensor([true,true,true,true],0,0)"> Spawn Light sensor</button>
@@ -94,6 +121,9 @@
             </div>
         </section>
         <section id="table-panel">
+            <div id="load">
+                <button type="button" onclick="reloadTable()">Reload table</button> 
+            </div>
             <div>
                 <table id="table">
 

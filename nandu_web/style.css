@@ -33,7 +33,7 @@ main {
 
 .in {
     position: absolute;
-    background: green;
+    background: #000202;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
     border-right: 1px solid black;
@@ -41,7 +41,7 @@ main {
 
 .out {
     position: absolute;
-    background: #ff0000;
+    background: #000202;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
     border-left: 1px solid black;
@@ -136,6 +136,37 @@ main {
       font-weight: bold;
       font-size: 14px;
     }
+}
+
+.source-add {
+    position: absolute;
+    left: 300px;
+    top: 0px;
+    width: 100px;
+    height: 100px;
+    border: 1px solid black;
+}
+
+.source-add-i {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    width: 15px;
+    height: 15px;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#source-add-source {
+    position: absolute;
+    left: 17px;
+    top: 20px;
+    width: 65px;
+    height: 65px;
+    background-color: orange;
+    border: 1px solid black;
 }
 
 #table-panel {
@@ -278,3 +309,63 @@ label {
       outline: none;
     }
 }
+
+/* Switch container */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+  
+  /* Hide the default checkbox input */
+  .switch input {
+    display: none;
+  }
+  
+  /* Slider (the switch itself) */
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc; /* Gray background */
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 34px;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 50%;
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }
+  
+  /* When the checkbox is checked, slide the switch */
+  input:checked + .slider {
+    background-color: #2196F3; /* Blue background */
+  }
+  
+  input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }

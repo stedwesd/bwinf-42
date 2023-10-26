@@ -9,6 +9,7 @@ var tableTarget = $("#table").get(0);
 var tableOuts = [];
 var showLights = true;
 var doLightMapUpdating = true;
+var doTableUpdating = true;
 
 var colors = {
     activeInput: "#FFFDBC",
@@ -282,6 +283,7 @@ function changeBoardSize() {
     // cast input values to numbers
     board.rows = +input.sizeX.val();
     board.cols = +input.sizeY.val();
+    console.log(board.rows,board.cols);
     snapX = 100/board.cols;
     snapY = 100/board.rows;
     board.size = +input.zoom.val();
@@ -403,12 +405,6 @@ function initMarker(marker) {
 }
 
 function initSource(source) {
-    // Set source's size here
-    source.target.css({
-        width: source.width + "%",
-        height: source.height + "%",
-    });
-
     // Make the marker element draggable
     source.target.draggable({
         containment: "parent", // Keep the marker within its parent element (the board)
@@ -419,31 +415,6 @@ function initSource(source) {
             onDrag(event, ui, marker); // Pass the marker to onDrag
         }*/
     });
-
-    //Summon In- and Outputs
-    var s=source.outs;
-    for(var c=0; c<4; c++) {
-        if(s[c]) {
-            target = $("<div class='source-out' />").appendTo(source.target);
-            if(c<=1) {
-                target.css({
-                    left: (80*c)/*-10*/ + "%",
-                    top: 25 + "%",
-                    width: 20 + "%",
-                    height: 50 + "%"
-                });
-            }
-            else {
-                target.css({
-                    left: 25 + "%",
-                    top: (80*(c-2))/*-10*/ + "%",
-                    width: 50 + "%",
-                    height: 20 + "%"
-                });
-            }
-            continue;
-        }
-    }
     
     console.log("initSource called");
     return (source);
@@ -596,8 +567,11 @@ function onDrag(marker) { // is used for both markers and sources
         marker.y = yPos;
         updateLightMap();
     }
-    if(!colliding) {
-        marker.target.css({left: marker.xPercent+"%", top: marker.yPercent+"%",});
+    if(colliding) {
+        marker.target.css({left: marker.xPercent+"%", top: marker.yPercent+"%"});
+        if(marker.xPercent<0 || marker.yPercent>=100 || marker.yPercent<0 || marker.yPercent>=100) {
+            removeElement(marker);
+        }
     }
 }
 
@@ -629,7 +603,6 @@ function updateLightMap() {
     } while (!arraysEqual(oldMap, lightMap));
 
     updateLightSensors();
-    updateTable();
 }
 
 function resetLightMap() {
@@ -949,6 +922,8 @@ $(document).ready(function () {
     lightMap = resetLightMap();
 
     customMarkerSetUp();
+
+    markerButtonsSetUp();
 });
 
 // Function to set the marker's relative position
@@ -1043,7 +1018,37 @@ var markerTypes = [
             [false,false] // Inputs: false, false
         ]
     }
-]
+];
+
+function markerButtonsSetUp() {
+    var button = document.getElementById("source-add-source");
+    button.addEventListener("mousedown", newSource);
+}
+
+function newSource(event) {
+    if (!event) {
+        event = window.event; // For older IE compatibility
+    }
+
+    const posX = event.pageX;
+    const posY = event.pageY;
+    
+    var boardTarget = $("#board");
+    var boardPosition = boardTarget.offset();
+
+    var distanceX = posX - boardPosition.left;
+    var xPercent = (distanceX / boardTarget.width()) * 100 - snapX / 2;
+    var distanceY = posY - boardPosition.top;
+    var yPercent = (distanceY / (boardTarget.width()/board.cols*board.rows)) * 100 - snapY / 2;
+
+    var source = createSource([false, true, false, false], xPercent, yPercent);
+    var event = $.Event('mousedown', {
+        clientX: posX,
+        clientY: posY
+    });
+    
+    source.target.trigger(event);
+}
 
 function createMarker(typeIndex, xPercent, yPercent) {
     var newMarker = $("<div class='marker' />").appendTo(board.target);
@@ -1075,7 +1080,8 @@ function createMarker(typeIndex, xPercent, yPercent) {
         top: yPercent + "%"
     });
 
-    markers.push(initMarker(marker)); // Push the marker object, not the result of initMarker
+    markers.push(initMarker(marker));
+    updateTable();
 
     marker.target.on("mousedown", function (event) {
         event.preventDefault();
@@ -1107,6 +1113,7 @@ function createMarker(typeIndex, xPercent, yPercent) {
 
             board.bounds = null;
             setRelativeMarker(marker);
+            updateTable();
         };
     });
 
@@ -1126,15 +1133,41 @@ function createSource(outs,xPercent,yPercent) {
         yPercent: yPercent,
         x: Math.round(xPercent/100*board.cols),
         y: Math.round(yPercent/100*board.rows),
+        inBounds: false,
         active: true
     };
 
     source.target.css({
         left: xPercent + "%",
-        top: yPercent + "%"
+        top: yPercent + "%",
+        width: source.width + "%",
+        height: source.height + "%"
     });
 
-    sources.push(initSource(source));
+    //Summon In- and Outputs
+    var s=source.outs;
+    for(var c=0; c<4; c++) {
+        if(s[c]) {
+            target = $("<div class='source-out' />").appendTo(source.target);
+            if(c<=1) {
+                target.css({
+                    left: (80*c)/*-10*/ + "%",
+                    top: 25 + "%",
+                    width: 20 + "%",
+                    height: 50 + "%"
+                });
+            }
+            else {
+                target.css({
+                    left: 25 + "%",
+                    top: (80*(c-2))/*-10*/ + "%",
+                    width: 50 + "%",
+                    height: 20 + "%"
+                });
+            }
+            continue;
+        }
+    }
 
     source.target.on("mousedown", function (event) {
         event.preventDefault();
@@ -1147,16 +1180,23 @@ function createSource(outs,xPercent,yPercent) {
         var click = true;
 
         document.onmousemove = function (e) {
+            
             if (source.isDragging) {
                 var newX = startLeft + e.clientX - startX;
                 var newY = startTop + e.clientY - startY;
-                // Ensure the source stays within the board
-                newX = Math.min(Math.max(newX, 0), board.width - source.width);
-                newY = Math.min(Math.max(newY, 0), board.height - (board.height/board.rows));
+                
+                if(source.inBounds) {
+                    // Ensure the source stays within the board
+                    newX = Math.min(Math.max(newX, 0), board.width - source.width);
+                    newY = Math.min(Math.max(newY, 0), board.height - (board.height/board.rows));
 
-                source.target.css({ left: newX + 'px', top: newY + 'px'});
+                    source.target.css({ left: newX + 'px', top: newY + 'px'});
 
-                onDrag(source);
+                    onDrag(source);
+                }
+                else {
+                    source.target.css({ left: newX + 'px', top: newY + 'px'});
+                }
             }
             click=false;
         };
@@ -1165,7 +1205,6 @@ function createSource(outs,xPercent,yPercent) {
             if(click) {
                 source.active=!source.active;
                 var outs = source.target.find(".source-out");
-                console.log(outs.length);
                 if(source.active){
                     outs.css({background: colors.activeInput});
                 }
@@ -1178,12 +1217,42 @@ function createSource(outs,xPercent,yPercent) {
             document.onmouseup = null;
 
             board.bounds = null;
-            setRelativeSource(source);
+            var left = parseFloat(source.target.css('left'));
+            var top = parseFloat(source.target.css('top'));
+            console.log(source.inBounds);
+            if(!source.inBounds) {
+                var newLeft = Math.min(Math.max(left, 0), board.width - source.width);
+                var newTop = Math.min(Math.max(top, 0), board.height - (board.height/board.rows));
+
+                if(newLeft==left && newTop==top) {
+                    source.inBounds = true;
+                    //initSource(source);
+                    sources.push(source);
+
+                    var newX = Math.min(Math.max(newX, 0), board.width - source.width);
+                    var newY = Math.min(Math.max(newY, 0), board.height - (board.height/board.rows));
+
+                    source.target.css({ left: newX + 'px', top: newY + 'px'});
+
+                    onDrag(source);
+                    console.log("true");
+                }
+                else {
+                    source.target.remove();
+                }
+            }
+            
+            if(source.inBounds) {
+                setRelativeSource(source);
+            }
             updateLightMap();
+            updateTable();
         };
     });
 
     updateLightMap();
+
+    return(source);
 }
 
 function createSensor(ins,xPercent,yPercent) {
@@ -1226,6 +1295,7 @@ function createSensor(ins,xPercent,yPercent) {
     });
 
     sensors.push(sensor);
+    updateTable();
 
     sensor.target.on("mousedown", function (event) {
         event.preventDefault();
@@ -1258,10 +1328,23 @@ function createSensor(ins,xPercent,yPercent) {
             board.bounds = null;
             setRelativeSensor(sensor);
             updateLightMap();
+            updateTable();
         };
     });
 
     updateLightMap();
+}
+
+function removeElement(elem) {
+    if(markers.indexOf(elem)!= -1) {
+        removeMarker(markers.indexOf(elem));
+    }
+    if(sources.indexOf(elem)!= -1) {
+        removeSource(sources.indexOf(elem));
+    }
+    if(sensors.indexOf(elem)!= -1) {
+        removeSource(sensors.indexOf(elem));
+    }
 }
 
 function removeMarker(index) {
@@ -1279,7 +1362,18 @@ function removeSensor(index) {
 
 // Table Sources/Sensors :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+function reloadTable() {
+    var myDoTableUpdating = doTableUpdating;
+    doTableUpdating = true;
+    updateTable();
+    doTableUpdating = myDoTableUpdating;
+}
+
 function updateTable(){
+    if(!doTableUpdating) {
+        return;
+    }
+
     showTable(sources.length,sensors.length);
     var saveLightMap = JSON.parse(JSON.stringify(lightMap));
     var savedLights = JSON.parse(JSON.stringify(lights));
