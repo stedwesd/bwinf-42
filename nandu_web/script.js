@@ -942,33 +942,25 @@ function setRelativeMarker(marker) {
     }
 }
 
-function setRelativeSource(marker) {
+function setRelativeSource(source) {
     TweenLite.set(board.target, { zIndex: 10 });
-    TweenLite.set(marker.target, {
-        left: marker.xPercent + "%",
-        top: marker.yPercent + "%"
+    TweenLite.set(source.target, {
+        left: source.xPercent + "%",
+        top: source.yPercent + "%"
     });
-    if(marker.xPercent>=100 || marker.yPercent>=100) {
-        marker.target.remove();
-        sources.splice(sources.indexOf(marker), 1);
-        for(var i=0;i<sources.length;i++) {
-            sources[i].target.contents()[0].nodeValue = i+1;
-        }
+    if(source.xPercent>=100 || source.yPercent>=100) {
+        removeSource(sources.indexOf(source));
     }
 }
 
-function setRelativeSensor(marker) {
+function setRelativeSensor(sensor) {
     TweenLite.set(board.target, { zIndex: 10 });
-    TweenLite.set(marker.target, {
-        left: marker.xPercent + "%",
-        top: marker.yPercent + "%"
+    TweenLite.set(sensor.target, {
+        left: sensor.xPercent + "%",
+        top: sensor.yPercent + "%"
     });
-    if(marker.xPercent>=100 || marker.yPercent>=100) {
-        marker.target.remove();
-        sensors.splice(sensors.indexOf(marker), 1);
-        for(var i=0;i<sensors.length;i++) {
-            sensors[i].target.contents()[0].nodeValue = i+1;
-        }
+    if(sensor.xPercent>=100 || marker.yPercent>=100) {
+        removeSensor(sensors.indexOf(sensor));
     }
 }
 
@@ -1025,8 +1017,10 @@ var markerTypes = [
 ];
 
 function markerButtonsSetUp() {
-    var button = document.getElementById("source-add-source");
-    button.addEventListener("mousedown", newSource);
+    var sourceButton = document.getElementById("source-add-source");
+    sourceButton.addEventListener("mousedown", newSource);
+    var sensorButton = document.getElementById("sensor-add-sensor");
+    sensorButton.addEventListener("mousedown", newSensor);
 }
 
 function newSource(event) {
@@ -1052,6 +1046,31 @@ function newSource(event) {
     });
     
     source.target.trigger(event);
+}
+
+function newSensor() {
+    if (!event) {
+        event = window.event; // For older IE compatibility
+    }
+
+    const posX = event.pageX;
+    const posY = event.pageY;
+    
+    var boardTarget = $("#board");
+    var boardPosition = boardTarget.offset();
+
+    var distanceX = posX - boardPosition.left;
+    var xPercent = (distanceX / boardTarget.width()) * 100 - snapX / 2;
+    var distanceY = posY - boardPosition.top;
+    var yPercent = (distanceY / (boardTarget.width()/board.cols*board.rows)) * 100 - snapY / 2;
+
+    var sensor = createSensor([false, true, false, false], xPercent, yPercent);
+    var event = $.Event('mousedown', {
+        clientX: posX,
+        clientY: posY
+    });
+    
+    sensor.target.trigger(event);
 }
 
 function createMarker(typeIndex, xPercent, yPercent) {
@@ -1183,8 +1202,7 @@ function createSource(outs,xPercent,yPercent) {
         var startTop = parseFloat(source.target.css('top')) || 0;
         var click = true;
 
-        document.onmousemove = function (e) {
-            
+        document.onmousemove = function (e) { 
             if (source.isDragging) {
                 var lastL = parseInt(source.target.css('left'));
                 var lastT = parseInt(source.target.css('top'));
@@ -1277,6 +1295,7 @@ function createSensor(ins,xPercent,yPercent) {
         yPercent: yPercent,
         x: Math.round(xPercent/100*board.cols),
         y: Math.round(yPercent/100*board.rows),
+        inBounds: false,
         active: false
     };
 
@@ -1302,7 +1321,6 @@ function createSensor(ins,xPercent,yPercent) {
         }*/
     });
 
-    sensors.push(sensor);
     updateTable();
 
     sensor.target.on("mousedown", function (event) {
@@ -1340,7 +1358,81 @@ function createSensor(ins,xPercent,yPercent) {
         };
     });
 
+    sensor.target.on("mousedown", function (event) {
+        event.preventDefault();
+        sensor.isDragging = true;
+
+        var startX = event.clientX;
+        var startY = event.clientY;
+        var startLeft = parseFloat(sensor.target.css('left')) || 0;
+        var startTop = parseFloat(sensor.target.css('top')) || 0;
+
+        document.onmousemove = function (e) { 
+            if (sensor.isDragging) {
+                var lastL = parseInt(sensor.target.css('left'));
+                var lastT = parseInt(sensor.target.css('top'));
+                var newX = startLeft + e.clientX - startX;
+                var newY = startTop + e.clientY - startY;
+                
+                if(!sensor.inBounds) {
+                    var left = newX;
+                    var top = newY;
+                    //console.log(left,top);
+                    if((left >= -board.width/board.cols && left <= board.width) && (top >= -board.height/board.rows && top <= board.height)) {
+                        // Ensure the sensor stays within the board
+                        var x = Math.min(Math.max(newX, 0), board.width - sensor.width);
+                        var y = Math.min(Math.max(newY, 0), board.height - (board.height/board.rows));
+
+                        sensor.target.css({ left: x + 'px', top: y + 'px'});
+
+                        onDrag(sensor);
+
+                        if(sensor.inBounds) {
+                            //initSensor(sensor);
+                            sensors.push(sensor);
+                        }
+                        else {
+                            sensor.target.css({ left: lastL + 'px', top: lastT + 'px'});
+                        }
+                    }
+                }
+
+                if(sensor.inBounds) {
+                    // Ensure the sensor stays within the board
+                    newX = Math.min(Math.max(newX, 0), board.width - sensor.width);
+                    newY = Math.min(Math.max(newY, 0), board.height - (board.height/board.rows));
+
+                    sensor.target.css({ left: newX + 'px', top: newY + 'px'});
+
+                    onDrag(sensor);
+                }
+                else {
+                    sensor.target.css({ left: newX + 'px', top: newY + 'px'});
+                }
+            }
+        };
+
+        document.onmouseup = function () {
+            sensor.isDragging = false;
+            document.onmousemove = null;
+            document.onmouseup = null;
+
+            board.bounds = null;
+
+            if(sensor.inBounds) {
+                setRelativeSensor(sensor);
+            }
+            else {
+                sensor.target.remove();
+            }
+            updateLightMap();
+            updateTable();
+        };
+    });
+
     updateLightMap();
+
+    return(sensor);
 }
 
 function removeElement(elem) {
@@ -1361,11 +1453,17 @@ function removeMarker(index) {
 }
 function removeSource(index) {
     sources[index].target.remove();
-    sources.splice(index, 1);
+    sources.splice(sources[index], 1);
+    for(var i=0;i<sources.length;i++) {
+        sources[i].target.contents()[0].nodeValue = i+1;
+    }
 }
 function removeSensor(index) {
     sensors[index].target.remove();
-    sensors.splice(index, 1);
+    sensors.splice(sensors[index], 1);
+    for(var i=0;i<sensors.length;i++) {
+        sensors[i].target.contents()[0].nodeValue = i+1;
+    }
 }
 
 // Table Sources/Sensors :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

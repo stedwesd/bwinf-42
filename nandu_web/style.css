@@ -138,10 +138,15 @@ main {
     }
 }
 
-.source-add {
+#add-elements {
     position: absolute;
+    width: 100px;
     left: 300px;
     top: 0px;
+}
+
+.source-add {
+    position: relative;
     width: 100px;
     height: 100px;
     border: 1px solid black;
@@ -166,6 +171,35 @@ main {
     width: 65px;
     height: 65px;
     background-color: orange;
+    border: 1px solid black;
+}
+
+.sensor-add {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border: 1px solid black;
+}
+
+.sensor-add-i {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    width: 15px;
+    height: 15px;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#sensor-add-sensor {
+    position: absolute;
+    left: 17px;
+    top: 20px;
+    width: 65px;
+    height: 65px;
+    background-color: grey;
     border: 1px solid black;
 }
 
