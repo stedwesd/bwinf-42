@@ -140,10 +140,10 @@ main {
 
 #add-elements {
     position: absolute;
-    width: 117px;
     left: 300px;
     top: 0px;
     height: 98%;
+    width: 500px;
     overflow-y: auto; 
 }
 
@@ -152,18 +152,6 @@ main {
     width: 100px;
     height: 100px;
     border: 1px solid black;
-}
-
-.source-add-i {
-    position: absolute;
-    right: -1px;
-    top: -1px;
-    width: 15px;
-    height: 15px;
-    border: 1px solid black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 #source-add-source {
@@ -181,18 +169,6 @@ main {
     width: 100px;
     height: 100px;
     border: 1px solid black;
-}
-
-.sensor-add-i {
-    position: absolute;
-    right: -1px;
-    top: -1px;
-    width: 15px;
-    height: 15px;
-    border: 1px solid black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 #sensor-add-sensor {
@@ -221,7 +197,6 @@ main {
     height: 100px;
     border: 1px solid black;
     font-size: small;
-    overflow: hidden;
 }
 
 .marker-add-i {
@@ -229,6 +204,18 @@ main {
     right: -1px;
     top: -1px;
     width: 15px;
+    height: 15px;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.marker-add-edit {
+    position: absolute;
+    right: -1px;
+    bottom: -1px;
+    width: 30px;
     height: 15px;
     border: 1px solid black;
     display: flex;
@@ -244,6 +231,19 @@ main {
     height: 65px;
     background-color: grey;
     border: 1px solid black;
+}
+
+#marker-table-parent {
+    position: absolute;
+    left: 100%;
+    top: 0%;
+    background-color: #ddd;
+    border: 1px solid black;
+    z-index: 1000;
+}
+
+#marker-table {
+    position: relative;
 }
 
 #table-panel {

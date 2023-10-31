@@ -1017,14 +1017,27 @@ function spawnMarkerButtons() {
         // ToDo: Automatically adjust text size
 
         var marker = $("<button class='marker-add-marker' type='button'></button>").appendTo(div);
-        var info = $("<div class='marker-add-i'>i</div>").appendTo(div);
+        var info = $("<button class='marker-add-i' type='button'>i</button>").appendTo(div);
+        info.on('click', function(index) {
+            return function() {
+                showMarkerTable(index);
+            };
+        }(index));
+
+        if(index>=4) {
+            var edit = $("<button class='marker-add-edit' type='button'>Edit</button>").appendTo(div);
+            edit.on('click', function(index) {
+                return function() {
+                    customMarkerLoad(index);
+                };
+            }(index));
+        }
 
         marker.css({
             background: type.color,
             width: (65/type.realHeight) + "%",
             left: (100-(65/type.realHeight))/2 + "%"
         });
-
         
         var s=type.inOut;
         for(var c=0; c<4; c++) {
@@ -1060,6 +1073,96 @@ function spawnMarkerButtons() {
     }
 }
 
+function showMarkerTable(index) {
+    deleteMarkerTable();
+
+    var markerButtons = document.getElementsByClassName("marker-add");
+    var div = markerButtons[index];
+    var tableParent = $("<div id='marker-table-parent'></div>").appendTo(div);
+    var table = $("<table id='marker-table'></table>").appendTo(tableParent);
+
+    var numberOfInputs = 0;
+    var numberOfOutputs = 0;
+    for(var i=0;i<markerTypes[index].realHeight;i++) {
+        if(markerTypes[index].inOut[0][i]) {
+            numberOfInputs++;
+        }
+        if(markerTypes[index].inOut[1][i]) {
+            numberOfOutputs++;
+        }
+    }
+    console.log(numberOfInputs,numberOfOutputs);
+
+    markerShowTable(numberOfInputs,numberOfOutputs,table);
+    markerShowTableOuts(index);
+}
+
+function deleteMarkerTable() {
+    if(document.getElementById("marker-table")) {
+        document.getElementById("marker-table").remove();
+    }
+}
+
+var markerTableOuts = [];
+
+function markerShowTable(ins,outs,markerTableTarget) { // number of inputs and outputs
+    var head = $("<tr> </tr>").appendTo(markerTableTarget);
+
+    for(var i=0; i<ins; i++) {
+        var elem = $("<th>I"+(i+1)+"</th>").appendTo(head);
+    }
+    for(var i=0; i<outs; i++) {
+        var elem = $("<th>O"+(i+1)+"</th>").appendTo(head);
+    }
+    var insCombinations = getCombinations(ins);
+    markerTableOuts = [];
+    for(var r=0; r<insCombinations.length; r++) {
+        var row = $("<tr> </tr>").appendTo(markerTableTarget);
+        for(var i=0; i<ins; i++) {
+            var elem;
+            if(i<ins-1) {
+                elem = $("<td> </td>").appendTo(row);
+            }
+            else{
+                elem = $("<td class='divider'> </td>").appendTo(row);
+            }
+            var activeTarget = $("<div class='custom-marker-table-elem'></div>").appendTo(elem);
+            if(insCombinations[r][i]) {
+                activeTarget.css({background: "yellow"});
+            }
+        }
+        markerTableOuts.push([]);
+        for(var o=0; o<outs; o++){
+            var elem = $("<td> </td>").appendTo(row);
+            var activeTarget = $("<div class='custom-marker-table-elem'></div>").appendTo(elem);
+            markerTableOuts[r].push({
+                active: false,
+                target: activeTarget
+            });
+        }
+    }
+}
+
+function markerShowTableOuts(index) {
+    var rules = markerTypes[index].rules;
+    console.log(markerTableOuts);
+    if(rules != []) {
+        for(var a=0;a<rules.length;a++) {
+            for(var b=0;b<rules[0].length;b++) {
+                markerTableOuts[a][b].active = rules[a][b];
+                if(markerTableOuts[a][b].active) {
+                    markerTableOuts[a][b].target.css({background: "yellow"});
+                }
+                else {
+                    markerTableOuts[a][b].target.css({background: "lightgray"});
+                }
+            }
+        }
+    }
+}
+
+// New Element :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
 function newMarker(event,index) {
     if (!event) {
         event = window.event; // For older IE compatibility
@@ -1083,6 +1186,8 @@ function newMarker(event,index) {
     });
     
     marker.target.trigger(event);
+
+    deleteMarkerTable();
 }
 
 function newSource(event) {
@@ -1108,6 +1213,8 @@ function newSource(event) {
     });
     
     source.target.trigger(event);
+
+    deleteMarkerTable();
 }
 
 function newSensor() {
@@ -1133,6 +1240,8 @@ function newSensor() {
     });
     
     sensor.target.trigger(event);
+
+    deleteMarkerTable();
 }
 
 function createMarker(typeIndex, xPercent, yPercent, inBounds) {
