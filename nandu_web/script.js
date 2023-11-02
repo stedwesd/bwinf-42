@@ -194,6 +194,7 @@ function init(/*event*/) {
 
         doLightMapUpdating = true;
         updateLightMap();
+        updateTable();
     });
 }
 
@@ -936,6 +937,11 @@ function createGrid() {
                 left: col * 100 / board.cols + "%",
                 top: row * 100 / board.rows + "%"
             });
+
+
+            if(darkModeActive) {
+                target.css({background: darkGrey});
+            }
         }
     }
 }
@@ -1601,6 +1607,8 @@ function createSource(outs,xPercent,yPercent,inBounds) {
                 else{
                     outs.css({background: colors.deactiveInput});
                 }
+                updateLightMap();
+                showTablePickedRow();
             }
             source.isDragging = false;
             document.onmousemove = null;
@@ -1841,6 +1849,9 @@ function updateTable(){
         updateLightMarkers();
     } while (!arraysEqual(oldMap, lightMap));
     updateLightSensors();
+
+    // Show active row
+    showTablePickedRow();
 }
 
 function showTable(ins,outs) { // number of inputs and outputs
@@ -1933,7 +1944,26 @@ function tablePickElement(index) {
         }
     }
     updateLightMap();
+    showTablePickedRow();
 }
+
+var pickedRowIndex;
+
+function showTablePickedRow() {
+    var index = 1;
+    for(var i=0;i<sources.length;i++) {
+        if(!sources[i].active) {
+            index += Math.pow(2,sources.length-i-1);
+        }
+    }
+    if(pickedRowIndex) {
+        tableTarget.children[pickedRowIndex].children[0].children[0].style.backgroundImage = "url(lamp_pick.png)";
+    }
+    tableTarget.children[index].children[0].children[0].style.backgroundImage = "url(lamp_pick_active.png)";
+    pickedRowIndex = index;
+}
+
+
 
 // Custom Markers :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
