@@ -8,7 +8,7 @@
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.1/gsap.min.js"></script>
     </head>
-<body>
+<body id="body">
     <main>
         <div id="add-elements">
             <div class="source-add">
@@ -55,26 +55,6 @@
             </form>
             <label> </label>
             <div>
-                Automatically update table
-                <div>
-                    <label class="switch">
-                        <input type="checkbox" id="mySwitch">
-                        <span class="slider round"></span>
-                    </label>
-                </div>
-                
-                <div>
-                    <button id="calculate-table-0" type="button" onclick="">... when object moved.</button>
-                </div>
-                <div>
-                    <button id="calculate-table-1" type="button" onclick="">... when object put down.</button>
-                </div>
-                <div>
-                    <button id="calculate-table-2" type="button" onclick="">... when clicked on reload.</button>
-                </div>
-            </div>
-            <label> </label>
-            <div>
                 Delete Stuff
                 <div>
                     <button type="button" onclick="clearBoard()">Delete all markers on the board</button>
@@ -97,6 +77,10 @@
                 <div>
                     <button type="button" onclick="downloadBoard()">Download board as Text File</button>
                 </div>
+            </div>
+            <label> </label>
+            <div>
+                <button id="dark-mode-button" type="button" onclick="darkMode()">Change to dark mode</button>
             </div>
         </section>
         <section id="custom-marker-panel">

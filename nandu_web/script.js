@@ -15,6 +15,12 @@ var colors = {
     activeInput: "#FFFDBC",
     deactiveInput: "#000202"
 }
+var black = "#191D1D";
+var darkGrey = "#333838";
+var completelyBlack = "#FFFFFF";
+var lightgrey = "#ddd";
+var grey = "#aeaeae";
+var borderGrey = "#ccc";
 
 // File
 const fileInputTarget = document.getElementById('file-input');
@@ -33,6 +39,9 @@ var input = {
     sizeY: $("#size-y"),
     zoom: $("#board-zoom")
 };
+
+//Darkmode
+var darkModeActive = false;
 
 // INIT :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 function init(/*event*/) {
@@ -349,6 +358,74 @@ function changeBoardSize() {
     }
     console.log(sources,sensors);
     updateLightMap();
+}
+
+function darkMode() {
+    var button = document.getElementById("dark-mode-button");
+    darkModeActive = !darkModeActive;
+    console.log(darkModeActive);
+    if(darkModeActive) {
+        button.textContent = "Change to light mode";
+
+        document.body.style.background = black;
+        document.body.style.color = "white";
+        document.getElementById("add-elements").style.background = darkGrey;
+        document.getElementById("panel").style.background = darkGrey;
+        document.getElementById("custom-marker-panel").style.background = darkGrey;
+        document.getElementById("table-panel").style.background = darkGrey;
+        document.getElementById("board").style.background = black;
+        
+        document.getElementById("add-elements").style.border = completelyBlack;
+        document.getElementById("panel").style.border = completelyBlack;
+        document.getElementById("custom-marker-panel").style.border = completelyBlack;
+        document.getElementById("table-panel").style.border = completelyBlack;
+
+        var cells = document.getElementsByClassName("cell");
+        for(var i=0;i<cells.length; i++) {
+            cells[i].style.background = darkGrey;
+        }
+
+        // Source text
+        sources.forEach(function(source) {
+            source.target.css({color: "black"});
+        });
+
+        // Sensor text
+        sensors.forEach(function(sensor) {
+            sensor.target.css({color: "black"});
+        });
+        
+        var customMarkerAddMarkerPartButton = document.getElementsByClassName("custom-marker-new-part");
+        customMarkerAddMarkerPartButton[0].style.color = "black";
+        var customMarkerDeleteMarkerPartButton = document.getElementsByClassName("custom-marker-delete-part");
+        customMarkerDeleteMarkerPartButton[0].style.color = "black";
+    }
+    else {
+        button.textContent = "Change to dark mode";
+
+        document.body.style.background = lightgrey;
+        document.body.style.color = "black";
+        document.getElementById("add-elements").style.background = lightgrey;
+        document.getElementById("panel").style.background = borderGrey;
+        document.getElementById("custom-marker-panel").style.background = borderGrey;
+        document.getElementById("table-panel").style.background = borderGrey;
+        document.getElementById("board").style.background = borderGrey;
+        
+        document.getElementById("add-elements").style.border = borderGrey;
+        document.getElementById("panel").style.border = borderGrey;
+        document.getElementById("custom-marker-panel").style.border = borderGrey;
+        document.getElementById("table-panel").style.border = borderGrey;
+
+        var cells = document.getElementsByClassName("cell");
+        for(var i=0;i<cells.length; i++) {
+            cells[i].style.background = grey;
+        }
+        
+        var customMarkerAddMarkerPartButton = document.getElementsByClassName("custom-marker-new-part");
+        customMarkerAddMarkerPartButton[0].style.color = "black";
+        var customMarkerDeleteMarkerPartButton = document.getElementsByClassName("custom-marker-delete-part");
+        customMarkerDeleteMarkerPartButton[0].style.color = "black";
+    }
 }
 
 function initMarker(marker) {
@@ -1011,19 +1088,24 @@ function spawnMarkerButtons() {
         
         // Name
         div.text(type.name);
-
         var fontSize = 11;
         div.css('font-size', fontSize + 'px');
         // ToDo: Automatically adjust text size
 
+        // Spawn marker, info and edit (not in standard markers) buttons 
         var marker = $("<button class='marker-add-marker' type='button'></button>").appendTo(div);
         var info = $("<button class='marker-add-i' type='button'>i</button>").appendTo(div);
-        info.on('click', function(index) {
-            return function() {
+        info.hover(
+            function() {
+                // Show marker table when hovering
+                var index = $(this).data('index');
                 showMarkerTable(index);
-            };
-        }(index));
-
+            },
+            function() {
+                // Delte marker table when not hovering anymore
+                deleteMarkerTable();
+            }
+        ).data('index', index);
         if(index>=4) {
             var edit = $("<button class='marker-add-edit' type='button'>Edit</button>").appendTo(div);
             edit.on('click', function(index) {
@@ -1079,6 +1161,10 @@ function showMarkerTable(index) {
     var markerButtons = document.getElementsByClassName("marker-add");
     var div = markerButtons[index];
     var tableParent = $("<div id='marker-table-parent'></div>").appendTo(div);
+    if(darkModeActive) {
+        tableParent.css({background: darkGrey});
+    }
+
     var table = $("<table id='marker-table'></table>").appendTo(tableParent);
 
     var numberOfInputs = 0;
@@ -1186,8 +1272,6 @@ function newMarker(event,index) {
     });
     
     marker.target.trigger(event);
-
-    deleteMarkerTable();
 }
 
 function newSource(event) {
@@ -1213,8 +1297,6 @@ function newSource(event) {
     });
     
     source.target.trigger(event);
-
-    deleteMarkerTable();
 }
 
 function newSensor() {
@@ -1240,8 +1322,6 @@ function newSensor() {
     });
     
     sensor.target.trigger(event);
-
-    deleteMarkerTable();
 }
 
 function createMarker(typeIndex, xPercent, yPercent, inBounds) {
@@ -1421,6 +1501,10 @@ function createSource(outs,xPercent,yPercent,inBounds) {
         height: source.height + "%"
     });
 
+    if(darkModeActive) {
+        source.target.css({color: "black"});
+    }
+
     //Summon In- and Outputs
     var s=source.outs;
     for(var c=0; c<4; c++) {
@@ -1569,6 +1653,10 @@ function createSensor(ins,xPercent,yPercent,inBounds) {
         height: sensor.height + "%",
     });
 
+    if(darkModeActive) {
+        sensor.target.css({color: "black"});
+    }
+
     // Make the marker element draggable
     sensor.target.draggable({
         containment: "parent", // Keep the marker within its parent element (the board)
@@ -1672,7 +1760,7 @@ function removeElement(elem) {
         removeSource(sources.indexOf(elem));
     }
     if(sensors.indexOf(elem)!= -1) {
-        removeSource(sensors.indexOf(elem));
+        removeSensor(sensors.indexOf(elem));
     }
 }
 
@@ -1682,14 +1770,14 @@ function removeMarker(index) {
 }
 function removeSource(index) {
     sources[index].target.remove();
-    sources.splice(sources[index], 1);
+    sources.splice(index, 1);
     for(var i=0;i<sources.length;i++) {
         sources[i].target.contents()[0].nodeValue = i+1;
     }
 }
 function removeSensor(index) {
     sensors[index].target.remove();
-    sensors.splice(sensors[index], 1);
+    sensors.splice(index, 1);
     for(var i=0;i<sensors.length;i++) {
         sensors[i].target.contents()[0].nodeValue = i+1;
     }
@@ -2049,6 +2137,13 @@ function customMarkerDeletePart() {
     }
     customMarkerParts.pop(index);
     console.log(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
+    
+    if(customMarkerParts.length==0) {
+        target.css({borderTop: "1px solid black"});
+    }
+    else {
+        customMarkerParts[customMarkerParts.length-1].target.css({borderBottom: "1px solid black"});
+    }
 
     customMarkerShowTable(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
 }
