@@ -278,6 +278,56 @@ function downloadBoard() {
     downloadFile("nandu.txt", fileContent);
 }
 
+function downloadTable() {
+    var numberOfInputs = sources.length;
+    var numberOfOutputs = sensors.length;
+    var fileContent = "";
+    for(var i=0;i<numberOfInputs;i++) {
+        fileContent += "Q"+(i+1)+";"
+    }
+    for(var i=0;i<numberOfOutputs-1;i++) {
+        fileContent += "L"+(i+1)+";"
+    }
+    fileContent += "L"+numberOfOutputs;
+
+    var insCombinations = getCombinations(numberOfInputs);
+    for(var row=0;row<tableOuts.length;row++) {
+        fileContent += "\n";
+        for(var i=0; i<insCombinations[row].length; i++) {
+            console.log("i");
+            if(insCombinations[row][i]) {
+                fileContent += "An;";
+            }
+            else {
+                fileContent += "Aus;";
+            }
+        }
+
+        for(var out=0;out<tableOuts[row].length-1;out++) {
+            if(tableOuts[row][out].active) {
+                fileContent += "An;";
+                console.log("an");
+            }
+            else {
+                fileContent += "Aus;";
+                console.log("aus");
+            }
+        }
+        if(tableOuts[row].length != 0) {
+            if(tableOuts[row][tableOuts[row].length-1].active) {
+                fileContent += "An";
+                console.log("an");
+            }
+            else {
+                fileContent += "Aus";
+                console.log("aus");
+            }
+        }
+    }
+    console.log(fileContent);
+    downloadFile("table.csv",fileContent);
+}
+
 function downloadFile(fileName, fileContent) {
     // Create a Blob containing the content
     var blob = new Blob([fileContent], { type: "text/plain" });
@@ -914,7 +964,7 @@ function updateSize() {
     TweenLite.set(board.target, {
         xPercent: -50,
         yPercent: -50,
-        width: size / (landscape ? max : min) * 100 + "%",
+        width: size / (landscape ? max : min) * 100 * board.cols/board.rows + "%",
         paddingTop: size / (landscape ? max : min) * 100 + "%"
     });
 }
