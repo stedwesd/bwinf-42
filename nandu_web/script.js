@@ -2294,7 +2294,7 @@ function customMarkerShowColors() {
         "#9A31E0",
         "#EBEBEB",
         "#676667",
-        "#212121"
+        "#111111"
     ]
 
     var colorSelectionTarget = $("#custom-marker-choose-colors");

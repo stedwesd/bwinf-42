@@ -146,10 +146,13 @@ main {
     left: 300px;
     top: 0px;
     max-height: 100%;
+    height: 100%;
     min-width: 100px;
     overflow-x: visible;
-    overflow-y: visible;
+    overflow-y: auto;
+    padding-left: 15px;
     z-index: 200;
+    direction: ltr; 
 }
 
 .source-add {
@@ -157,6 +160,7 @@ main {
     width: 100px;
     height: 100px;
     border: 1px solid black;
+    direction: ltr; 
 }
 
 #source-add-source {
@@ -174,6 +178,7 @@ main {
     width: 100px;
     height: 100px;
     border: 1px solid black;
+    direction: ltr; 
 }
 
 #sensor-add-sensor {
@@ -202,6 +207,8 @@ main {
     height: 100px;
     border: 1px solid black;
     font-size: small;
+    overflow: visible;
+    direction: ltr; 
 }
 
 .marker-add-i {
