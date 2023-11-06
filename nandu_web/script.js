@@ -44,9 +44,7 @@ var input = {
 var darkModeActive = false;
 
 // INIT :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-function init(/*event*/) {
-    // prevent when called by submit
-    //event && event.preventDefault();
+function init() {
     changeBoardSize();
 
     createGrid();
@@ -1152,10 +1150,10 @@ function spawnMarkerButtons() {
         var marker = $("<button class='marker-add-marker' type='button'></button>").appendTo(div);
         var info = $("<button class='marker-add-i' type='button'>i</button>").appendTo(div);
         info.hover(
-            function() {
+            function(event) {
                 // Show marker table when hovering
                 var index = $(this).data('index');
-                showMarkerTable(index);
+                showMarkerTable(index,event);
             },
             function() {
                 // Delte marker table when not hovering anymore
@@ -1211,12 +1209,17 @@ function spawnMarkerButtons() {
     }
 }
 
-function showMarkerTable(index) {
+function showMarkerTable(index,event) {
     deleteMarkerTable();
+
+    const posX = event.pageX+2;
+    const posY = event.pageY+2;
 
     var markerButtons = document.getElementsByClassName("marker-add");
     var div = markerButtons[index];
-    var tableParent = $("<div id='marker-table-parent'></div>").appendTo(div);
+    var tableParent = $("<div id='marker-table-parent'></div>").appendTo(document.body);
+    tableParent.css({left: posX+"px", top: posY+"px"});
+
     if(darkModeActive) {
         tableParent.css({background: darkGrey});
     }
@@ -1233,15 +1236,14 @@ function showMarkerTable(index) {
             numberOfOutputs++;
         }
     }
-    console.log(numberOfInputs,numberOfOutputs);
 
     markerShowTable(numberOfInputs,numberOfOutputs,table);
     markerShowTableOuts(index);
 }
 
 function deleteMarkerTable() {
-    if(document.getElementById("marker-table")) {
-        document.getElementById("marker-table").remove();
+    if(document.getElementById("marker-table-parent")) {
+        document.getElementById("marker-table-parent").remove();
     }
 }
 
@@ -1287,7 +1289,6 @@ function markerShowTable(ins,outs,markerTableTarget) { // number of inputs and o
 
 function markerShowTableOuts(index) {
     var rules = markerTypes[index].rules;
-    console.log(markerTableOuts);
     if(rules != []) {
         for(var a=0;a<rules.length;a++) {
             for(var b=0;b<rules[0].length;b++) {
