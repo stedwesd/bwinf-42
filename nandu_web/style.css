@@ -140,6 +140,13 @@ main {
     }
 }
 
+.tab-button {
+    width: 100px;
+    height: 40px;
+    display: inline-block; 
+    margin: 0; 
+}
+
 #add-elements {
     position: absolute;
     background: #ccc;
