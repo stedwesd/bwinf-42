@@ -31,16 +31,13 @@
                 </button>  
                 <button class="marker-add-i" type="button">i</button>
                 <button class="marker-add-edit" type="button">Edit</button>
-                <div class="marker-table">
-                    
-                </div>
             </div>
         </div>
         
-        <div id="choose-tabs">
-            <button type="button" id="tab-table" class="tab-button">Table</button>
-            <button type="button" id="tab-custom-marker" class="tab-button">Custom Marker</button>
-            <button type="button" id="tab-settings" class="tab-button">Settings</button>
+        <div id="tabs">
+            <button type="button" id="tab-table" class="tab-button" onclick="changeTabTable()">Table</button>
+            <button type="button" id="tab-custom-marker" class="tab-button" onclick="changeTabCustomMarker()">Custom Marker</button>
+            <button type="button" id="tab-settings" class="tab-button" onclick="changeTabSettings()">Settings</button>
         </div>
 
         <section id="panel">
@@ -116,6 +113,7 @@
             </div>
         </section>
         <section id="table-panel">
+            <header>Table</header>
             <div>
                 <table id="table">
 

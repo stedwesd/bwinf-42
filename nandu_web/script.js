@@ -410,12 +410,23 @@ function changeBoardSize() {
 }
 
 function darkMode() {
+    setDarkMode(!darkModeActive);
+
     var button = document.getElementById("dark-mode-button");
-    darkModeActive = !darkModeActive;
-    console.log(darkModeActive);
     if(darkModeActive) {
         button.textContent = "Change to light mode";
+    }
 
+    else {
+        button.textContent = "Change to dark mode";
+    }
+
+}
+
+function setDarkMode(active) {
+    darkModeActive = active;
+
+    if(darkModeActive) {
         document.body.style.background = black;
         document.body.style.color = "white";
         document.getElementById("add-elements").style.background = darkGrey;
@@ -450,8 +461,6 @@ function darkMode() {
         customMarkerDeleteMarkerPartButton[0].style.color = "black";
     }
     else {
-        button.textContent = "Change to dark mode";
-
         document.body.style.background = lightgrey;
         document.body.style.color = "black";
         document.getElementById("add-elements").style.background = lightgrey;
@@ -476,6 +485,50 @@ function darkMode() {
         customMarkerDeleteMarkerPartButton[0].style.color = "black";
     }
 }
+
+var tabButtonTable = document.getElementById("tab-table");
+var tabButtonCustomMarker = document.getElementById("tab-custom-marker");
+var tabButtonSettings = document.getElementById("tab-settings");
+
+function changeTabTable() {
+    tabButtonTable.style.background = borderGrey;
+    tabButtonTable.style.borderBottom = "0px";
+    tabButtonCustomMarker.style.background = lightgrey;
+    tabButtonCustomMarker.style.borderBottom = "1px solid black";
+    tabButtonSettings.style.background = lightgrey;
+    tabButtonSettings.style.borderBottom = "1px solid black";
+    document.getElementById("table-panel").style.visibility = "visible";
+    document.getElementById("custom-marker-panel").style.visibility = "hidden";
+    document.getElementById("panel").style.visibility = "hidden";
+    setDarkMode(darkModeActive);
+}
+
+function changeTabCustomMarker() {
+    tabButtonCustomMarker.style.background = borderGrey;
+    tabButtonCustomMarker.style.borderBottom = "0px";
+    tabButtonTable.style.background = lightgrey;
+    tabButtonTable.style.borderBottom = "1px solid black";
+    tabButtonSettings.style.background = lightgrey;
+    tabButtonSettings.style.borderBottom = "1px solid black";
+    document.getElementById("table-panel").style.visibility = "hidden";
+    document.getElementById("custom-marker-panel").style.visibility = "visible";
+    document.getElementById("panel").style.visibility = "hidden";
+    setDarkMode(darkModeActive);
+}
+
+function changeTabSettings() {
+    tabButtonSettings.style.background = borderGrey;
+    tabButtonSettings.style.borderBottom = "0px";
+    tabButtonCustomMarker.style.background = lightgrey;
+    tabButtonCustomMarker.style.borderBottom = "1px solid black";
+    tabButtonTable.style.background = lightgrey;
+    tabButtonTable.style.borderBottom = "1px solid black";
+    document.getElementById("table-panel").style.visibility = "hidden";
+    document.getElementById("custom-marker-panel").style.visibility = "hidden";
+    document.getElementById("panel").style.visibility = "visible";
+    setDarkMode(darkModeActive);
+}
+
 
 function initMarker(marker) {
     // Make the marker element draggable
@@ -1020,6 +1073,8 @@ $(document).ready(function () {
     customMarkerSetUp();
 
     elementButtonsSetUp();
+
+    changeTabTable();
 });
 
 // Function to set the marker's relative position
