@@ -37,7 +37,9 @@ var customMarkerIndex = -1;
 var input = {
     sizeX: $("#size-x"),
     sizeY: $("#size-y"),
-    zoom: $("#board-zoom")
+    zoom: $("#board-zoom"),
+    markerButtonWidth: $("#marker-buttons-size"),
+    markerButtonsPerRow: $("#marker-buttons-per-row")
 };
 
 //Darkmode
@@ -349,8 +351,36 @@ function changeBoardSize() {
     console.log(board.rows,board.cols);
     snapX = 100/board.cols;
     snapY = 100/board.rows;
-    board.size = +input.zoom.val();
 
+    var widthLeft = document.getElementById("add-elements").offsetWidth;
+    var widthRight = 300;
+    if(activeTab==0) {
+        widthRight = Math.max(document.getElementById("table-panel").offsetWidth,300);
+    }
+    else if(activeTab==1) {
+        widthRight = Math.max(document.getElementById("custom-marker-panel").offsetWidth,300);
+    }
+    else {
+        widthRight = Math.max(document.getElementById("panel").offsetWidth,300);
+    }
+    console.log(document.getElementById("table-panel").offsetWidth);
+    var windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
+    var possibleBoardWidth = (windowWidth-widthLeft-widthRight);
+    console.log(windowHeight,possibleBoardWidth);
+    if(windowHeight<possibleBoardWidth){
+        board.size = input.zoom.val();
+        console.log("a");
+    }
+    else {
+        board.size = possibleBoardWidth/windowHeight*input.zoom.val();
+        console.log("b");
+    }
+
+    board.target.css({left: widthLeft+(possibleBoardWidth/2)});
+
+    
     var i=0;
     while(i<markers.length) {
         if(markers[i].x >= board.cols || markers[i].y+markers[i].realHeight-1 >= board.rows) {
@@ -489,6 +519,7 @@ function setDarkMode(active) {
 var tabButtonTable = document.getElementById("tab-table");
 var tabButtonCustomMarker = document.getElementById("tab-custom-marker");
 var tabButtonSettings = document.getElementById("tab-settings");
+var activeTab = 0; // 0-table, 1-customMarker, 2-settings
 
 function changeTabTable() {
     tabButtonTable.style.background = borderGrey;
@@ -501,6 +532,8 @@ function changeTabTable() {
     document.getElementById("custom-marker-panel").style.visibility = "hidden";
     document.getElementById("panel").style.visibility = "hidden";
     setDarkMode(darkModeActive);
+    activeTab = 0;
+    changeBoardSize();
 }
 
 function changeTabCustomMarker() {
@@ -514,6 +547,8 @@ function changeTabCustomMarker() {
     document.getElementById("custom-marker-panel").style.visibility = "visible";
     document.getElementById("panel").style.visibility = "hidden";
     setDarkMode(darkModeActive);
+    activeTab = 1;
+    changeBoardSize();
 }
 
 function changeTabSettings() {
@@ -527,6 +562,8 @@ function changeTabSettings() {
     document.getElementById("custom-marker-panel").style.visibility = "hidden";
     document.getElementById("panel").style.visibility = "visible";
     setDarkMode(darkModeActive);
+    activeTab = 2;
+    changeBoardSize();
 }
 
 
@@ -1010,7 +1047,7 @@ function updateSize() {
 
     var min = Math.min(winWidth, winHeight);
     var max = Math.max(winWidth, winHeight);
-    var size = board.size * min / 100;
+    var size = board.size * winHeight / 100;
 
     TweenLite.set(board.target, {
         xPercent: -50,
@@ -1052,6 +1089,10 @@ $(document).ready(function () {
     $("#apply-button").on("click", function (event) {
         event.preventDefault();
         init(event);
+    });
+
+    window.addEventListener('resize', function() {
+        changeBoardSize();
     });
 
     board = {
@@ -1264,14 +1305,32 @@ function spawnMarkerButtons() {
     }
 }
 
+function changeMarkerButtonSettings(){
+    console.log(input.markerButtonsPerRow.val());
+    var addElements = document.getElementById("add-elements");
+    addElements.style.width = (parseFloat(input.markerButtonWidth.val())+2)*input.markerButtonsPerRow.val() + "px";
+
+    var sourceAdd = document.getElementById("source-add");
+    sourceAdd.style.width = ((+input.markerButtonWidth.val())) + "px";
+    sourceAdd.style.height = ((+input.markerButtonWidth.val())) + "px";
+
+    var sensorAdd = document.getElementById("sensor-add");
+    sensorAdd.style.width = ((+input.markerButtonWidth.val())) + "px";
+    sensorAdd.style.height = ((+input.markerButtonWidth.val())) + "px";
+
+    var buttons = document.getElementsByClassName("marker-add");
+    for (var i = buttons.length - 1; i >= 0; i--) {
+        buttons[i].style.width = ((+input.markerButtonWidth.val())) + "px";
+        buttons[i].style.height = ((+input.markerButtonWidth.val())) + "px";
+    }
+}
+
 function showMarkerTable(index,event) {
     deleteMarkerTable();
 
     const posX = event.pageX+2;
     const posY = event.pageY+2;
 
-    var markerButtons = document.getElementsByClassName("marker-add");
-    var div = markerButtons[index];
     var tableParent = $("<div id='marker-table-parent'></div>").appendTo(document.body);
     tableParent.css({left: posX+"px", top: posY+"px"});
 

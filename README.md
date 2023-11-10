@@ -21,6 +21,9 @@ The team consists of: @stedwesd, @Roboter09, @Banana2308
 ### Settings
 - ✅ "Snap X", "Snap Y" und "Board Size" zu "Size X", "Size Y", "Zoom" aendern (mit expected functionality)
 - ✅ reset button waere nice
+- Change Language
+- ✅ Change size of spawning buttons.
+- ✅ Change number of spawning buttons per row.
 
 ### Import/Export File
 - hochgeladene dateien sollten vielleicht direkt auf den feld angezeigt werden, war bisschen verwirrt als ich eine datei hochgeladen habe und nichts passiert ist
@@ -48,6 +51,7 @@ The team consists of: @stedwesd, @Roboter09, @Banana2308
 - automatically adjust text size of the name
 
 ### Other
+- Board should not be biggger than possible.
 - die row welche die sachen loescht sollte auch rot/roetlich angezeigt sein
 - Better Textures.
 - In-, output rund und unterscheidbar von der Form
