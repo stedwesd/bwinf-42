@@ -344,42 +344,14 @@ function downloadFile(fileName, fileContent) {
     document.body.removeChild(link);
 }
 
+// SIZING :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
 function changeBoardSize() {
     // cast input values to numbers
     board.rows = +input.sizeX.val();
     board.cols = +input.sizeY.val();
-    console.log(board.rows,board.cols);
     snapX = 100/board.cols;
     snapY = 100/board.rows;
-
-    var widthLeft = document.getElementById("add-elements").offsetWidth;
-    var widthRight = 300;
-    if(activeTab==0) {
-        widthRight = Math.max(document.getElementById("table-panel").offsetWidth,300);
-    }
-    else if(activeTab==1) {
-        widthRight = Math.max(document.getElementById("custom-marker-panel").offsetWidth,300);
-    }
-    else {
-        widthRight = Math.max(document.getElementById("panel").offsetWidth,300);
-    }
-    console.log(document.getElementById("table-panel").offsetWidth);
-    var windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-
-    var possibleBoardWidth = (windowWidth-widthLeft-widthRight);
-    console.log(windowHeight,possibleBoardWidth);
-    if(windowHeight<possibleBoardWidth){
-        board.size = input.zoom.val();
-        console.log("a");
-    }
-    else {
-        board.size = possibleBoardWidth/windowHeight*input.zoom.val();
-        console.log("b");
-    }
-
-    board.target.css({left: widthLeft+(possibleBoardWidth/2)});
-
     
     var i=0;
     while(i<markers.length) {
@@ -437,7 +409,47 @@ function changeBoardSize() {
     }
     console.log(sources,sensors);
     updateLightMap();
+
+    updateSize();
 }
+
+function updateSize() {
+    var widthLeft = document.getElementById("add-elements").offsetWidth;
+    var widthRight = 300;
+    if(activeTab==0) {
+        widthRight = Math.max(document.getElementById("table-panel").offsetWidth,300);
+    }
+    else if(activeTab==1) {
+        widthRight = Math.max(document.getElementById("custom-marker-panel").offsetWidth,300);
+    }
+    else {
+        widthRight = Math.max(document.getElementById("panel").offsetWidth,300);
+    }
+
+    var windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    var possibleBoardWidth = (windowWidth-widthLeft-widthRight);
+    if(windowHeight/board.rows<possibleBoardWidth/board.cols){
+        board.size = input.zoom.val()*board.cols/board.rows;
+        console.log("a",board.size);
+    }
+    else {
+        board.size = possibleBoardWidth/windowHeight*input.zoom.val();
+        console.log("b",board.size);
+    }
+    
+    var size = board.size * windowHeight / windowWidth;
+
+    TweenLite.set(board.target, {
+        left: widthLeft+(possibleBoardWidth/2),
+        xPercent: -50,
+        yPercent: -50,
+        width: size + "%",
+        paddingTop: size * board.rows/board.cols + "%"
+    });
+}
+
+
 
 function darkMode() {
     setDarkMode(!darkModeActive);
@@ -1039,24 +1051,6 @@ function newLight(type,pos) { //type: 0 horizontal, 1 vertical; pos as array [x,
     lights.push(light);
 }
 
-// SIZING :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-function updateSize() {
-    var winWidth = window.innerWidth;
-    var winHeight = window.innerHeight;
-    var landscape = (winWidth > winHeight);
-
-    var min = Math.min(winWidth, winHeight);
-    var max = Math.max(winWidth, winHeight);
-    var size = board.size * winHeight / 100;
-
-    TweenLite.set(board.target, {
-        xPercent: -50,
-        yPercent: -50,
-        width: size / (landscape ? max : min) * 100 * board.cols/board.rows + "%",
-        paddingTop: size / (landscape ? max : min) * 100 + "%"
-    });
-}
-
 // GRID :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 function createGrid() {
     // remove previous cells
@@ -1120,7 +1114,6 @@ $(document).ready(function () {
 
 // Function to set the marker's relative position
 function setRelativeMarker(marker) {
-    TweenLite.set(board.target, { zIndex: 10 });
     TweenLite.set(marker.target, {
         left: marker.xPercent + "%",
         top: marker.yPercent + "%"
@@ -1131,7 +1124,6 @@ function setRelativeMarker(marker) {
 }
 
 function setRelativeSource(source) {
-    TweenLite.set(board.target, { zIndex: 10 });
     TweenLite.set(source.target, {
         left: source.xPercent + "%",
         top: source.yPercent + "%"
@@ -1142,7 +1134,6 @@ function setRelativeSource(source) {
 }
 
 function setRelativeSensor(sensor) {
-    TweenLite.set(board.target, { zIndex: 10 });
     TweenLite.set(sensor.target, {
         left: sensor.xPercent + "%",
         top: sensor.yPercent + "%"

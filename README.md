@@ -52,6 +52,6 @@ The team consists of: @stedwesd, @Roboter09, @Banana2308
 
 ### Other
 - Board should not be biggger than possible.
-- die row welche die sachen loescht sollte auch rot/roetlich angezeigt sein
+- ✅ die row welche die sachen loescht sollte auch rot/roetlich angezeigt sein
 - Better Textures.
 - In-, output rund und unterscheidbar von der Form
