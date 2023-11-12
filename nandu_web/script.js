@@ -545,7 +545,7 @@ function changeTabTable() {
     document.getElementById("panel").style.visibility = "hidden";
     setDarkMode(darkModeActive);
     activeTab = 0;
-    changeBoardSize();
+    updateSize();
 }
 
 function changeTabCustomMarker() {
@@ -560,7 +560,7 @@ function changeTabCustomMarker() {
     document.getElementById("panel").style.visibility = "hidden";
     setDarkMode(darkModeActive);
     activeTab = 1;
-    changeBoardSize();
+    updateSize();
 }
 
 function changeTabSettings() {
@@ -575,7 +575,7 @@ function changeTabSettings() {
     document.getElementById("panel").style.visibility = "visible";
     setDarkMode(darkModeActive);
     activeTab = 2;
-    changeBoardSize();
+    updateSize();
 }
 
 
@@ -1314,6 +1314,8 @@ function changeMarkerButtonSettings(){
         buttons[i].style.width = ((+input.markerButtonWidth.val())) + "px";
         buttons[i].style.height = ((+input.markerButtonWidth.val())) + "px";
     }
+
+    updateSize();
 }
 
 function showMarkerTable(index,event) {
