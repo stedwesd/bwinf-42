@@ -6,7 +6,7 @@ def getSecretMessage(path: str):
     w, h = img.size
     msg = ""
     while not msg or dx or dy:
-        char, dx, dy, _ = img.getpixel((x, y))
+        char, dx, dy = img.getpixel((x, y))[:3]
         msg += chr(char) # add the characters
         x, y = x + dx, y + dy # add the offsets
         x, y = x % w, y % h # wrap over the ends of the picture
