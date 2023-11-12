@@ -12,31 +12,26 @@
 <body id="body">
     <main>
         <div id="add-elements">
-            <div class="source-add">
+            <div id="source-add">
                 Source
                 <button id="source-add-source" type="button">
                     <div class="source-out"></div>
                 </button>  
             </div>
-            <div class="sensor-add">
+            <div id="sensor-add">
                 Sensor
                 <button id="sensor-add-sensor" type="button">
                     <div class="sensor-add-sensor-lamp"></div>
                 </button>  
             </div>
-            <div class="marker-add">
-                Marker
-                <button class="marker-add-marker" type="button">
-                    <div class="in"></div>
-                </button>  
-                <button class="marker-add-i" type="button">i</button>
-                <button class="marker-add-edit" type="button">Edit</button>
-                <div class="marker-table">
-                    
-                </div>
-            </div>
         </div>
         
+        <div id="tabs">
+            <button type="button" id="tab-table" class="tab-button" onclick="changeTabTable()">Table</button>
+            <button type="button" id="tab-custom-marker" class="tab-button" onclick="changeTabCustomMarker()">Custom Marker</button>
+            <button type="button" id="tab-settings" class="tab-button" onclick="changeTabSettings()">Settings</button>
+        </div>
+
         <section id="panel">
             <header>Settings</header>
             <form id=setting-form>
@@ -50,7 +45,7 @@
                 </label>
                 <label>
                 Zoom
-                <input id="board-zoom" type="number" value="80" min="1" max="100" step="0.1" />
+                <input type="range" id="board-zoom" min="1" max="100" value="80" step="0.1">
                 </label>
                 <button id="apply-button" onclick="changeBoardSize()">Apply</button>
             </form>
@@ -78,10 +73,27 @@
                 <div>
                     <button type="button" onclick="downloadBoard()">Download board as Text File</button>
                 </div>
+                <div>
+                    <button type="button" onclick="downloadTable()">Download table</button>
+                </div>
             </div>
             <label> </label>
             <div>
+                Dark Mode
                 <button id="dark-mode-button" type="button" onclick="darkMode()">Change to dark mode</button>
+            </div>
+            <label> </label>
+            <div>
+                Spawning Buttons
+                <label>
+                    Width
+                    <input type="range" id="marker-buttons-size" min="50" max="300" value="100" step="0.1">    
+                </label>
+                <label>
+                    Collums
+                    <input type="range" id="marker-buttons-per-row" min="1" max="5" value="1" step="1">
+                </label>
+                <button id="apply-marker-button-settings" onclick="changeMarkerButtonSettings()">Apply</button>
             </div>
         </section>
         <section id="custom-marker-panel">
@@ -107,6 +119,7 @@
             </div>
         </section>
         <section id="table-panel">
+            <header>Table</header>
             <div>
                 <table id="table">
 

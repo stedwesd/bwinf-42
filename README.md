@@ -21,12 +21,15 @@ The team consists of: @stedwesd, @Roboter09, @Banana2308
 ### Settings
 - ✅ "Snap X", "Snap Y" und "Board Size" zu "Size X", "Size Y", "Zoom" aendern (mit expected functionality)
 - ✅ reset button waere nice
+- Change Language
+- ✅ Change size of spawning buttons.
+- ✅ Change number of spawning buttons per row.
 
 ### Import/Export File
 - hochgeladene dateien sollten vielleicht direkt auf den feld angezeigt werden, war bisschen verwirrt als ich eine datei hochgeladen habe und nichts passiert ist
 - eine error-ausgabe falls das importieren durchgefallen ist? -> nicht laden
 - ✅ circuit-export?
-- tabelle-export?
+- ✅ tabelle-export?
 
 ### Tabelle
 - wenn man ueber ~5 inputs hat, faengt das program an zu laggen, weil es nach jeden change welcher gemacht wird die ganze tabelle nochmal evaluieren muss. wuerde sagen dass du einen extra-button bei der tabelle fuer die calculation addest
@@ -42,12 +45,13 @@ The team consists of: @stedwesd, @Roboter09, @Banana2308
 ### Rework marker spawning system.
 - ✅wenn man sachen reinspawnt koennen sie sich immer noch uebereinander stacken (weiss nicht wie einfach es waere so zu machen dass man bei den spawn buttons die marker direkt in die maus reinsteckt, ohne dass die geklickt halten muessen. ansonsten einfach denselben algorithmus daraufwenden den du verwendest damit sie sich nicht ueberlappen)
 - ✅vielleicht die New Marker kategorie statt buttons mit den namen anzuzeigen, einfach die bloecke selber anzeigen
-- Source und sensor schön machen
-- alte Buttons entfernen
-- keine ahnung vie kompliziert es waere, falls man ueber in der obengenannten kategorie rueberhovered, dann die truth-table angezeigt wird
+- ✅ Source und sensor schön machen
+- ✅ alte Buttons entfernen
+- ✅ keine ahnung vie kompliziert es waere, falls man ueber in der obengenannten kategorie rueberhovered, dann die truth-table angezeigt wird
 - automatically adjust text size of the name
 
 ### Other
+- Board should not be biggger than possible.
 - die row welche die sachen loescht sollte auch rot/roetlich angezeigt sein
 - Better Textures.
 - In-, output rund und unterscheidbar von der Form

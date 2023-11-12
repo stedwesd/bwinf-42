@@ -59,7 +59,7 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2vw;
+    font-size: 1.5vw;
 }
 
 .source-out {
@@ -86,7 +86,7 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2vw;
+    font-size: 1.5vw;
 }
 
 .sensor-lamp {
@@ -127,12 +127,18 @@ main {
     padding: 10px;
     z-index: 20;
     background: #ccc;
-    border: 1px solid #ccc;
-    height: 48%;
+    
+    border-left: 1px solid black;
+    top: 37px;
+    right: 0;
+    bottom: 0;
+
     overflow-y: auto; 
     padding-right: 15px;
     min-width: 150px;
     width: auto;
+
+    visibility: hidden;
   
     header {
       font-weight: bold;
@@ -140,46 +146,70 @@ main {
     }
 }
 
+#tabs {
+    position: absolute;
+    right: 0px;
+}
+
+.tab-button {
+    width: 100px;
+    height: 40px;
+    display: inline-block; 
+    margin: -3px; 
+    border: 1px solid black;
+    
+    background-color: #ddd;
+}
+
 #add-elements {
     position: absolute;
     background: #ccc;
-    left: 300px;
-    top: 0px;
+    left: 0;
+    top: 0;
+    max-height: 100%;
     width: 102px;
     overflow-x: visible;
-    overflow-y: visible;
+    overflow-y: auto;
+    
+    z-index: 9;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start; /* Start from the left */
+    align-content: flex-start; /* Start from the top */
 }
 
-.source-add {
+#source-add {
     position: relative;
     width: 100px;
     height: 100px;
     border: 1px solid black;
+    background: #ccc;
 }
 
 #source-add-source {
     position: absolute;
-    left: 17px;
-    top: 20px;
-    width: 65px;
-    height: 65px;
+    left: 17%;
+    top: 20%;
+    width: 65%;
+    height: 65%;
     background-color: #FF8500;
     border: 1px solid black;
 }
 
-.sensor-add {
+#sensor-add {
     position: relative;
     width: 100px;
     height: 100px;
     border: 1px solid black;
+    background: #ccc;
 }
 
 #sensor-add-sensor {
     position: absolute;
-    left: 17px;
-    top: 20px;
-    width: 65px;
-    height: 65px;
+    left: 17%;
+    top: 20%;
+    width: 65%;
+    height: 65%;
     background-color: grey;
     border: 1px solid black;
 }
@@ -200,14 +230,16 @@ main {
     height: 100px;
     border: 1px solid black;
     font-size: small;
+    overflow: visible; 
+    background: #ccc;
 }
 
 .marker-add-i {
     position: absolute;
     right: -1px;
     top: -1px;
-    width: 15px;
-    height: 15px;
+    width: 15%;
+    height: 15%;
     border: 1px solid black;
     display: flex;
     align-items: center;
@@ -218,8 +250,8 @@ main {
     position: absolute;
     right: -1px;
     bottom: -1px;
-    width: 30px;
-    height: 15px;
+    width: 30%;
+    height: 15%;
     border: 1px solid black;
     display: flex;
     align-items: center;
@@ -228,16 +260,16 @@ main {
 
 .marker-add-marker {
     position: absolute;
-    left: 33.25px;
-    top: 20px;
-    width: 32.5px;
-    height: 65px;
+    left: 33.25%;
+    top: 20%;
+    width: 32.5%;
+    height: 65%;
     background-color: grey;
     border: 1px solid black;
 }
 
 .marker-name {
-    width: 90px;
+    width: 90%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -245,8 +277,7 @@ main {
 
 #marker-table-parent {
     position: absolute;
-    left: 100%;
-    top: 0%;
+    left: 500px;
     background-color: #ddd;
     border: 1px solid black;
     z-index: 1000;
@@ -261,9 +292,11 @@ main {
     padding: 10px;
     z-index: 20;
     background: #ccc;
-    border: 1px solid #ccc;
-    right: 0%;
-    height: 98%;
+    border-left: 1px solid black;
+    top: 37px;
+    right: 0;
+    bottom: 0;
+    
     padding-right: 15px;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -275,19 +308,34 @@ main {
     }
 }
 
+.table-pick-element {
+    width: 18px;
+    height: 18px;
+    background-image: url(lamp_pick.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 18px 18px;
+    border: 0px;
+    background-color: #ccc;
+}
+
 #custom-marker-panel {
     position: absolute;
     padding: 10px;
     z-index: 20;
     background: #ccc;
-    border: 1px solid #ccc;
-    left: 0;
-    top: 50%;
-    height: 48%;
+
+    border-left: 1px solid black;
+    top: 37px;
+    right: 0;
+    bottom: 0;
+
     overflow-y: auto; 
     padding-right: 15px;
-    min-width: 170px;
+    min-width: 180px;
     width: auto;
+
+    visibility: hidden;
   
     header {
       font-weight: bold;

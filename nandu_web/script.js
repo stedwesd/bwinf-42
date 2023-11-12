@@ -37,16 +37,16 @@ var customMarkerIndex = -1;
 var input = {
     sizeX: $("#size-x"),
     sizeY: $("#size-y"),
-    zoom: $("#board-zoom")
+    zoom: $("#board-zoom"),
+    markerButtonWidth: $("#marker-buttons-size"),
+    markerButtonsPerRow: $("#marker-buttons-per-row")
 };
 
 //Darkmode
 var darkModeActive = false;
 
 // INIT :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-function init(/*event*/) {
-    // prevent when called by submit
-    //event && event.preventDefault();
+function init() {
     changeBoardSize();
 
     createGrid();
@@ -194,6 +194,7 @@ function init(/*event*/) {
 
         doLightMapUpdating = true;
         updateLightMap();
+        updateTable();
     });
 }
 
@@ -277,6 +278,56 @@ function downloadBoard() {
     downloadFile("nandu.txt", fileContent);
 }
 
+function downloadTable() {
+    var numberOfInputs = sources.length;
+    var numberOfOutputs = sensors.length;
+    var fileContent = "";
+    for(var i=0;i<numberOfInputs;i++) {
+        fileContent += "Q"+(i+1)+";"
+    }
+    for(var i=0;i<numberOfOutputs-1;i++) {
+        fileContent += "L"+(i+1)+";"
+    }
+    fileContent += "L"+numberOfOutputs;
+
+    var insCombinations = getCombinations(numberOfInputs);
+    for(var row=0;row<tableOuts.length;row++) {
+        fileContent += "\n";
+        for(var i=0; i<insCombinations[row].length; i++) {
+            console.log("i");
+            if(insCombinations[row][i]) {
+                fileContent += "An;";
+            }
+            else {
+                fileContent += "Aus;";
+            }
+        }
+
+        for(var out=0;out<tableOuts[row].length-1;out++) {
+            if(tableOuts[row][out].active) {
+                fileContent += "An;";
+                console.log("an");
+            }
+            else {
+                fileContent += "Aus;";
+                console.log("aus");
+            }
+        }
+        if(tableOuts[row].length != 0) {
+            if(tableOuts[row][tableOuts[row].length-1].active) {
+                fileContent += "An";
+                console.log("an");
+            }
+            else {
+                fileContent += "Aus";
+                console.log("aus");
+            }
+        }
+    }
+    console.log(fileContent);
+    downloadFile("table.csv",fileContent);
+}
+
 function downloadFile(fileName, fileContent) {
     // Create a Blob containing the content
     var blob = new Blob([fileContent], { type: "text/plain" });
@@ -300,8 +351,36 @@ function changeBoardSize() {
     console.log(board.rows,board.cols);
     snapX = 100/board.cols;
     snapY = 100/board.rows;
-    board.size = +input.zoom.val();
 
+    var widthLeft = document.getElementById("add-elements").offsetWidth;
+    var widthRight = 300;
+    if(activeTab==0) {
+        widthRight = Math.max(document.getElementById("table-panel").offsetWidth,300);
+    }
+    else if(activeTab==1) {
+        widthRight = Math.max(document.getElementById("custom-marker-panel").offsetWidth,300);
+    }
+    else {
+        widthRight = Math.max(document.getElementById("panel").offsetWidth,300);
+    }
+    console.log(document.getElementById("table-panel").offsetWidth);
+    var windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
+    var possibleBoardWidth = (windowWidth-widthLeft-widthRight);
+    console.log(windowHeight,possibleBoardWidth);
+    if(windowHeight<possibleBoardWidth){
+        board.size = input.zoom.val();
+        console.log("a");
+    }
+    else {
+        board.size = possibleBoardWidth/windowHeight*input.zoom.val();
+        console.log("b");
+    }
+
+    board.target.css({left: widthLeft+(possibleBoardWidth/2)});
+
+    
     var i=0;
     while(i<markers.length) {
         if(markers[i].x >= board.cols || markers[i].y+markers[i].realHeight-1 >= board.rows) {
@@ -361,12 +440,23 @@ function changeBoardSize() {
 }
 
 function darkMode() {
+    setDarkMode(!darkModeActive);
+
     var button = document.getElementById("dark-mode-button");
-    darkModeActive = !darkModeActive;
-    console.log(darkModeActive);
     if(darkModeActive) {
         button.textContent = "Change to light mode";
+    }
 
+    else {
+        button.textContent = "Change to dark mode";
+    }
+
+}
+
+function setDarkMode(active) {
+    darkModeActive = active;
+
+    if(darkModeActive) {
         document.body.style.background = black;
         document.body.style.color = "white";
         document.getElementById("add-elements").style.background = darkGrey;
@@ -401,8 +491,6 @@ function darkMode() {
         customMarkerDeleteMarkerPartButton[0].style.color = "black";
     }
     else {
-        button.textContent = "Change to dark mode";
-
         document.body.style.background = lightgrey;
         document.body.style.color = "black";
         document.getElementById("add-elements").style.background = lightgrey;
@@ -427,6 +515,57 @@ function darkMode() {
         customMarkerDeleteMarkerPartButton[0].style.color = "black";
     }
 }
+
+var tabButtonTable = document.getElementById("tab-table");
+var tabButtonCustomMarker = document.getElementById("tab-custom-marker");
+var tabButtonSettings = document.getElementById("tab-settings");
+var activeTab = 0; // 0-table, 1-customMarker, 2-settings
+
+function changeTabTable() {
+    tabButtonTable.style.background = borderGrey;
+    tabButtonTable.style.borderBottom = "0px";
+    tabButtonCustomMarker.style.background = lightgrey;
+    tabButtonCustomMarker.style.borderBottom = "1px solid black";
+    tabButtonSettings.style.background = lightgrey;
+    tabButtonSettings.style.borderBottom = "1px solid black";
+    document.getElementById("table-panel").style.visibility = "visible";
+    document.getElementById("custom-marker-panel").style.visibility = "hidden";
+    document.getElementById("panel").style.visibility = "hidden";
+    setDarkMode(darkModeActive);
+    activeTab = 0;
+    changeBoardSize();
+}
+
+function changeTabCustomMarker() {
+    tabButtonCustomMarker.style.background = borderGrey;
+    tabButtonCustomMarker.style.borderBottom = "0px";
+    tabButtonTable.style.background = lightgrey;
+    tabButtonTable.style.borderBottom = "1px solid black";
+    tabButtonSettings.style.background = lightgrey;
+    tabButtonSettings.style.borderBottom = "1px solid black";
+    document.getElementById("table-panel").style.visibility = "hidden";
+    document.getElementById("custom-marker-panel").style.visibility = "visible";
+    document.getElementById("panel").style.visibility = "hidden";
+    setDarkMode(darkModeActive);
+    activeTab = 1;
+    changeBoardSize();
+}
+
+function changeTabSettings() {
+    tabButtonSettings.style.background = borderGrey;
+    tabButtonSettings.style.borderBottom = "0px";
+    tabButtonCustomMarker.style.background = lightgrey;
+    tabButtonCustomMarker.style.borderBottom = "1px solid black";
+    tabButtonTable.style.background = lightgrey;
+    tabButtonTable.style.borderBottom = "1px solid black";
+    document.getElementById("table-panel").style.visibility = "hidden";
+    document.getElementById("custom-marker-panel").style.visibility = "hidden";
+    document.getElementById("panel").style.visibility = "visible";
+    setDarkMode(darkModeActive);
+    activeTab = 2;
+    changeBoardSize();
+}
+
 
 function initMarker(marker) {
     // Make the marker element draggable
@@ -908,12 +1047,12 @@ function updateSize() {
 
     var min = Math.min(winWidth, winHeight);
     var max = Math.max(winWidth, winHeight);
-    var size = board.size * min / 100;
+    var size = board.size * winHeight / 100;
 
     TweenLite.set(board.target, {
         xPercent: -50,
         yPercent: -50,
-        width: size / (landscape ? max : min) * 100 + "%",
+        width: size / (landscape ? max : min) * 100 * board.cols/board.rows + "%",
         paddingTop: size / (landscape ? max : min) * 100 + "%"
     });
 }
@@ -936,6 +1075,11 @@ function createGrid() {
                 left: col * 100 / board.cols + "%",
                 top: row * 100 / board.rows + "%"
             });
+
+
+            if(darkModeActive) {
+                target.css({background: darkGrey});
+            }
         }
     }
 }
@@ -945,6 +1089,10 @@ $(document).ready(function () {
     $("#apply-button").on("click", function (event) {
         event.preventDefault();
         init(event);
+    });
+
+    window.addEventListener('resize', function() {
+        changeBoardSize();
     });
 
     board = {
@@ -966,6 +1114,8 @@ $(document).ready(function () {
     customMarkerSetUp();
 
     elementButtonsSetUp();
+
+    changeTabTable();
 });
 
 // Function to set the marker's relative position
@@ -1096,10 +1246,10 @@ function spawnMarkerButtons() {
         var marker = $("<button class='marker-add-marker' type='button'></button>").appendTo(div);
         var info = $("<button class='marker-add-i' type='button'>i</button>").appendTo(div);
         info.hover(
-            function() {
+            function(event) {
                 // Show marker table when hovering
                 var index = $(this).data('index');
-                showMarkerTable(index);
+                showMarkerTable(index,event);
             },
             function() {
                 // Delte marker table when not hovering anymore
@@ -1155,12 +1305,35 @@ function spawnMarkerButtons() {
     }
 }
 
-function showMarkerTable(index) {
+function changeMarkerButtonSettings(){
+    console.log(input.markerButtonsPerRow.val());
+    var addElements = document.getElementById("add-elements");
+    addElements.style.width = (parseFloat(input.markerButtonWidth.val())+2)*input.markerButtonsPerRow.val() + "px";
+
+    var sourceAdd = document.getElementById("source-add");
+    sourceAdd.style.width = ((+input.markerButtonWidth.val())) + "px";
+    sourceAdd.style.height = ((+input.markerButtonWidth.val())) + "px";
+
+    var sensorAdd = document.getElementById("sensor-add");
+    sensorAdd.style.width = ((+input.markerButtonWidth.val())) + "px";
+    sensorAdd.style.height = ((+input.markerButtonWidth.val())) + "px";
+
+    var buttons = document.getElementsByClassName("marker-add");
+    for (var i = buttons.length - 1; i >= 0; i--) {
+        buttons[i].style.width = ((+input.markerButtonWidth.val())) + "px";
+        buttons[i].style.height = ((+input.markerButtonWidth.val())) + "px";
+    }
+}
+
+function showMarkerTable(index,event) {
     deleteMarkerTable();
 
-    var markerButtons = document.getElementsByClassName("marker-add");
-    var div = markerButtons[index];
-    var tableParent = $("<div id='marker-table-parent'></div>").appendTo(div);
+    const posX = event.pageX+2;
+    const posY = event.pageY+2;
+
+    var tableParent = $("<div id='marker-table-parent'></div>").appendTo(document.body);
+    tableParent.css({left: posX+"px", top: posY+"px"});
+
     if(darkModeActive) {
         tableParent.css({background: darkGrey});
     }
@@ -1177,15 +1350,14 @@ function showMarkerTable(index) {
             numberOfOutputs++;
         }
     }
-    console.log(numberOfInputs,numberOfOutputs);
 
     markerShowTable(numberOfInputs,numberOfOutputs,table);
     markerShowTableOuts(index);
 }
 
 function deleteMarkerTable() {
-    if(document.getElementById("marker-table")) {
-        document.getElementById("marker-table").remove();
+    if(document.getElementById("marker-table-parent")) {
+        document.getElementById("marker-table-parent").remove();
     }
 }
 
@@ -1231,7 +1403,6 @@ function markerShowTable(ins,outs,markerTableTarget) { // number of inputs and o
 
 function markerShowTableOuts(index) {
     var rules = markerTypes[index].rules;
-    console.log(markerTableOuts);
     if(rules != []) {
         for(var a=0;a<rules.length;a++) {
             for(var b=0;b<rules[0].length;b++) {
@@ -1601,6 +1772,8 @@ function createSource(outs,xPercent,yPercent,inBounds) {
                 else{
                     outs.css({background: colors.deactiveInput});
                 }
+                updateLightMap();
+                showTablePickedRow();
             }
             source.isDragging = false;
             document.onmousemove = null;
@@ -1841,6 +2014,9 @@ function updateTable(){
         updateLightMarkers();
     } while (!arraysEqual(oldMap, lightMap));
     updateLightSensors();
+
+    // Show active row
+    showTablePickedRow();
 }
 
 function showTable(ins,outs) { // number of inputs and outputs
@@ -1933,7 +2109,26 @@ function tablePickElement(index) {
         }
     }
     updateLightMap();
+    showTablePickedRow();
 }
+
+var pickedRowIndex;
+
+function showTablePickedRow() {
+    var index = 1;
+    for(var i=0;i<sources.length;i++) {
+        if(!sources[i].active) {
+            index += Math.pow(2,sources.length-i-1);
+        }
+    }
+    if(pickedRowIndex) {
+        tableTarget.children[pickedRowIndex].children[0].children[0].style.backgroundImage = "url(lamp_pick.png)";
+    }
+    tableTarget.children[index].children[0].children[0].style.backgroundImage = "url(lamp_pick_active.png)";
+    pickedRowIndex = index;
+}
+
+
 
 // Custom Markers :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -2214,7 +2409,7 @@ function customMarkerShowColors() {
         "#9A31E0",
         "#EBEBEB",
         "#676667",
-        "#212121"
+        "#111111"
     ]
 
     var colorSelectionTarget = $("#custom-marker-choose-colors");
