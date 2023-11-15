@@ -1,128 +1,154 @@
-import numpy as np
+import itertools
 
-class DijkstraTile:
+# types purely for signature readability
+TileLocation = tuple[int]
 
-    def __init__(self, location: tuple[int], path: list[tuple], cost: int, dim: tuple[int]):
+class PathfindTile:
+
+    def __init__(self, location: TileLocation, path: list[TileLocation], path_cost: int, maze_shape: tuple[int]):
         self.location = location
         self.path = path
-        self.cost = cost
-        self.dim = dim
+        self.path_cost = path_cost
+        self.maze_shape = maze_shape
 
     def adjacent(self):
+        # generates tiles that are adjacent to the current tile, by iterating over every dimension and getting the tile coordinates that are offset by +1/-1
+        # doesn't go out of bounds using the maze shape
         for inx in range(len(self.location)):
-            adj = list(self.location)
-            adj[inx] += 1
-            if self.dim[inx] > adj[inx]: yield tuple(adj), inx
-            adj[inx] -= 2 # ^= adj[inx]-1 of the original list
-            if adj[inx] >= 0: yield tuple(adj), inx
+            if self.location[inx] + 1 < self.maze_shape[inx]:
+                adj = list(self.location)
+                adj[inx] += 1
+                yield tuple(adj), inx
+            if self.location[inx] - 1 >= 0:
+                adj = list(self.location)
+                adj[inx] -= 1
+                yield tuple(adj), inx
     
     def __hash__(self):
+        # hash function to work properly with sets
         return self.location.__hash__()
     
     def __eq__(self, other):
-        if isinstance(other, DijkstraTile):
+        # equality function to work properly with sets
+        if isinstance(other, PathfindTile):
             return self.location == other.location
         return self.location == other
 
-class DijkstraGrid:
+class PathfindGrid:
 
-    def __init__(self, grid: np.ndarray, cost: tuple[int]):
+    WALL = "#"
+
+    def __init__(self, grid: list, cost: tuple[int], shape: tuple[int]):
         self.grid = grid
-        self.cost = cost
-        self.shape = grid.shape
+        self.movement_cost = cost
+        self.shape = shape
 
-    def pathfind(self, begin: tuple, end: tuple):
-        edges: set[DijkstraTile] = set([DijkstraTile(begin, [begin], 0, self.shape)])
-        visited: set[tuple[int]] = set()
+    def pathfind(self, begin_tile: TileLocation, end_tile: TileLocation):
+        # pathfinds from begin_tile to end_tile. returns the path cost and the path itself.
 
-        min_path = 0
-        #while end not in visited:
+        edges: list[PathfindTile] = [
+            PathfindTile(location=begin_tile, 
+                         path=[begin_tile], 
+                         path_cost=0, 
+                         maze_shape=self.shape
+            )
+        ]
+        visited: set[TileLocation] = set()
+
+        path_cost = 0
+
         while True:
-            #print(min_path,visited)
-            nxt_edges: set[DijkstraTile] = set()
+            next_edges: list[PathfindTile] = list()
             for tile in edges:
-                if tile.cost > min_path:
-                    nxt_edges.add(tile)
+                if path_cost < tile.path_cost:
+                    next_edges.append(tile)
                     continue
-                for adj, dir in tile.adjacent():
-                    if self.grid[adj] == 1:
+                if tile == end_tile:
+                    return tile.path, tile.path_cost
+
+                for adjacent_tile, direction in tile.adjacent():
+                    
+                    tile_value = self.getTileValue(adjacent_tile)
+
+                    if tile_value == self.WALL or adjacent_tile in visited:
                         continue
-                    if adj in visited:
-                        continue
-                    nxt_tile = DijkstraTile(adj, tile.path + [adj], tile.cost + self.cost[dir], self.shape)
-                    if adj == end:
-                        return nxt_tile.path, nxt_tile.cost
-                    nxt_edges.add(nxt_tile)
-            edges = nxt_edges.copy()
-            visited = visited.union((nxt.location for nxt in nxt_edges))
-            min_path += 1
+                    
+                    path = tile.path + [adjacent_tile]
+                    cost = tile.path_cost + self.movement_cost[direction]
+                    
+                    next_tile = PathfindTile(location=adjacent_tile, path=path, path_cost=cost, maze_shape=self.shape)
+                    next_edges.append(next_tile)
+
+            edges = next_edges.copy()
+            
+            visited = visited.union((next_tile.location for next_tile in next_edges))
+            
+            path_cost += 1
+        
+    def getTileValue(self, loc: list[TileLocation]) -> str:
+        # aqcuires a tile value from any-dimensional grids
+        item = self.grid
+        for _loc in loc:
+            item = item[_loc]
+        return item
 
 
-def convMaze(maze: list) -> np.ndarray:
-    arr = [[1 if char == "#" else 2 if char == "A" else 3 if char == "B" else 0 for char in row] for row in maze]
-    return np.array(arr)
-
-def importMaze(filename: str) -> DijkstraGrid:
+def importMaze(filename: str) -> PathfindGrid:
     with open(filename, "r") as f:
         data = f.read().split("\n")
-    h, w = map(int, data[0].split())
-    arr = np.array([
-            convMaze(data[1:h+1]),
-            convMaze(data[h+2:2*h+2])
-    ])
-    return DijkstraGrid(
-        arr,
-        (3,1,1)
+    height, width = map(int, data[0].split())
+    grid = [list(k) for k in data[1:height+1]], [list(k) for k in data[height+2:2*height+2]]
+    return PathfindGrid(
+        grid = grid,
+        cost = (3, 1, 1),
+        shape = (2, height, width)
     )
 
-def getStartPoints(arr: np.ndarray):
-    start, end = None, None
-    for iny, level in enumerate(arr):
-        for inz, row in enumerate(level):
-            for inx, id in enumerate(row):
-                if id == 2:
-                    start = (iny, inz, inx)
-                elif id == 3:
-                    end = (iny, inz, inx)
-    if not (start and end):
-        raise Exception("any of start,end wasnt found")
-    return start, end
-
-def visualizePath(filename):
-    chars = {
-        0 : ".",
-        1 : "#",
-        2 : "A",
-        3 : "B",
-        5 : "!",
-        6 : "<",
-        7 : "^",
-        8 : ">",
-        9 : "v"
-    }
-    maze = importMaze(filename)
-    start, end = getStartPoints(maze.grid)
-    path, cost = maze.pathfind(start, end)
-    print(path)
-    grid = maze.grid
-    for inx, cur in enumerate(path[:-1]):
-        nxt = path[inx+1]
-        dx, dz = nxt[2] - cur[2], nxt[1] - cur[1]
-
-        grid[cur] = 5 if nxt[0] != cur[0] else (
-            6 if dx == -1 else
-            8 if dx ==  1 else
-            7 if dz == -1 else 9
-        )
+def visualizeMazePath(pfg: PathfindGrid):
+    def searchTileValue(value, grid: PathfindGrid):
+        # itertools.product generates the cartesian product, equivalent to a nested for-loop 
+        # (gives us all the possible coordinates that we have to go through in a singular for-loop
+        # any amount of dimensions)
+        for loc in itertools.product(*[range(k) for k in grid.shape]): 
+            if grid.getTileValue(loc) == value:
+                return loc
+    begin_tile = searchTileValue("A", pfg)
+    end_tile = searchTileValue("B", pfg)
     
-    string = ""
-    for iny, level in enumerate(grid):
-        for inz, row in enumerate(level):
-            for inx, char in enumerate(row):
-                string += chars[char]
-            string += "\n"
-        string += "\n"
-    return string
+    path, cost = pfg.pathfind(begin_tile, end_tile)
+    grid = pfg.grid
+
+    for inx, current_tile in enumerate(path[:-1]):
+        
+        next_tile = path[inx+1]
+
+        # in the 2 cases below, due to implementation, each value represents the folllowing:
+        #   - x/dx describes the top/bottom level, 
+        #   - y/dy the row, and
+        #   - z/dz the column       
+        dx, dy, dz = tuple([nxt - cur for nxt, cur in zip(next_tile, current_tile)])
+        
+        x, y, z = current_tile
+
+        grid[x][y][z] = {
+            (1, 0, 0) : "!",
+            (-1, 0, 0) : "!",
+            (0, 1, 0) : "v",
+            (0, -1, 0) : "^",
+            (0, 0, 1) : ">",
+            (0, 0, -1) : "<"
+        }[dx, dy, dz]
+    
+    grid[begin_tile[0]][begin_tile[1]][begin_tile[2]] = "A"
+
+    # (an unholy) way to string up the maze in a singular row instead of looping 3 times.
+    string = "\n\n".join("\n".join("".join(row) for row in level) for level in grid) 
+
+    return f"Path Cost: {cost}\n" + string
+
 
 if __name__ == "__main__":
-    print(visualizePath("dwarfen-fortress/files/zauberschule0.txt"))
+    for i in range(6):
+        res = visualizeMazePath(importMaze(f"files/zauberschule{i}.txt"))
+        with open(f"output/zauberschule{i}.txt","w") as f:
+            f.write(res)
