@@ -471,13 +471,11 @@ function setDarkMode(active) {
     if(darkModeActive) {
         document.body.style.background = black;
         document.body.style.color = "white";
-        document.getElementById("add-elements").style.background = darkGrey;
         document.getElementById("panel").style.background = darkGrey;
         document.getElementById("custom-marker-panel").style.background = darkGrey;
         document.getElementById("table-panel").style.background = darkGrey;
         document.getElementById("board").style.background = black;
         
-        document.getElementById("add-elements").style.border = completelyBlack;
         document.getElementById("panel").style.border = completelyBlack;
         document.getElementById("custom-marker-panel").style.border = completelyBlack;
         document.getElementById("table-panel").style.border = completelyBlack;
@@ -501,17 +499,38 @@ function setDarkMode(active) {
         customMarkerAddMarkerPartButton[0].style.color = "black";
         var customMarkerDeleteMarkerPartButton = document.getElementsByClassName("custom-marker-delete-part");
         customMarkerDeleteMarkerPartButton[0].style.color = "black";
+
+        //Add buttons
+        document.getElementById("source-add").style.background = darkGrey;
+        document.getElementById("sensor-add").style.background = darkGrey;
+        var markerAdds = document.getElementsByClassName("marker-add");
+        for(var i=0;i<markerAdds.length; i++) {
+            markerAdds[i].style.background = darkGrey;
+        }
+        var markerAddIs = document.getElementsByClassName("marker-add-i");
+        for(var i=0;i<markerAddIs.length; i++) {
+            markerAddIs[i].style.background = darkGrey;
+            markerAddIs[i].style.color = "white";
+        }
+        var markerAddEdits = document.getElementsByClassName("marker-add-edit");
+        for(var i=0;i<markerAddEdits.length; i++) {
+            markerAddEdits[i].style.background = darkGrey;
+            markerAddEdits[i].style.color = "white";
+        }
+
+        // Tabs
+        tabButtonTable.style.color = "white";
+        tabButtonCustomMarker.style.color = "white";
+        tabButtonSettings.style.color = "white";
     }
     else {
         document.body.style.background = lightgrey;
         document.body.style.color = "black";
-        document.getElementById("add-elements").style.background = lightgrey;
         document.getElementById("panel").style.background = borderGrey;
         document.getElementById("custom-marker-panel").style.background = borderGrey;
         document.getElementById("table-panel").style.background = borderGrey;
-        document.getElementById("board").style.background = borderGrey;
+        document.getElementById("board").style.background = "#d7d7d7";
         
-        document.getElementById("add-elements").style.border = borderGrey;
         document.getElementById("panel").style.border = borderGrey;
         document.getElementById("custom-marker-panel").style.border = borderGrey;
         document.getElementById("table-panel").style.border = borderGrey;
@@ -525,6 +544,39 @@ function setDarkMode(active) {
         customMarkerAddMarkerPartButton[0].style.color = "black";
         var customMarkerDeleteMarkerPartButton = document.getElementsByClassName("custom-marker-delete-part");
         customMarkerDeleteMarkerPartButton[0].style.color = "black";
+
+        //Add buttons
+        document.getElementById("source-add").style.background = borderGrey;
+        document.getElementById("sensor-add").style.background = borderGrey;
+        var markerAdds = document.getElementsByClassName("marker-add");
+        for(var i=0;i<markerAdds.length; i++) {
+            markerAdds[i].style.background = borderGrey;
+        }
+        var markerAddIs = document.getElementsByClassName("marker-add-i");
+        for(var i=0;i<markerAddIs.length; i++) {
+            markerAddIs[i].style.background = borderGrey;
+            markerAddIs[i].style.color = "black";
+        }
+        var markerAddEdits = document.getElementsByClassName("marker-add-edit");
+        for(var i=0;i<markerAddEdits.length; i++) {
+            markerAddEdits[i].style.background = borderGrey;
+            markerAddEdits[i].style.color = "black";
+        }
+
+        // Tabs
+        tabButtonTable.style.color = black;
+        tabButtonCustomMarker.style.color = black;
+        tabButtonSettings.style.color = black;
+    }
+
+    if(activeTab==0) {
+        changeTabTable();
+    }
+    else if(activeTab==1) {
+        changeTabCustomMarker();
+    }
+    else {
+        changeTabSettings();
     }
 }
 
@@ -534,47 +586,77 @@ var tabButtonSettings = document.getElementById("tab-settings");
 var activeTab = 0; // 0-table, 1-customMarker, 2-settings
 
 function changeTabTable() {
-    tabButtonTable.style.background = borderGrey;
+    if(!darkModeActive) {
+        tabButtonTable.style.background = borderGrey;
+        tabButtonCustomMarker.style.background = lightgrey;
+        tabButtonSettings.style.background = lightgrey;
+    }
+    else{
+        tabButtonTable.style.background = darkGrey;
+        tabButtonCustomMarker.style.background = black;
+        tabButtonSettings.style.background = black;
+    }
+    
     tabButtonTable.style.borderBottom = "0px";
-    tabButtonCustomMarker.style.background = lightgrey;
     tabButtonCustomMarker.style.borderBottom = "1px solid black";
-    tabButtonSettings.style.background = lightgrey;
     tabButtonSettings.style.borderBottom = "1px solid black";
     document.getElementById("table-panel").style.visibility = "visible";
     document.getElementById("custom-marker-panel").style.visibility = "hidden";
     document.getElementById("panel").style.visibility = "hidden";
-    setDarkMode(darkModeActive);
-    activeTab = 0;
+    if(activeTab != 0) {
+        activeTab = 0;
+        setDarkMode(darkModeActive);
+    }
     updateSize();
 }
 
 function changeTabCustomMarker() {
-    tabButtonCustomMarker.style.background = borderGrey;
-    tabButtonCustomMarker.style.borderBottom = "0px";
-    tabButtonTable.style.background = lightgrey;
+    if(!darkModeActive) {
+        tabButtonTable.style.background = lightgrey;
+        tabButtonCustomMarker.style.background = borderGrey;
+        tabButtonSettings.style.background = lightgrey;
+    }
+    else{
+        tabButtonTable.style.background = black;
+        tabButtonCustomMarker.style.background = darkGrey;
+        tabButtonSettings.style.background = black;
+    }
+    
     tabButtonTable.style.borderBottom = "1px solid black";
-    tabButtonSettings.style.background = lightgrey;
+    tabButtonCustomMarker.style.borderBottom = "0px";
     tabButtonSettings.style.borderBottom = "1px solid black";
     document.getElementById("table-panel").style.visibility = "hidden";
     document.getElementById("custom-marker-panel").style.visibility = "visible";
     document.getElementById("panel").style.visibility = "hidden";
-    setDarkMode(darkModeActive);
-    activeTab = 1;
+    if(activeTab != 1) {
+        activeTab = 1;
+        setDarkMode(darkModeActive);
+    }
     updateSize();
 }
 
 function changeTabSettings() {
-    tabButtonSettings.style.background = borderGrey;
-    tabButtonSettings.style.borderBottom = "0px";
-    tabButtonCustomMarker.style.background = lightgrey;
-    tabButtonCustomMarker.style.borderBottom = "1px solid black";
-    tabButtonTable.style.background = lightgrey;
+    if(!darkModeActive) {
+        tabButtonTable.style.background = lightgrey;
+        tabButtonCustomMarker.style.background = lightgrey;
+        tabButtonSettings.style.background = borderGrey;
+    }
+    else{
+        tabButtonTable.style.background = black;
+        tabButtonCustomMarker.style.background = black;
+        tabButtonSettings.style.background = darkGrey;
+    }
+    
     tabButtonTable.style.borderBottom = "1px solid black";
+    tabButtonCustomMarker.style.borderBottom = "1px solid black";
+    tabButtonSettings.style.borderBottom = "0px";
     document.getElementById("table-panel").style.visibility = "hidden";
     document.getElementById("custom-marker-panel").style.visibility = "hidden";
     document.getElementById("panel").style.visibility = "visible";
-    setDarkMode(darkModeActive);
-    activeTab = 2;
+    if(activeTab != 2) {
+        activeTab = 2;
+        setDarkMode(darkModeActive);
+    }
     updateSize();
 }
 
@@ -1214,6 +1296,8 @@ function markerButtonsSetUp() {
             });
         })(i);
     }
+
+    changeMarkerButtonSettings();
 }
 
 function spawnMarkerButtons() {
@@ -1299,7 +1383,8 @@ function spawnMarkerButtons() {
 function changeMarkerButtonSettings(){
     console.log(input.markerButtonsPerRow.val());
     var addElements = document.getElementById("add-elements");
-    addElements.style.width = (parseFloat(input.markerButtonWidth.val())+2)*input.markerButtonsPerRow.val() + "px";
+    console.log(input.markerButtonWidth.val()+2);
+    addElements.style.width = ((parseFloat(input.markerButtonWidth.val())+2)*input.markerButtonsPerRow.val() + 15) + "px";
 
     var sourceAdd = document.getElementById("source-add");
     sourceAdd.style.width = ((+input.markerButtonWidth.val())) + "px";
@@ -2155,6 +2240,8 @@ function customMarkerSetUp() {
     // Namefield
     document.getElementById("custom-marker-name").placeholder = "Custom Marker " + (markerTypes.length-3);
     document.getElementById("custom-marker-name").value = "";
+
+    customMarkerShowActiveInOutPuts();
 }
 
 function customMarkerLoad(index) {
@@ -2212,6 +2299,8 @@ function customMarkerLoad(index) {
     // Namefield
     document.getElementById("custom-marker-name").placeholder = "Custom Marker " + (customMarkerIndex-3);
     document.getElementById("custom-marker-name").value = markerTypes[customMarkerIndex].name;
+
+    customMarkerShowActiveInOutPuts();
 }
 
 function customMarkerAddMarker() {
@@ -2309,6 +2398,7 @@ function customMarkerNewPart() {
     customMarkerParts.push(newPart);
 
     customMarkerShowTable(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
+    customMarkerShowActiveInOutPuts();
 }
 
 function customMarkerDeletePart() {
@@ -2334,19 +2424,19 @@ function customMarkerDeletePart() {
     }
 
     customMarkerShowTable(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
+    customMarkerShowActiveInOutPuts();
 }
 
 function customMarkerActivateInput(i) {
     console.log("Input");
     customMarkerParts[i].input= !customMarkerParts[i].input;
     if(customMarkerParts[i].input) {
-        customMarkerParts[i].inputTarget.css({background: "green"});
         customMarkerNumberOfInputs+=1;
     }
     else {
-        customMarkerParts[i].inputTarget.css({background: "lightgrey"});
         customMarkerNumberOfInputs-=1;
     }
+    customMarkerShowActiveInput(i);
 
     customMarkerShowTable(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
     customMarkerShowInOutNumbers();
@@ -2356,16 +2446,41 @@ function customMarkerActivateOutput(i) {
     console.log("Output");
     customMarkerParts[i].output= !customMarkerParts[i].output;
     if(customMarkerParts[i].output) {
-        customMarkerParts[i].outputTarget.css({background: "red"});
         customMarkerNumberOfOutputs+=1;
     }
     else {
-        customMarkerParts[i].outputTarget.css({background: "lightgrey"});
         customMarkerNumberOfOutputs-=1;
     }
+    customMarkerShowActiveOutput(i);
 
     customMarkerShowTable(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
     customMarkerShowInOutNumbers();
+}
+
+function customMarkerShowActiveInOutPuts() {
+    for(var i=0;i<customMarkerParts.length;i++) {
+        customMarkerShowActiveInput(i);
+        customMarkerShowActiveOutput(i);
+    }
+    customMarkerShowInOutNumbers();
+}
+
+function customMarkerShowActiveInput(i) {
+    if(customMarkerParts[i].input) {
+        customMarkerParts[i].inputTarget.css({background: colors.deactiveInput, border: "1px solid black"});
+    }
+    else {
+        customMarkerParts[i].inputTarget.css({background: customMarkerColor, border: "1px dashed black"});
+    }
+}
+
+function customMarkerShowActiveOutput(i) {
+    if(customMarkerParts[i].output) {
+        customMarkerParts[i].outputTarget.css({background: colors.activeInput, border: "1px solid black"});
+    }
+    else {
+        customMarkerParts[i].outputTarget.css({background: customMarkerColor, border: "1px dashed black"});
+    }
 }
 
 function customMarkerShowInOutNumbers() {
@@ -2375,17 +2490,21 @@ function customMarkerShowInOutNumbers() {
     for (var i = 0; i < customMarkerParts.length; i++) {
         if (customMarkerParts[i].input) {
             customMarkerParts[i].inputTarget.contents()[0].nodeValue = ins;
+            customMarkerParts[i].inputTarget.css({color: "white"});
             ins++;
         }
         else {
-            customMarkerParts[i].inputTarget.contents()[0].nodeValue = "";
+            customMarkerParts[i].inputTarget.contents()[0].nodeValue = ".";
+            customMarkerParts[i].inputTarget.css({color: customMarkerColor});
         }
         if (customMarkerParts[i].output) {
             customMarkerParts[i].outputTarget.contents()[0].nodeValue = outs;
+            customMarkerParts[i].outputTarget.css({color: "black"});
             outs++;
         }
         else {
-            customMarkerParts[i].outputTarget.contents()[0].nodeValue = "";
+            customMarkerParts[i].outputTarget.contents()[0].nodeValue = ".";
+            customMarkerParts[i].outputTarget.css({color: customMarkerColor});
         }
     }
 }
@@ -2401,8 +2520,8 @@ function customMarkerShowColors() {
         "#0089FF",
         "#9A31E0",
         "#EBEBEB",
-        "#676667",
-        "#111111"
+        "#676667"/*,
+        "#111111"*/
     ]
 
     var colorSelectionTarget = $("#custom-marker-choose-colors");
@@ -2417,6 +2536,7 @@ function customMarkerChangeColor(color) {
         customMarkerParts[i].target.css({background: color});
     }
     customMarkerColor=color;
+    customMarkerShowActiveInOutPuts();
 }
 
 var customMarkerTableOuts = [[

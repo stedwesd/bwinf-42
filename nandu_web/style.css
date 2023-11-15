@@ -163,11 +163,10 @@ main {
 
 #add-elements {
     position: absolute;
-    background: #ccc;
     left: 0;
     top: 0;
     max-height: 100%;
-    width: 102px;
+    width: 117px;
     overflow-x: visible;
     overflow-y: auto;
     
@@ -182,7 +181,8 @@ main {
     position: relative;
     width: 100px;
     height: 100px;
-    border: 1px solid black;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
     background: #ccc;
 }
 
@@ -200,7 +200,8 @@ main {
     position: relative;
     width: 100px;
     height: 100px;
-    border: 1px solid black;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
     background: #ccc;
 }
 
@@ -228,7 +229,8 @@ main {
     position: relative;
     width: 100px;
     height: 100px;
-    border: 1px solid black;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
     font-size: small;
     overflow: visible; 
     background: #ccc;
@@ -376,7 +378,7 @@ main {
     width: 10%;
     height: 50%;
     background: lightgrey;
-    border: 1px solid black;
+    border: 1px dashed black;
 }
 
 .custom-marker-part-out {
@@ -386,7 +388,7 @@ main {
     width: 10%;
     height: 50%;
     background: lightgrey;
-    border: 1px solid black;
+    border: 1px dashed black;
 }
 
 .custom-marker-table-elem {
