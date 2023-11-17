@@ -3,7 +3,8 @@ import itertools
 # types purely for signature readability
 TileLocation = tuple[int]
 
-class PathfindTile:
+class PathfindedTile:
+    # A tile that has been pathfinded to and contains information about the path to it
 
     def __init__(self, location: TileLocation, path: list[TileLocation], path_cost: int, maze_shape: tuple[int]):
         self.location = location
@@ -30,63 +31,97 @@ class PathfindTile:
     
     def __eq__(self, other):
         # equality function to work properly with sets
-        if isinstance(other, PathfindTile):
+        if isinstance(other, PathfindedTile):
             return self.location == other.location
         return self.location == other
 
 class PathfindGrid:
 
-    WALL = "#"
+    WALL: str = "#"
 
     def __init__(self, grid: list, cost: tuple[int], shape: tuple[int]):
         self.grid = grid
         self.movement_cost = cost
         self.shape = shape
 
-    def pathfind(self, begin_tile: TileLocation, end_tile: TileLocation):
+    def pathfind(self, begin_tile: TileLocation, end_tile: TileLocation) -> tuple[list[TileLocation], int]:
         # pathfinds from begin_tile to end_tile. returns the path cost and the path itself.
 
-        edges: list[PathfindTile] = [
-            PathfindTile(location=begin_tile, 
-                         path=[begin_tile], 
-                         path_cost=0, 
-                         maze_shape=self.shape
+
+        # first 'edge' is the starter tile. we use a dictionary due to needing to access the PathfindedTile-instances out of here later
+        edges: dict[TileLocation,  PathfindedTile] = {
+            begin_tile : PathfindedTile(
+                location = begin_tile, 
+                path = [begin_tile], 
+                path_cost = 0, 
+                maze_shape = self.shape
             )
-        ]
+        }
+        
         visited: set[TileLocation] = set()
 
+
+        # the path cost that we are currently working with. is used to work with the tiles that we need
+        # the amount of loops that is required to finish this algorithm is consequently the cost of the path itself.
         path_cost = 0
 
         while True:
-            next_edges: list[PathfindTile] = list()
-            for tile in edges:
+            
+            if not edges: # aquivalent to when edges is empty
+                raise Exception("Out of options, cannot continue pathfinding! Does the maze have a solution?")
+
+            # edges that are going to be used in the next iteration of the while loop
+            next_edges: dict[TileLocation, PathfindedTile] = {}
+
+            for tile_location, tile in edges.items():
+
+                # ignoring tiles to which our current path cost cannot reach
                 if path_cost < tile.path_cost:
-                    next_edges.append(tile)
+                    # just readding it to the dictionary
+                    next_edges[tile_location] = tile
                     continue
+                
+                # we're done, good job!
                 if tile == end_tile:
                     return tile.path, tile.path_cost
 
-                for adjacent_tile, direction in tile.adjacent():
+                for adjacent_tile_location, direction in tile.adjacent():
                     
-                    tile_value = self.getTileValue(adjacent_tile)
+                    tile_value: str = self.getTileValue(adjacent_tile_location)
 
-                    if tile_value == self.WALL or adjacent_tile in visited:
+                    if tile_value == self.WALL or adjacent_tile_location in visited:
                         continue
                     
-                    path = tile.path + [adjacent_tile]
-                    cost = tile.path_cost + self.movement_cost[direction]
+                    adjacent_tile_path: list[TileLocation] = tile.path + [adjacent_tile_location]
+                    adjacent_tile_cost: int = tile.path_cost + self.movement_cost[direction]
                     
-                    next_tile = PathfindTile(location=adjacent_tile, path=path, path_cost=cost, maze_shape=self.shape)
-                    next_edges.append(next_tile)
+
+                    # specific edge case where 2 tiles have the same adjacent, and one of the paths is longer 
+                    # (due to the next_tile of the other iteration using a direction with bigger path cost)
+                    # we can't update the visited on the fly because we have to check the path lenght and cannot simply skip over
+                    if adjacent_tile_location in next_edges.keys():
+                        duplicate_tile: PathfindedTile = next_edges[adjacent_tile_location]
+                        if duplicate_tile.path_cost <= adjacent_tile_cost:
+                            continue
+
+                    adjacent_tile = PathfindedTile(
+                        location = adjacent_tile_location,
+                        path = adjacent_tile_path, 
+                        path_cost = adjacent_tile_cost, 
+                        maze_shape = self.shape
+                    )
+
+                    next_edges[adjacent_tile_location] = adjacent_tile
 
             edges = next_edges.copy()
             
-            visited = visited.union((next_tile.location for next_tile in next_edges))
+            # mark the visited locations as actually visited to not go through them again
+            visited = visited.union(next_edges.keys())
             
             path_cost += 1
         
-    def getTileValue(self, loc: list[TileLocation]) -> str:
-        # aqcuires a tile value from any-dimensional grids
+    def getTileValue(self, loc: TileLocation) -> str:
+        # acquires a tile value from any-dimensional grids
         item = self.grid
         for _loc in loc:
             item = item[_loc]

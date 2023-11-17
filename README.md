@@ -11,7 +11,7 @@ The team consists of: @stedwesd, @Roboter09, @Banana2308
 | `J2` St. Egano         | ✅ Program implemented | @stedwesd
 | `N1` Arukone           | 🟠 Algorithm figured | @Banana2308
 | `N2` Die goldene Mitte | 🟠 Algorithm figured (Brute-force) |
-| `N3` Zauberschule      | ✅ Program implemented | @stedwesd
+| `N3` Zauberschule      | ☑️ Documentation written | @stedwesd
 | `N4` Nandu             | ✅ Program implemented| @stedwesd
 | `N5` Stadtführung      | - | 
 | `Z1` Website für `N4`  | - | @Roboter09
