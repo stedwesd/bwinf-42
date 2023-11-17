@@ -129,13 +129,14 @@ main {
     background: #ccc;
     
     border-left: 1px solid black;
-    top: 37px;
+    border-top: 1px solid black;
+    top: 36px;
     right: 0;
     bottom: 0;
 
     overflow-y: auto; 
     padding-right: 15px;
-    min-width: 150px;
+    min-width: 269px;
     width: auto;
 
     visibility: hidden;
@@ -149,6 +150,7 @@ main {
 #tabs {
     position: absolute;
     right: 0px;
+    z-index: 100;
 }
 
 .tab-button {
@@ -295,19 +297,25 @@ main {
     z-index: 20;
     background: #ccc;
     border-left: 1px solid black;
-    top: 37px;
+    top: 36px;
     right: 0;
     bottom: 0;
+    border-top: 1px solid black;
     
     padding-right: 15px;
     padding-top: 10px;
     padding-bottom: 10px;
     overflow: auto;
-  
+    min-width: 269px;
+    
     header {
       font-weight: bold;
       font-size: 14px;
     }
+}
+
+#table {
+    font-size: 13px;
 }
 
 .table-pick-element {
@@ -328,13 +336,14 @@ main {
     background: #ccc;
 
     border-left: 1px solid black;
-    top: 37px;
+    border-top: 1px solid black;
+    top: 36px;
     right: 0;
     bottom: 0;
 
     overflow-y: auto; 
     padding-right: 15px;
-    min-width: 180px;
+    min-width: 269px;
     width: auto;
 
     visibility: hidden;

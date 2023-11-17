@@ -475,10 +475,6 @@ function setDarkMode(active) {
         document.getElementById("custom-marker-panel").style.background = darkGrey;
         document.getElementById("table-panel").style.background = darkGrey;
         document.getElementById("board").style.background = black;
-        
-        document.getElementById("panel").style.border = completelyBlack;
-        document.getElementById("custom-marker-panel").style.border = completelyBlack;
-        document.getElementById("table-panel").style.border = completelyBlack;
 
         var cells = document.getElementsByClassName("cell");
         for(var i=0;i<cells.length; i++) {
@@ -522,6 +518,8 @@ function setDarkMode(active) {
         tabButtonTable.style.color = "white";
         tabButtonCustomMarker.style.color = "white";
         tabButtonSettings.style.color = "white";
+
+        showTablePickedRow();
     }
     else {
         document.body.style.background = lightgrey;
@@ -530,10 +528,6 @@ function setDarkMode(active) {
         document.getElementById("custom-marker-panel").style.background = borderGrey;
         document.getElementById("table-panel").style.background = borderGrey;
         document.getElementById("board").style.background = "#d7d7d7";
-        
-        document.getElementById("panel").style.border = borderGrey;
-        document.getElementById("custom-marker-panel").style.border = borderGrey;
-        document.getElementById("table-panel").style.border = borderGrey;
 
         var cells = document.getElementsByClassName("cell");
         for(var i=0;i<cells.length; i++) {
@@ -567,6 +561,16 @@ function setDarkMode(active) {
         tabButtonTable.style.color = black;
         tabButtonCustomMarker.style.color = black;
         tabButtonSettings.style.color = black;
+
+        // Table pick
+        if(tableTarget.children.length>=1) {
+            for(var i=1;i<tableTarget.children.length;i++) {
+                tableTarget.children[i].children[0].children[0].style.backgroundImage = "url(lamp_pick.png)";
+                tableTarget.children[i].children[0].children[0].style.backgroundColor = borderGrey;
+                console.log(i);
+            }
+        }
+        showTablePickedRow();
     }
 
     if(activeTab==0) {
@@ -2193,16 +2197,36 @@ function tablePickElement(index) {
 var pickedRowIndex;
 
 function showTablePickedRow() {
+    if(tableTarget.children.length==0) {
+        return;
+    }
     var index = 1;
     for(var i=0;i<sources.length;i++) {
         if(!sources[i].active) {
             index += Math.pow(2,sources.length-i-1);
         }
     }
-    if(pickedRowIndex) {
-        tableTarget.children[pickedRowIndex].children[0].children[0].style.backgroundImage = "url(lamp_pick.png)";
+    if(darkModeActive) {
+        for(var i=1;i<tableTarget.children.length;i++) {
+            tableTarget.children[i].children[0].children[0].style.backgroundImage = "url(dark_mode_lamp_pick.png)";
+            tableTarget.children[i].children[0].children[0].style.backgroundColor = darkGrey;
+            console.log(i);
+        }
     }
-    tableTarget.children[index].children[0].children[0].style.backgroundImage = "url(lamp_pick_active.png)";
+    if(pickedRowIndex) {
+        if(!darkModeActive) {
+            tableTarget.children[pickedRowIndex].children[0].children[0].style.backgroundImage = "url(lamp_pick.png)";
+        }
+        else {
+            tableTarget.children[pickedRowIndex].children[0].children[0].style.backgroundImage = "url(dark_mode_lamp_pick.png)";
+        }
+    }
+    if(!darkModeActive) {
+        tableTarget.children[index].children[0].children[0].style.backgroundImage = "url(lamp_pick_active.png)";
+    }
+    else {
+        tableTarget.children[index].children[0].children[0].style.backgroundImage = "url(dark_mode_lamp_pick_active.png)";
+    }
     pickedRowIndex = index;
 }
 
@@ -2351,6 +2375,7 @@ function customMarkerAddMarker() {
 
     customMarkerSetUp();
     markerButtonsSetUp();
+    setDarkMode(darkModeActive);
 }
 
 function customMarkerDeleteMarker() {
@@ -2373,6 +2398,7 @@ function customMarkerDeleteMarker() {
 
     customMarkerSetUp();
     markerButtonsSetUp();
+    setDarkMode(darkModeActive);
 }
 
 function customMarkerNewPart() {
