@@ -572,7 +572,7 @@ function setDarkMode(active) {
         // Table pick
         if(tableTarget.children.length>=1) {
             for(var i=1;i<tableTarget.children.length;i++) {
-                tableTarget.children[i].children[0].children[0].style.backgroundImage = "url(lamp_pick.png)";
+                tableTarget.children[i].children[0].children[0].style.backgroundImage = "url(source/lamp_pick.png)";
                 tableTarget.children[i].children[0].children[0].style.backgroundColor = borderGrey;
             }
         }
@@ -2187,23 +2187,23 @@ function showTablePickedRow() {
     }
     if(darkModeActive) {
         for(var i=1;i<tableTarget.children.length;i++) {
-            tableTarget.children[i].children[0].children[0].style.backgroundImage = "url(dark_mode_lamp_pick.png)";
+            tableTarget.children[i].children[0].children[0].style.backgroundImage = "url(source/dark_mode_lamp_pick.png)";
             tableTarget.children[i].children[0].children[0].style.backgroundColor = darkGrey;
         }
     }
     if(pickedRowIndex) {
         if(!darkModeActive) {
-            tableTarget.children[pickedRowIndex].children[0].children[0].style.backgroundImage = "url(lamp_pick.png)";
+            tableTarget.children[pickedRowIndex].children[0].children[0].style.backgroundImage = "url(source/lamp_pick.png)";
         }
         else {
-            tableTarget.children[pickedRowIndex].children[0].children[0].style.backgroundImage = "url(dark_mode_lamp_pick.png)";
+            tableTarget.children[pickedRowIndex].children[0].children[0].style.backgroundImage = "url(source/dark_mode_lamp_pick.png)";
         }
     }
     if(!darkModeActive) {
-        tableTarget.children[index].children[0].children[0].style.backgroundImage = "url(lamp_pick_active.png)";
+        tableTarget.children[index].children[0].children[0].style.backgroundImage = "url(source/lamp_pick_active.png)";
     }
     else {
-        tableTarget.children[index].children[0].children[0].style.backgroundImage = "url(dark_mode_lamp_pick_active.png)";
+        tableTarget.children[index].children[0].children[0].style.backgroundImage = "url(source/dark_mode_lamp_pick_active.png)";
     }
     pickedRowIndex = index;
 }
