@@ -73,102 +73,7 @@ class LightGate:
         
         return output_values
 
-
-def evaluateNanduRow(row: NanduRow, input_values: LightValueRow, gates: list[LightGate], source_values: list[bool], sensor_values: list[bool]) -> LightValueRow:
-    
-    # the inputs that are processed are going to land here
-    output_values: LightValueRow = []
-
-    while row:
-
-        # we do not need a specific edge case for when an "X" is used; A gate for that should be contained in the gate list
-        # however, we need one for sources and sensors (quelle/lichtsensor)
-        
-        # the light sensor lets light through, which it is not confirmed to do in the task description;
-        # however, it does not conflict with the example files and is replicating the websites functionality
-
-        if row[0][0] == "Q" or row[0][0] == "L":
-            id: int = int(row[0][1:])
-            id -= 1 # the id's start counting from one, list indexes start counting from 0
-            if row[0][0] == "Q":
-                output_values.append(source_values[id])
-            else:
-                sensor_values[id] = input_values[0]
-                output_values.append(input_values[0])
-            
-            # remove the first element from the row and input_values
-            row = row[1:]
-            input_values = input_values[1:]
-
-        else:
-
-            # we iterate through all the possible gates
-            for gate in gates:
-                # we compare the slice of the list that has the same lenght as the gate
-                compare_gate = row[:gate.size]
-                if gate.id == compare_gate:
-                    
-                    process_input = input_values[:gate.size]
-                    
-                    processed_input = gate.process(process_input)
-                    output_values.extend(processed_input)
-                    
-                    # we cut out the rest to process it in the next iteration
-                    row = row[gate.size:]
-                    input_values = input_values[gate.size:]
-                    
-                    break
-            else:
-                raise Exception(f"Couldn't process further from the following row expression: {row}")
-    
-    return output_values, source_values, sensor_values
-
-def evaluateNanduGrid(grid: list[NanduRow], gates: list[LightGate], source_values: list[bool], sensor_values: list[bool]) -> list[bool]:
-
-    # initially everything is off    
-    output_values = [False] * len(grid[0])
-
-
-    for row in grid:
-
-
-        output_values, source_values, sensor_values = evaluateNanduRow(
-            row = row, 
-            input_values = output_values,
-            gates = gates,
-            source_values = source_values,
-            sensor_values = sensor_values
-        )
-        
-    
-    return sensor_values
-
-def solveNandu(filename: str,output: str):
-
-    grid, gates = importNanduGrid(filename)
-
-    count_sources: int = 0
-    count_sensors: int = 0
-
-    for row in grid:
-        for block in row:
-            if block[0] == "Q": 
-                count_sources += 1
-            if block[0] == "L": 
-                count_sensors += 1
-    
-    truth_table = []
-
-    for light_variant in product((False, True),repeat=count_sources):
-        truth_table.append((light_variant, evaluateNanduGrid(
-            grid = grid,
-            gates = gates,
-            source_values = list(light_variant),
-            sensor_values = [False] * count_sensors
-        )))
-    
-    return truth_table
-
+# default gates that are defined by the task. we also define an empty one
 
 BlueMarker = LightGate(
     id=["B", "B"],
@@ -257,6 +162,108 @@ DEFAULT_GATE_LIST = [
     empty
 ]
 
+def evaluateNanduRow(row: NanduRow, input_values: LightValueRow, gates: list[LightGate], source_values: list[bool], sensor_values: list[bool]) -> LightValueRow:
+    
+    # the inputs that are processed are going to land here
+    output_values: LightValueRow = []
+
+    while row:
+
+        # we do not need a specific edge case for when an "X" is used; A gate for that should be contained in the gate list
+        # however, we need one for sources and sensors (quelle/lichtsensor)
+        
+        # the light sensor lets light through, which it is not confirmed to do in the task description;
+        # however, it does not conflict with the example files and is replicating the websites functionality
+
+        if row[0][0] == "Q" or row[0][0] == "L":
+            id: int = int(row[0][1:])
+            id -= 1 # the id's start counting from one, list indexes start counting from 0
+            if row[0][0] == "Q":
+                output_values.append(source_values[id])
+            else:
+                sensor_values[id] = input_values[0]
+                output_values.append(input_values[0])
+            
+            # remove the first element from the row and input_values
+            row = row[1:]
+            input_values = input_values[1:]
+
+        else:
+
+            # we iterate through all the possible gates, and compare the slice that has the size of the gate to the gate itself
+            for gate in gates:
+                compare_gate = row[:gate.size]
+                if gate.id == compare_gate:
+                    
+                    process_input = input_values[:gate.size]
+                    
+                    processed_input = gate.process(process_input)
+                    output_values.extend(processed_input)
+                    
+                    # we cut out the rest to process it in the next iteration
+                    row = row[gate.size:]
+                    input_values = input_values[gate.size:]
+                    
+                    break
+            else:
+                raise Exception(f"Couldn't process further from the following row expression: {row}")
+    
+    return output_values
+
+def evaluateNanduGrid(grid: list[NanduRow], gates: list[LightGate], source_values: list[bool], sensor_values: list[bool]) -> list[bool]:
+    # simply calls evaluateNanduRow on every row through a grid.
+
+    # initially everything is off
+    output_values = [False] * len(grid[0])
+
+    for row in grid:
+
+        # source_values and sensor_values are edited internally, so we do not need to reassign them
+        output_values = evaluateNanduRow(
+            row = row, 
+            input_values = output_values, # input values to the next row are the output values from the previous rows
+            gates = gates,
+            source_values = source_values,
+            sensor_values = sensor_values
+        )
+        
+    return sensor_values
+
+def solveNandu(filename: str, output: str):
+
+    grid, gates = importNanduGrid(filename)
+
+    # we assume that the sources/sensors are assigned to the numbers 1..n in the file, so we can just count them
+    count_sources: int = 0
+    count_sensors: int = 0
+
+    for row in grid:
+        for block in row:
+            if block[0] == "Q": 
+                count_sources += 1
+            if block[0] == "L": 
+                count_sensors += 1
+    
+    truth_table = []
+
+    # itertools.product generates all the variants for the truth table we need
+    for light_variant in product((True, False),repeat=count_sources):
+        truth_table.append((light_variant, evaluateNanduGrid(
+            grid = grid,
+            gates = gates,
+            source_values = list(light_variant),
+            sensor_values = [False] * count_sensors # all sensors should initially be off
+        )))
+
+    # exported als CSV. we use semicolons as separators, shouldn't be a problem as google sheets and excel can work with those
+    with open(output, "w") as f:
+        # creates the header that describes what column belong to what input/output
+        header = ";".join(f"Q{n+1}" for n in range(count_sources)) + ";"
+        header += ";".join(f"L{n+1}" for n in range(count_sensors))
+        f.write(header + "\n")
+        for source_values, sensor_values in truth_table:
+            f.write(";".join("An" if val else "Aus" for val in (list(source_values) + sensor_values)) + "\n")
+
 def importNanduGrid(filename: str) -> tuple[list[NanduRow], list[LightGate]]:
     with open(filename, "r") as f:
         data: str = f.read()
@@ -269,18 +276,22 @@ def importNanduGrid(filename: str) -> tuple[list[NanduRow], list[LightGate]]:
 
     gates: list[LightGate] = DEFAULT_GATE_LIST
 
+    # if height+2 is out of range, we get an empty iterator, so it's all fine
     for index, line in enumerate(lines[height+2:]):
         try:
-            gate_json = json.loads(line)
             gate = LightGate(
-                id = index + 1,
-                json_data = gate_json
+                id = index + 1, # id's should start from 1, indexes start from 0
+                json_data = json.loads(line)
             )
             gates.append(gate)
         except json.decoder.JSONDecodeError:
-            raise Exception(f"Couldn't extract gate from file: {line}")
+            raise Exception(f"Couldn't extract gate {index} from file: {line}")
     
     return grid, gates
 
 
-print(solveNandu("files/nandu1.txt","dummy"))
+if __name__ == "__main__":
+    print("WARNING: The CSV Files in nandu/output/ use semicolons as separators.")
+    for i in range(5):
+        solveNandu(f"files/nandu{i+1}.txt",f"output/nandu{i+1}.csv")
+        
