@@ -147,6 +147,16 @@ main {
     }
 }
 
+#info {
+    position: absolute;
+    right: 300px;
+    top: 0%;
+    width: 200px;
+    padding: 5px;
+    background: #ccc;
+    visibility: hidden;
+}
+
 #tabs {
     position: absolute;
     right: 0px;

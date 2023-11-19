@@ -73,6 +73,20 @@ function init() {
         changeMarkerButtonSettings();
     });
 
+    // Info
+    var infoButtons = [document.getElementById("table-i-button"),document.getElementById("custom-marker-i-button"),document.getElementById("settings-i-button"),];
+    for(var i=0;i<3;i++) {
+        infoButtons[i].addEventListener("mouseover", function() {
+            // Show marker table when hovering
+            showInfo();
+        });
+        infoButtons[i].addEventListener("mouseout", function() {
+            // Show marker table when hovering
+            hideInfo();
+        });
+        console.log(infoButtons[i]);
+    }
+
     // Input from file
     document.getElementById("input-apply").opacity = "0.5";
     document.getElementById("input-apply").disabled = true;
@@ -669,6 +683,28 @@ function changeTabSettings() {
     }
     updateSize();
 }
+
+
+function showInfo() {
+    document.getElementById("info").style.visibility = "visible";
+    if(activeTab==0) {
+        // Table
+        document.getElementById("info").innerHTML = "<p>Die Tabelle zeigt bla</p>"
+    }
+    else if(activeTab==1) {
+        // Custom marker
+        document.getElementById("info").innerHTML = "<p>Custom marker erstellen bla</p>"
+    }
+    else {
+        // Settings
+        document.getElementById("info").innerHTML = "<p>Settings bla</p>"
+    }
+}
+
+function hideInfo() {
+    document.getElementById("info").style.visibility = "hidden";
+}
+
 
 // Reset Board ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -2232,7 +2268,7 @@ function customMarkerSetUp() {
     customMarkerShowInOutNumbers();
 
     // Buttons for creating the marker type or canceling
-    $("#custom-marker-header").html("Create custom Marker");
+    $("#custom-marker-header").html("Create custom Marker <button type='button' id='custom-marker-i-button'>i</button>");
     document.getElementById("custom-marker-done-button").textContent = "Create Marker";
     document.getElementById("custom-marker-revert-changes-button").textContent = "Cancel";
     if(document.getElementById("custom-marker-delete-button") != null) {
@@ -2294,7 +2330,7 @@ function customMarkerLoad(index) {
     }
     customMarkerShowInOutNumbers();
 
-    $("#custom-marker-header").html("Edit Marker");
+    $("#custom-marker-header").html("Edit Marker <button type='button' id='custom-marker-i-button'>i</button> ");
 
     // Buttons for applying/reverting changes and for deleting the marker type
     document.getElementById("custom-marker-done-button").textContent = "Apply changes";

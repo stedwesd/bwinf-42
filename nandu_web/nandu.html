@@ -25,6 +25,10 @@
                 </button>  
             </div>
         </div>
+
+        <div id="info">
+
+        </div>
         
         <div id="tabs">
             <button type="button" id="tab-table" class="tab-button" onclick="changeTabTable()">Table</button>
@@ -33,7 +37,9 @@
         </div>
 
         <section id="panel">
-            <header>Settings</header>
+            <header>Settings
+                <button type="button" id="settings-i-button">i</button>
+            </header>
             <div id=setting-form class="setting-section">
                 Board
                 <label>
@@ -91,7 +97,7 @@
             </div>
         </section>
         <section id="custom-marker-panel">
-            <header id="custom-marker-header">Create custom Marker</header>
+            <header id="custom-marker-header">Create custom Marker <button type="button" id="custom-marker-i-button">i</button> </header>
             <input type="text" id="custom-marker-name" placeholder="Custom Marker">
             <div id="custom-marker-choose-colors"></div>
             <div id="custom-marker-parts"></div>
@@ -113,7 +119,7 @@
             </div>
         </section>
         <section id="table-panel">
-            <header id="table-header">Table</header>
+            <header id="table-header">Table <button type="button" id="table-i-button">i</button> </header>
             <div>
                 <table id="table">
 
