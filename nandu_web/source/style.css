@@ -125,6 +125,10 @@ main {
 #delete-area {
     background: rgba(250, 10, 10, 0.4);
     position: absolute;
+    background-image: url(trash_can.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }
   
 #panel {
@@ -135,7 +139,7 @@ main {
     
     border-left: 1px solid black;
     border-top: 1px solid black;
-    top: 36px;
+    top: 49px;
     right: 0;
     bottom: 0;
 
@@ -165,15 +169,19 @@ main {
 #tabs {
     position: absolute;
     right: 0px;
+    top: 0px;
     z-index: 100;
 }
 
 .tab-button {
+    position: relative;
     width: 100px;
-    height: 40px;
+    height: 51px;
     display: inline-block; 
-    margin: -3px; 
+    margin-left: -3px;
+    margin-right: -3px;
     border: 1px solid black;
+    top: -1px;
     
     background-color: #ddd;
 }
@@ -318,7 +326,7 @@ main {
     z-index: 20;
     background: #ccc;
     border-left: 1px solid black;
-    top: 36px;
+    top: 49px;
     right: 0;
     bottom: 0;
     border-top: 1px solid black;
@@ -362,7 +370,7 @@ main {
 
     border-left: 1px solid black;
     border-top: 1px solid black;
-    top: 36px;
+    top: 49px;
     right: 0;
     bottom: 0;
 

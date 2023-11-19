@@ -135,7 +135,7 @@ function init() {
 
         board.cols = cols;
         board.rows = rows;
-        snapX = 100/board.cols;
+        snapX = 100/(board.cols+1);
         snapY = 100/board.rows;
         createGrid();
         updateSize();
@@ -160,38 +160,39 @@ function init() {
                 }
                 else if(c[row][0] == "Q") {
                     var number = c[row].slice(1,c[row].length);
-                    createSource([false,true,false,false],100*col/board.cols,100*row/board.rows,true);
+                    createSource([false,true,false,false],100*col/(board.cols+1),100*row/(board.rows),true);
                     sourceOrder.push(number);
                 }
                 else if(c[row][0] == "L") {
                     var number = c[row].slice(1,c[row].length);
-                    createSensor([true,true,true,true],100*col/board.cols,100*row/board.rows,true);
+                    createSensor([true,true,true,true],100*col/(board.cols+1),100*row/(board.rows),true);
                     sensorOrder.push(number);
                 }
                 else if(c[row] == "W") {
-                    createMarker(0,100*col/board.cols,100*row/board.rows,true);
-                    row++;
+                    createMarker(0,100*col/(board.cols+1),100*row/(board.rows),true);
+                    row+=1;
                 }
                 else if(c[row] == "R") {
-                    createMarker(1,100*col/board.cols,100*row/board.rows,true);
-                    row++;
+                    createMarker(1,100*col/(board.cols+1),100*row/(board.rows),true);
+                    row+=1;
                 }
                 else if(c[row] == "r") {
-                    createMarker(2,100*col/board.cols,100*row/board.rows,true);
-                    row++;
+                    createMarker(2,100*col/(board.cols+1),100*row/(board.rows),true);
+                    row+=1;
                 }
                 else if(c[row] == "B") {
-                    createMarker(3,100*col/board.cols,100*row/board.rows,true);
-                    row++;
+                    createMarker(3,100*col/(board.cols+1),100*row/(board.rows),true);
+                    row+=1;
                 }
                 else if(c[row][0] == "M") {
                     var number = parseInt(c[row].slice(1,c[row].length))+3;
-                    createMarker(number,100*col/board.cols,100*row/board.rows,true);
+                    createMarker(number,100*col/(board.cols+1),100*row/(board.rows),true);
                     row+=markerTypes[number].realHeight-1;
                 }
                 row++;
             }
         }
+        console.log(lightMap);
 
         // Sort sources 
         for(var a=0;a<sources.length;a++) {
@@ -851,6 +852,7 @@ function onDrag(marker) { // is used for both markers and sources
         marker.y = yPos;
         marker.inBounds = true;
         updateLightMap();
+        console.log(lightMap);
     }
     if(colliding) {
         if(!marker.inBounds) {
