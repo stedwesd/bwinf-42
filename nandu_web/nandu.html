@@ -34,7 +34,8 @@
 
         <section id="panel">
             <header>Settings</header>
-            <form id=setting-form>
+            <form id=setting-form class="setting-section">
+                Board
                 <label>
                 Rows
                 <input id="size-x" type="number" value="10" min="5" max="50" step="1" autofocus />
@@ -49,41 +50,7 @@
                 </label>
                 <button id="apply-button" onclick="changeBoardSize()">Apply</button>
             </form>
-            <label> </label>
-            <div>
-                Delete Stuff
-                <div>
-                    <button type="button" onclick="clearBoard()">Delete all markers on the board</button>
-                </div>
-                <div>
-                    <button type="button" onclick="resetBoard()">Delete all custom marker types</button>
-                </div>
-            </div>
-            <label> </label>
-            <div>
-                <!-- File Uploader HTML-->
-                Upload File
-                <input id="file-input" accept=".txt" name="fileToUpload" type="file" /> 
-                <button id="input-apply"> Apply file </button>
-            </div>
-            <label> </label>
-            <div>
-                <!-- File Downloader HTML-->
-                Download File
-                <div>
-                    <button type="button" onclick="downloadBoard()">Download board as Text File</button>
-                </div>
-                <div>
-                    <button type="button" onclick="downloadTable()">Download table</button>
-                </div>
-            </div>
-            <label> </label>
-            <div>
-                Dark Mode
-                <button id="dark-mode-button" type="button" onclick="darkMode()">Change to dark mode</button>
-            </div>
-            <label> </label>
-            <div>
+            <div class="setting-section">
                 Spawning Buttons
                 <label>
                     Width
@@ -95,17 +62,50 @@
                 </label>
                 <button id="apply-marker-button-settings" onclick="changeMarkerButtonSettings()">Apply</button>
             </div>
+            <div class="setting-section">
+                Upload File
+                <div>
+                    <input id="file-input" accept=".txt" name="fileToUpload" type="file" /> 
+                </div>
+                <div>
+                    <button id="input-apply"> Apply file </button>
+                </div>
+            </div>
+            <div class="setting-section">
+                Download File
+                <div>
+                    <button type="button" onclick="downloadBoard()">Download board as Text File</button>
+                </div>
+                <div>
+                    <button type="button" onclick="downloadTable()">Download table</button>
+                </div>
+            </div>
+            <div class="setting-section">
+                Other
+                <div>
+                    <button type="button" id="automatically-update-table-button" onclick="automaticallyUpdateTable()">Automatically update table: ON</button>
+                </div>
+                <div>
+                    <button id="dark-mode-button" type="button" onclick="darkMode()">Change to dark mode</button>
+                </div>
+                <div>
+                    <button type="button" onclick="clearBoard()">Delete all markers on the board</button>
+                </div>
+                <div>
+                    <button type="button" onclick="resetBoard()">Delete all custom marker types</button>
+                </div>
+            </div>
         </section>
         <section id="custom-marker-panel">
             <header id="custom-marker-header">Create custom Marker</header>
             <input type="text" id="custom-marker-name" placeholder="Custom Marker">
+            <div id="custom-marker-choose-colors"></div>
             <div id="custom-marker-parts"></div>
             <div>
-                <button type="button" class="custom-marker-new-part" onclick="customMarkerNewPart()"></button>
-                <button type="button" class="custom-marker-delete-part" onclick="customMarkerDeletePart()"></button>
+                <button type="button" id="custom-marker-new-part" onclick="customMarkerNewPart()"></button>
+                <button type="button" id="custom-marker-delete-part" onclick="customMarkerDeletePart()"></button>
             </div>
-            <div id="custom-marker-choose-colors"></div>
-            <div>
+            <div id="custom-marker-table-parent">
                 <table id="custom-marker-table"></table>
             </div>
             <div id="custom-marker-done">
@@ -119,7 +119,7 @@
             </div>
         </section>
         <section id="table-panel">
-            <header>Table</header>
+            <header id="table-header">Table</header>
             <div>
                 <table id="table">
 

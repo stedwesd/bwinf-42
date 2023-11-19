@@ -491,10 +491,10 @@ function setDarkMode(active) {
             sensor.target.css({color: "black"});
         });
         
-        var customMarkerAddMarkerPartButton = document.getElementsByClassName("custom-marker-new-part");
-        customMarkerAddMarkerPartButton[0].style.color = "black";
-        var customMarkerDeleteMarkerPartButton = document.getElementsByClassName("custom-marker-delete-part");
-        customMarkerDeleteMarkerPartButton[0].style.color = "black";
+        var customMarkerAddMarkerPartButton = document.getElementById("custom-marker-new-part");
+        customMarkerAddMarkerPartButton.style.color = "black";
+        var customMarkerDeleteMarkerPartButton = document.getElementById("custom-marker-delete-part");
+        customMarkerDeleteMarkerPartButton.style.color = "black";
 
         //Add buttons
         document.getElementById("source-add").style.background = darkGrey;
@@ -534,10 +534,10 @@ function setDarkMode(active) {
             cells[i].style.background = grey;
         }
         
-        var customMarkerAddMarkerPartButton = document.getElementsByClassName("custom-marker-new-part");
-        customMarkerAddMarkerPartButton[0].style.color = "black";
-        var customMarkerDeleteMarkerPartButton = document.getElementsByClassName("custom-marker-delete-part");
-        customMarkerDeleteMarkerPartButton[0].style.color = "black";
+        var customMarkerAddMarkerPartButton = document.getElementById("custom-marker-new-part");
+        customMarkerAddMarkerPartButton.style.color = "black";
+        var customMarkerDeleteMarkerPartButton = document.getElementById("custom-marker-delete-part");
+        customMarkerDeleteMarkerPartButton.style.color = "black";
 
         //Add buttons
         document.getElementById("source-add").style.background = borderGrey;
@@ -2040,6 +2040,18 @@ function removeSensor(index) {
 
 // Table Sources/Sensors :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+function automaticallyUpdateTable() {
+    doTableUpdating = !doTableUpdating;
+    if(doTableUpdating) {
+        document.getElementById("automatically-update-table-button").textContent = "Automatically update table: ON"
+        document.getElementById("update-table-button").remove();
+    }
+    else {
+        document.getElementById("automatically-update-table-button").textContent = "Automatically update table: OFF"
+        $("<button type='button' id='update-table-button' onclick='reloadTable()'>Update Table</button>").appendTo(document.getElementById("table-header"));
+    }
+}
+
 function reloadTable() {
     var myDoTableUpdating = doTableUpdating;
     doTableUpdating = true;
@@ -2049,7 +2061,11 @@ function reloadTable() {
 
 function updateTable(){
     if(!doTableUpdating) {
+        document.getElementById("update-table-button").style.color = "red";
         return;
+    }
+    if(document.getElementById("update-table-button")) {
+        document.getElementById("update-table-button").style.color = "black";
     }
 
     showTable(sources.length,sensors.length);
@@ -2261,6 +2277,12 @@ function customMarkerSetUp() {
         document.getElementById("custom-marker-delete-button").remove();
     }
 
+    // Add and remove parts buttons
+    document.getElementById("custom-marker-new-part").disabled = false;
+    document.getElementById("custom-marker-new-part").style.opacity = "1";
+    document.getElementById("custom-marker-delete-part").disabled = true;
+    document.getElementById("custom-marker-delete-part").style.opacity = "0.5";
+
     // Namefield
     document.getElementById("custom-marker-name").placeholder = "Custom Marker " + (markerTypes.length-3);
     document.getElementById("custom-marker-name").value = "";
@@ -2318,6 +2340,24 @@ function customMarkerLoad(index) {
     if(document.getElementById("custom-marker-delete-button") == null) {
         var div = $("<div id='custom-marker-delete' />").appendTo($("#custom-marker-panel"));
         $("<button type='button' id='custom-marker-delete-button' onclick='customMarkerDeleteMarker()'>Delete Marker</button>").appendTo(div);
+    }
+
+    // Add and remove parts buttons
+    if(customMarkerParts.length==5) {
+        document.getElementById("custom-marker-new-part").disabled = true;
+        document.getElementById("custom-marker-new-part").style.opacity = "0.5";
+    }
+    else {
+        document.getElementById("custom-marker-new-part").disabled = false;
+        document.getElementById("custom-marker-new-part").style.opacity = "1";
+    }
+    if(customMarkerParts.length==1) {
+        document.getElementById("custom-marker-delete-part").disabled = true;
+        document.getElementById("custom-marker-delete-part").style.opacity = "0.5";
+    }
+    else {
+        document.getElementById("custom-marker-delete-part").disabled = false;
+        document.getElementById("custom-marker-delete-part").style.opacity = "1";
     }
 
     // Namefield
@@ -2423,12 +2463,23 @@ function customMarkerNewPart() {
     target.css({background: customMarkerColor, borderBottom: "1px solid black"});
     customMarkerParts.push(newPart);
 
+    // Keep the size of the marker between 1 and 5
+    if(customMarkerParts.length==2) {
+        document.getElementById("custom-marker-delete-part").disabled = false;
+        document.getElementById("custom-marker-delete-part").style.opacity = "1";
+    }
+    if(customMarkerParts.length==5) {
+        document.getElementById("custom-marker-new-part").disabled = true;
+        document.getElementById("custom-marker-new-part").style.opacity = "0.5";
+    }
+
     customMarkerShowTable(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
     customMarkerShowActiveInOutPuts();
 }
 
 function customMarkerDeletePart() {
     if(customMarkerParts.length<=1) {
+        console.log("bruh");
         return;
     }
     var index = customMarkerParts.length-1;
@@ -2447,6 +2498,16 @@ function customMarkerDeletePart() {
     }
     else {
         customMarkerParts[customMarkerParts.length-1].target.css({borderBottom: "1px solid black"});
+    }
+    
+    // Keep the size of the marker between 1 and 5
+    if(customMarkerParts.length==1) {
+        document.getElementById("custom-marker-delete-part").disabled = true;
+        document.getElementById("custom-marker-delete-part").style.opacity = "0.5";
+    }
+    if(customMarkerParts.length==4) {
+        document.getElementById("custom-marker-new-part").disabled = false;
+        document.getElementById("custom-marker-new-part").style.opacity = "1";
     }
 
     customMarkerShowTable(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
