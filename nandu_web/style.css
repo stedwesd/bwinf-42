@@ -140,7 +140,7 @@ main {
     width: auto;
 
     visibility: hidden;
-  
+
     header {
       font-weight: bold;
       font-size: 14px;
@@ -161,6 +161,11 @@ main {
     border: 1px solid black;
     
     background-color: #ddd;
+}
+
+.setting-section {
+    margin-top: 15px;
+    font-size: 15px;
 }
 
 #add-elements {
@@ -329,6 +334,10 @@ main {
     background-color: #ccc;
 }
 
+#update-table-button {
+    margin-left: 20px;
+}
+
 #custom-marker-panel {
     position: absolute;
     padding: 10px;
@@ -354,6 +363,11 @@ main {
     }
 }
 
+#custom-marker-name {
+    margin-top: 5px;
+    margin-bottom: 0px;
+}
+
 .custom-marker-part {
     width: 50px;
     height: 50px;
@@ -362,7 +376,7 @@ main {
     border-right: 1px solid black;
 }
 
-.custom-marker-new-part {
+#custom-marker-new-part {
     width: 25px;
     height: 25px;
     background-image: url(Plus.png);
@@ -371,7 +385,7 @@ main {
     background-size: 25px 25px;
 }
 
-.custom-marker-delete-part {
+#custom-marker-delete-part {
     width: 25px;
     height: 25px;
     background-image: url(Minus.png);
@@ -400,6 +414,11 @@ main {
     border: 1px dashed black;
 }
 
+#custom-marker-table {
+    margin-top: 10px;
+    font-size: 15px;
+}
+
 .custom-marker-table-elem {
     position: relative;
     width: 18px;
@@ -425,6 +444,7 @@ th.divider, td.divider {
     height: 10px;
     background-color: #ff0000;
     border: 1px solid transparent;
+    margin-bottom: 15px;
 }
 
 input {
