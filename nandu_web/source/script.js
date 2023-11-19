@@ -1602,7 +1602,7 @@ function createMarker(typeIndex, xPercent, yPercent, inBounds) {
         realHeight: type.realHeight,
         xPercent: xPercent,
         yPercent: yPercent,
-        x: Math.round(xPercent/100*board.cols),
+        x: Math.round(xPercent/100*(board.cols+1)),
         y: Math.round(yPercent/100*board.rows),
         inBounds: inBounds,
         inOut: type.inOut, // left, right, top, bottom
@@ -1750,7 +1750,7 @@ function createSource(outs,xPercent,yPercent,inBounds) {
         height: 100/board.rows,
         xPercent: xPercent,
         yPercent: yPercent,
-        x: Math.round(xPercent/100*board.cols),
+        x: Math.round(xPercent/100*(board.cols+1)),
         y: Math.round(yPercent/100*board.rows),
         inBounds: inBounds,
         active: true
@@ -1898,7 +1898,7 @@ function createSensor(ins,xPercent,yPercent,inBounds) {
         height: 100/board.rows,
         xPercent: xPercent,
         yPercent: yPercent,
-        x: Math.round(xPercent/100*board.cols),
+        x: Math.round(xPercent/100*(board.cols+1)),
         y: Math.round(yPercent/100*board.rows),
         inBounds: inBounds,
         active: false
