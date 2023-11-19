@@ -383,7 +383,7 @@ function changeBoardSize() {
             removeMarker(i);
             continue;
         }
-        markers[i].width = snapX*markers[i].realWidth;
+        markers[i].width = snapX;
         markers[i].height = snapY*markers[i].realHeight;
         markers[i].xPercent = markers[i].x*100/(board.cols+1);
         markers[i].yPercent = markers[i].y*100/board.rows;
@@ -716,9 +716,8 @@ function resetBoard() {
         {
             name: "Weißer Lichtgatter",
             color: "#EBEBEB",
-            realWidth: 1,
             realHeight: 2,
-            inOut: [["I1","I2"],["O1","O2"],[null],[null]],
+            inOut: [["I1","I2"],["O1","O2"]],
             rules: [
                 [false,false], // Inputs: true, true
                 [true,true], // Inputs: true, false
@@ -729,9 +728,8 @@ function resetBoard() {
         {
             name: "Roter Lichtgatter 1",
             color: "#E91607",
-            realWidth: 1,
             realHeight: 2,
-            inOut: [["I1",null],["O1","O2"],[null],[null]],
+            inOut: [["I1",null],["O1","O2"]],
             rules: [
                 [false,false], // Input: true
                 [true,true] // Input: false
@@ -740,9 +738,8 @@ function resetBoard() {
         {
             name: "Roter Lichtgatter 2",
             color: "#E91607",
-            realWidth: 1,
             realHeight: 2,
-            inOut: [[null,"I1"],["O1","O2"],[null],[null]],
+            inOut: [[null,"I1"],["O1","O2"]],
             rules: [
                 [false,false], // Input: true
                 [true,true] // Input: false
@@ -751,9 +748,8 @@ function resetBoard() {
         {
             name: "Blauer Lichtgatter",
             color: "#0089FF",
-            realWidth: 1,
             realHeight: 2,
-            inOut: [["I1","I2"],["O1","O2"],[null],[null]],
+            inOut: [["I1","I2"],["O1","O2"]],
             rules: [
                 [true,true], // Inputs: true, true
                 [true,false], // Inputs: true, false
@@ -916,7 +912,7 @@ function deleteLights() {
 function updateLightMapObstacles(){
     markers.forEach(function (marker) {
         var size={
-            x: marker.realWidth,
+            x: 1,
             y: marker.realHeight
         };
         for(var x=marker.x; x<marker.x+size.x; x++) {
@@ -985,7 +981,7 @@ function updateLightMarkers() {
     l.forEach(function (element) {
         var marker = markers[element.index];
         var size={
-            x: marker.realWidth,
+            x: 1,
             y: marker.realHeight
         };
 
@@ -993,7 +989,7 @@ function updateLightMarkers() {
         var inOut = marker.inOut;
         var ins = [];
         var outs = [];
-        for(var c=0; c<4; c++) {
+        for(var c=0; c<2; c++) {
             for(var i=0; i<inOut[c].length; i++) {
                 if(inOut[c][i] != null) {
                     var number;
@@ -1014,14 +1010,6 @@ function updateLightMarkers() {
                     else if(c==1){
                         element[1]=marker.x+size.x;
                         element[2]=marker.y+i;
-                    }
-                    if(c==2) {
-                        element[1]=marker.x+i;
-                        element[2]=marker.y-1;
-                    }
-                    else if(c==3) {
-                        element[1]=marker.x+i;
-                        element[2]=marker.y+size.y;
                     }
                     
                     if(inOut[c][i][0]=="I") {
@@ -1247,9 +1235,8 @@ var markerTypes = [
     {
         name: "Weißer Lichtgatter",
         color: "#EBEBEB",
-        realWidth: 1,
         realHeight: 2,
-        inOut: [["I1","I2"],["O1","O2"],[null],[null]],
+        inOut: [["I1","I2"],["O1","O2"]],
         rules: [
             [false,false], // Inputs: true, true
             [true,true], // Inputs: true, false
@@ -1260,9 +1247,8 @@ var markerTypes = [
     {
         name: "Roter Lichtgatter 1",
         color: "#E91607",
-        realWidth: 1,
         realHeight: 2,
-        inOut: [["I1",null],["O1","O2"],[null],[null]],
+        inOut: [["I1",null],["O1","O2"]],
         rules: [
             [false,false], // Input: true
             [true,true] // Input: false
@@ -1271,9 +1257,8 @@ var markerTypes = [
     {
         name: "Roter Lichtgatter 2",
         color: "#E91607",
-        realWidth: 1,
         realHeight: 2,
-        inOut: [[null,"I1"],["O1","O2"],[null],[null]],
+        inOut: [[null,"I1"],["O1","O2"]],
         rules: [
             [false,false], // Input: true
             [true,true] // Input: false
@@ -1282,9 +1267,8 @@ var markerTypes = [
     {
         name: "Blauer Lichtgatter",
         color: "#0089FF",
-        realWidth: 1,
         realHeight: 2,
-        inOut: [["I1","I2"],["O1","O2"],[null],[null]],
+        inOut: [["I1","I2"],["O1","O2"]],
         rules: [
             [true,true], // Inputs: true, true
             [true,false], // Inputs: true, false
@@ -1364,7 +1348,7 @@ function spawnMarkerButtons() {
         });
         
         var s=type.inOut;
-        for(var c=0; c<4; c++) {
+        for(var c=0; c<2; c++) {
             for(var i=0; i<s[c].length; i++) {
                 if(s[c][i]!=null) {
                     var target;
@@ -1374,22 +1358,12 @@ function spawnMarkerButtons() {
                     if(s[c][i][0]=="O") {
                         target = $("<div class='out' />").appendTo(marker);
                     }
-                    if(c<=1) {
-                        target.css({
-                            left: (80*c) + "%",
-                            top: 100/type.realHeight*i+25/type.realHeight + "%",
-                            width: 20/type.realWidth + "%",
-                            height: 50/type.realHeight + "%"
-                        });
-                    }
-                    else {
-                        target.css({
-                            left: 100/type.realWidth*i+25/type.realWidth + "%",
-                            top: (80*(c-2)) + "%",
-                            width: 50/type.realWidth + "%",
-                            height: 20/type.realHeight + "%"
-                        });
-                    }
+                    target.css({
+                        left: (80*c) + "%",
+                        top: 100/type.realHeight*i+25/type.realHeight + "%",
+                        width: 20 + "%",
+                        height: 50/type.realHeight + "%"
+                    });
                     continue;
                 }
             }
@@ -1596,9 +1570,8 @@ function createMarker(typeIndex, xPercent, yPercent, inBounds) {
     var marker = {
         isDragging: false,
         target: newMarker,
-        width: snapX*type.realWidth,
+        width: snapX,
         height: snapY*type.realHeight,
-        realWidth: type.realWidth,
         realHeight: type.realHeight,
         xPercent: xPercent,
         yPercent: yPercent,
@@ -1623,8 +1596,8 @@ function createMarker(typeIndex, xPercent, yPercent, inBounds) {
 
     //Summon In- and Outputs
     var s=marker.inOut;
-    marker.inOutTargets=[[],[],[],[]]
-    for(var c=0; c<4; c++) {
+    marker.inOutTargets=[[],[]]
+    for(var c=0; c<2; c++) {
         for(var i=0; i<s[c].length; i++) {
             if(s[c][i]!=null) {
                 var target;
@@ -1634,22 +1607,12 @@ function createMarker(typeIndex, xPercent, yPercent, inBounds) {
                 if(s[c][i][0]=="O") {
                     target = $("<div class='out' />").appendTo(marker.target);
                 }
-                if(c<=1) {
-                    target.css({
-                        left: (80*c)/*-10/marker.realWidth*/ + "%",
-                        top: 100/marker.realHeight*i+25/marker.realHeight + "%",
-                        width: 20/marker.realWidth + "%",
-                        height: 50/marker.realHeight + "%"
-                    });
-                }
-                else {
-                    target.css({
-                        left: 100/marker.realWidth*i+25/marker.realWidth + "%",
-                        top: (80*(c-2))/*-10/marker.realHeight*/ + "%",
-                        width: 50/marker.realWidth + "%",
-                        height: 20/marker.realHeight + "%"
-                    });
-                }
+                target.css({
+                    left: (80*c) + "%",
+                    top: 100/marker.realHeight*i+25/marker.realHeight + "%",
+                    width: 20 + "%",
+                    height: 50/marker.realHeight + "%"
+                });
                 marker.inOutTargets[c].push(target);
                 continue;
             }
@@ -2381,7 +2344,6 @@ function customMarkerAddMarker() {
     var markerType = {
         name: name,
         color: customMarkerColor,
-        realWidth: 1,
         realHeight: customMarkerParts.length,
         inOut: customMarkerGetInOut(),
         rules: customMarkerGetRules()
@@ -2720,7 +2682,7 @@ function customMarkerGetRules() {
 }
 
 function customMarkerGetInOut() {
-    inOut=[[],[],[null],[null]];
+    inOut=[[],[]];
     var inCounter = 1;
     var outCounter= 1;
     for(var i=0; i<customMarkerParts.length; i++) {
