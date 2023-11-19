@@ -121,6 +121,11 @@ main {
     top: 0;
     left: 0;
 }
+
+#delete-area {
+    background: rgba(250, 10, 10, 0.4);
+    position: absolute;
+}
   
 #panel {
     position: absolute;

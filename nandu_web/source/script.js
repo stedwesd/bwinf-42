@@ -373,7 +373,7 @@ function changeBoardSize() {
     // cast input values to numbers
     board.rows = +input.rows.val();
     board.cols = +input.columns.val();
-    snapX = 100/board.cols;
+    snapX = 100/(board.cols+1);
     snapY = 100/board.rows;
     
     var i=0;
@@ -384,7 +384,7 @@ function changeBoardSize() {
         }
         markers[i].width = snapX*markers[i].realWidth;
         markers[i].height = snapY*markers[i].realHeight;
-        markers[i].xPercent = markers[i].x*100/board.cols;
+        markers[i].xPercent = markers[i].x*100/(board.cols+1);
         markers[i].yPercent = markers[i].y*100/board.rows;
         markers[i].target.css({
             left: markers[i].xPercent + "%",
@@ -402,7 +402,7 @@ function changeBoardSize() {
         }
         sources[i].width = snapX;
         sources[i].height = snapY;
-        sources[i].xPercent = sources[i].x*100/board.cols;
+        sources[i].xPercent = sources[i].x*100/(board.cols+1);
         sources[i].yPercent = sources[i].y*100/board.rows;
         sources[i].target.css({
             left: sources[i].xPercent + "%",
@@ -420,7 +420,7 @@ function changeBoardSize() {
         }
         sensors[i].width = snapX;
         sensors[i].height = snapY;
-        sensors[i].xPercent = sensors[i].x*100/board.cols;
+        sensors[i].xPercent = sensors[i].x*100/(board.cols+1);
         sensors[i].yPercent = sensors[i].y*100/board.rows;
         sensors[i].target.css({
             left: sensors[i].xPercent + "%",
@@ -453,7 +453,7 @@ function updateSize() {
     var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
     var possibleBoardWidth = (windowWidth-widthLeft-widthRight);
     if(windowHeight/board.rows<possibleBoardWidth/board.cols){
-        board.size = zoom*board.cols/board.rows;
+        board.size = zoom*(board.cols+1)/board.rows;
     }
     else {
         board.size = possibleBoardWidth/windowHeight*zoom;
@@ -466,7 +466,7 @@ function updateSize() {
         xPercent: -50,
         yPercent: -50,
         width: size + "%",
-        paddingTop: size * board.rows/board.cols + "%"
+        paddingTop: size * board.rows/(board.cols+1) + "%"
     });
 }
 
@@ -779,7 +779,7 @@ function clearBoard() {
 
 function onDrag(marker) { // is used for both markers and sources
     // Snap the marker to the nearest grid cell within the board
-    var xGrid = Math.round(parseFloat(marker.target.css('left')) / board.width * board.cols) * (100 / board.cols);
+    var xGrid = Math.round(parseFloat(marker.target.css('left')) / board.width * (board.cols+1)) * (100 / (board.cols+1));
     var yGrid = Math.round(parseFloat(marker.target.css('top')) / board.height * board.rows) * (100 / board.rows);
 
     // Set the marker's position to the snapped values in percentages
@@ -788,7 +788,7 @@ function onDrag(marker) { // is used for both markers and sources
         top: yGrid + "%"
     });
 
-    var xPos = Math.round(xGrid/100*board.cols);
+    var xPos = Math.round(xGrid/100*(board.cols+1));
     var yPos = Math.round(yGrid/100*board.rows);
     var colliding = false;
 
@@ -857,7 +857,7 @@ function onDrag(marker) { // is used for both markers and sources
             return;
         }
         marker.target.css({left: marker.xPercent+"%", top: marker.yPercent+"%"});
-        if(marker.xPercent<0 || marker.yPercent>=100 || marker.yPercent<0 || marker.yPercent>=100) {
+        if(marker.xPercent<0 || marker.xPercent>=100*(board.cols)/(board.cols+1) || marker.yPercent<0 || marker.yPercent>=100) {
             removeElement(marker);
         }
     }
@@ -1115,18 +1115,18 @@ function newLight(type,pos) { //type: 0 horizontal, 1 vertical; pos as array [x,
         if(type==0) {
             newLight = $("<div class='horizontal-light' />").appendTo(board.target);
             newLight.css({
-                left: pos[0]*100/board.cols + "%",
+                left: pos[0]*100/(board.cols+1) + "%",
                 top: (pos[1]+0.4)*100/board.rows + "%",
-                width: 100/board.cols + "%",
+                width: 100/(board.cols+1) + "%",
                 height: 20/board.rows + "%"
             })
         }
         if(type==1) {
             newLight = $("<div class='vertical-light' />").appendTo(board.target);
             newLight.css({
-                left: (pos[0]+0.4)*100/board.cols + "%",
+                left: (pos[0]+0.4)*100/(board.cols+1) + "%",
                 top: pos[1]*100/board.rows + "%",
-                width: 20/board.cols + "%",
+                width: 20/(board.cols+1) + "%",
                 height: 100/board.rows + "%"
             })
         }
@@ -1150,6 +1150,7 @@ function newLight(type,pos) { //type: 0 horizontal, 1 vertical; pos as array [x,
 function createGrid() {
     // remove previous cells
     $(".cell").remove();
+    $("#delete-area").remove();
 
     for (var row = 0; row < board.rows; row++) {
         for (var col = 0; col < board.cols; col++) {
@@ -1159,9 +1160,9 @@ function createGrid() {
             var target = $("<div class='cell' />").appendTo(board.target);
 
             TweenLite.set(target, {
-                width: 100 / board.cols + "%",
+                width: 100 / (board.cols+1) + "%",
                 height: 100 / board.rows + "%",
-                left: col * 100 / board.cols + "%",
+                left: col * 100 / (board.cols+1) + "%",
                 top: row * 100 / board.rows + "%"
             });
 
@@ -1170,7 +1171,14 @@ function createGrid() {
                 target.css({background: darkGrey});
             }
         }
-    }
+    }   
+    var deleteArea = $("<div id='delete-area' />").appendTo(board.target);
+    TweenLite.set(deleteArea, {
+        width: 100 / (board.cols+1) + "%",
+        height: 100 + "%",
+        left: board.cols * 100 / (board.cols+1) + "%",
+        top: 0 + "%"
+    });
 }
 
 $(document).ready(function () {
@@ -1207,7 +1215,7 @@ function setRelativeMarker(marker) {
         left: marker.xPercent + "%",
         top: marker.yPercent + "%"
     });
-    if(marker.xPercent>=100 || marker.yPercent>=100) {
+    if(marker.xPercent>=100*(board.cols)/(board.cols+1) || marker.yPercent>=100) {
         removeMarker(markers.indexOf(marker));
     }
 }
@@ -1217,7 +1225,7 @@ function setRelativeSource(source) {
         left: source.xPercent + "%",
         top: source.yPercent + "%"
     });
-    if(source.xPercent>=100 || source.yPercent>=100) {
+    if(source.xPercent>=100*(board.cols)/(board.cols+1) || source.yPercent>=100) {
         removeSource(sources.indexOf(source));
     }
 }
@@ -1227,7 +1235,7 @@ function setRelativeSensor(sensor) {
         left: sensor.xPercent + "%",
         top: sensor.yPercent + "%"
     });
-    if(sensor.xPercent>=100 || sensor.yPercent>=100) {
+    if(sensor.xPercent>=100*(board.cols)/(board.cols+1) || sensor.yPercent>=100) {
         removeSensor(sensors.indexOf(sensor));
     }
 }
@@ -1674,7 +1682,7 @@ function createMarker(typeIndex, xPercent, yPercent, inBounds) {
                     var top = newY;
                     if((left >= -board.width/board.cols && left <= board.width) && (top >= -board.height/board.rows && top <= board.height)) {
                         // Ensure the marker stays within the board
-                        var x = Math.min(Math.max(newX, 0), board.width - marker.width);
+                        var x = Math.min(Math.max(newX, 0), board.width*(board.cols)/(board.cols+1) - marker.width);
                         var y = Math.min(Math.max(newY, 0), board.height - marker.realHeight*(board.height/board.rows));
 
                         marker.target.css({ left: x + 'px', top: y + 'px'});
@@ -1693,7 +1701,7 @@ function createMarker(typeIndex, xPercent, yPercent, inBounds) {
 
                 if(marker.inBounds) {
                     // Ensure the marker stays within the board
-                    newX = Math.min(Math.max(newX, 0), board.width - marker.width);
+                    newX = Math.min(Math.max(newX, 0), board.width*(board.cols)/(board.cols+1) - marker.width);
                     newY = Math.min(Math.max(newY, 0), board.height - marker.realHeight*(board.height/board.rows));
 
                     marker.target.css({ left: newX + 'px', top: newY + 'px'});
@@ -1732,12 +1740,11 @@ function createMarker(typeIndex, xPercent, yPercent, inBounds) {
 
 function createSource(outs,xPercent,yPercent,inBounds) {
     var newSource = $("<div class='source'>"+(sources.length+1)+"</div>").appendTo(board.target);
-    
     var source = {
         isDragging: false,
         target: newSource,
         outs: outs,
-        width: 100/board.cols,
+        width: snapX,
         height: 100/board.rows,
         xPercent: xPercent,
         yPercent: yPercent,
@@ -1810,7 +1817,7 @@ function createSource(outs,xPercent,yPercent,inBounds) {
                     var top = newY;
                     if((left >= -board.width/board.cols && left <= board.width) && (top >= -board.height/board.rows && top <= board.height)) {
                         // Ensure the source stays within the board
-                        var x = Math.min(Math.max(newX, 0), board.width - source.width);
+                        var x = Math.min(Math.max(newX, 0), board.width*(board.cols)/(board.cols+1) - source.width);
                         var y = Math.min(Math.max(newY, 0), board.height - (board.height/board.rows));
 
                         source.target.css({ left: x + 'px', top: y + 'px'});
@@ -1829,11 +1836,10 @@ function createSource(outs,xPercent,yPercent,inBounds) {
 
                 if(source.inBounds) {
                     // Ensure the source stays within the board
-                    newX = Math.min(Math.max(newX, 0), board.width - source.width);
+                    newX = Math.min(Math.max(newX, 0), board.width*(board.cols)/(board.cols+1) - source.width);
                     newY = Math.min(Math.max(newY, 0), board.height - (board.height/board.rows));
 
                     source.target.css({ left: newX + 'px', top: newY + 'px'});
-
                     onDrag(source);
                 }
                 else {
@@ -1886,7 +1892,7 @@ function createSensor(ins,xPercent,yPercent,inBounds) {
         isDragging: false,
         target: newSensor,
         ins: ins,
-        width: 100/board.cols,
+        width: snapX,
         height: 100/board.rows,
         xPercent: xPercent,
         yPercent: yPercent,
@@ -1950,7 +1956,7 @@ function createSensor(ins,xPercent,yPercent,inBounds) {
                     var top = newY;
                     if((left >= -board.width/board.cols && left <= board.width) && (top >= -board.height/board.rows && top <= board.height)) {
                         // Ensure the sensor stays within the board
-                        var x = Math.min(Math.max(newX, 0), board.width - sensor.width);
+                        var x = Math.min(Math.max(newX, 0), board.width*(board.cols)/(board.cols+1) - sensor.width);
                         var y = Math.min(Math.max(newY, 0), board.height - (board.height/board.rows));
 
                         sensor.target.css({ left: x + 'px', top: y + 'px'});
@@ -1970,7 +1976,7 @@ function createSensor(ins,xPercent,yPercent,inBounds) {
 
                 if(sensor.inBounds) {
                     // Ensure the sensor stays within the board
-                    newX = Math.min(Math.max(newX, 0), board.width - sensor.width);
+                    newX = Math.min(Math.max(newX, 0), board.width*(board.cols)/(board.cols+1) - sensor.width);
                     newY = Math.min(Math.max(newY, 0), board.height - (board.height/board.rows));
 
                     sensor.target.css({ left: newX + 'px', top: newY + 'px'});
