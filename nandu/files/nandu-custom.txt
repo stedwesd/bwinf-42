@@ -1,0 +1,12 @@
+4 8
+X  Q2 Q1 X
+X  X  X  X
+W  W  X  X
+X  M1 M1 X
+W  W  R  r
+X  X  X  X
+L1 X  L2 X
+X  X  X  X
+
+{"name":"AND","color":"#9A31E0","realWidth":1,"realHeight":2,"inOut":[["I1","I2"],[null,"O1"],[null],[null]],"rules":[[true],[false],[false],[false]]}
+{"name":"Custom Marker 2","color":"#676667","realWidth":1,"realHeight":7,"inOut":[[null,null,null,"I1","I2","I3","I4"],[null,null,"O1","O2","O3",null,null],[null],[null]],"rules":[[false,false,false],[false,false,true],[false,false,false],[false,false,false],[false,false,false],[true,false,false],[false,false,false],[false,true,false],[false,false,false],[false,true,false],[false,false,false],[true,false,false],[false,false,true],[false,false,false],[false,false,false],[false,false,false]]}
