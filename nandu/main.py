@@ -73,7 +73,7 @@ class LightGate:
         
         return output_values
 
-# default gates that are defined by the task. we also define an empty one
+# default gates that are defined by the task. we also define an empty one for X so we do not need to add an edge case for it later
 
 BlueMarker = LightGate(
     id=["B", "B"],
@@ -258,11 +258,11 @@ def solveNandu(filename: str, output: str):
     # exported als CSV. we use semicolons as separators, shouldn't be a problem as google sheets and excel can work with those
     with open(output, "w") as f:
         # creates the header that describes what column belong to what input/output
-        header = ";".join(f"Q{n+1}" for n in range(count_sources)) + ";"
-        header += ";".join(f"L{n+1}" for n in range(count_sensors))
+        header = ";".join(f"  Q{n+1}  " for n in range(count_sources)) + ";"
+        header += ";".join(f"  L{n+1}  " for n in range(count_sensors))
         f.write(header + "\n")
         for source_values, sensor_values in truth_table:
-            f.write(";".join("An" if val else "Aus" for val in (list(source_values) + sensor_values)) + "\n")
+            f.write(";".join("  An  " if val else "  Aus " for val in (list(source_values) + sensor_values)) + "\n")
 
 def importNanduGrid(filename: str) -> tuple[list[NanduRow], list[LightGate]]:
     with open(filename, "r") as f:
