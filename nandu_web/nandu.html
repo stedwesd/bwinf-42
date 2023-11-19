@@ -34,22 +34,17 @@
 
         <section id="panel">
             <header>Settings</header>
-            <form id=setting-form class="setting-section">
+            <div id=setting-form class="setting-section">
                 Board
                 <label>
                 Rows
-                <input id="size-x" type="number" value="10" min="5" max="50" step="1" autofocus />
+                <input id="rows-input" type="number" value="10" min="5" max="50" step="1" autofocus />
                 </label>
                 <label>
-                Collums
-                <input id="size-y" type="number" value="10" min="5" max="50" step="1" />
+                Columns
+                <input id="columns-input" type="number" value="10" min="5" max="50" step="1" />
                 </label>
-                <label>
-                Zoom
-                <input type="range" id="board-zoom" min="1" max="100" value="80" step="0.1">
-                </label>
-                <button id="apply-button" onclick="changeBoardSize()">Apply</button>
-            </form>
+            </div>
             <div class="setting-section">
                 Spawning Buttons
                 <label>
@@ -60,7 +55,6 @@
                     Collums
                     <input type="range" id="marker-buttons-per-row" min="1" max="5" value="1" step="1">
                 </label>
-                <button id="apply-marker-button-settings" onclick="changeMarkerButtonSettings()">Apply</button>
             </div>
             <div class="setting-section">
                 Upload File

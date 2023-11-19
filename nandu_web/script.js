@@ -4,6 +4,7 @@ var sources = [];
 var sensors = [];
 var lights = [];
 var snapX, snapY;
+var zoom = 80;
 var lightMap = []; // 0: nothing, 1: obstacle, 2: horizontal light, 3: vertical light, 4: crossing lights, 5: active obstacle to the right
 var tableTarget = $("#table").get(0);
 var tableOuts = [];
@@ -35,9 +36,8 @@ var customMarkerNumberOfOutputs = 0;
 var customMarkerIndex = -1;
 
 var input = {
-    sizeX: $("#size-x"),
-    sizeY: $("#size-y"),
-    zoom: $("#board-zoom"),
+    rows: $("#rows-input"),
+    columns: $("#columns-input"),
     markerButtonWidth: $("#marker-buttons-size"),
     markerButtonsPerRow: $("#marker-buttons-per-row")
 };
@@ -52,9 +52,31 @@ function init() {
     createGrid();
     updateSize();
 
-    console.log("init");
+    // Change Board size
+    var rowsInputTarget = document.getElementById("rows-input");
+    rowsInputTarget.addEventListener('change', function() {
+        changeBoardSize();
+        createGrid();
+    });
+    var columnsInputTarget = document.getElementById("columns-input");
+    columnsInputTarget.addEventListener('change', function() {
+        changeBoardSize();
+        createGrid();
+    });
+
+    var spawningButtonsWidthTarget = document.getElementById("marker-buttons-size");
+    spawningButtonsWidthTarget.addEventListener('change', function() {
+        changeMarkerButtonSettings();
+    });
+    var spawningButtonsColumnsTarget = document.getElementById("marker-buttons-per-row");
+    spawningButtonsColumnsTarget.addEventListener('change', function() {
+        changeMarkerButtonSettings();
+    });
 
     // Input from file
+    document.getElementById("input-apply").opacity = "0.5";
+    document.getElementById("input-apply").disabled = true;
+
     fileInputTarget.addEventListener('change', function() {
         const selectedFile = fileInputTarget.files[0];
         if (selectedFile) {
@@ -65,8 +87,12 @@ function init() {
             };
 
             reader.readAsText(selectedFile);
+
+            document.getElementById("input-apply").opacity = "1";
+            document.getElementById("input-apply").disabled = false;
         } else {
-            console.log("No file selected.");
+            document.getElementById("input-apply").opacity = "0.5";
+            document.getElementById("input-apply").disabled = true;
         }
     });
 
@@ -83,7 +109,6 @@ function init() {
             });
             inputBoard.push(elements);
         }
-        console.log(inputBoard);
         // Delete all markers 
         resetBoard();
 
@@ -91,8 +116,8 @@ function init() {
         var rows = parseInt(inputBoard[0][0]);
         var cols = parseInt(inputBoard[0][1]);
         
-        document.getElementById("size-x").value = rows;
-        document.getElementById("size-y").value = cols;
+        document.getElementById("rows-input").value = rows;
+        document.getElementById("columns-input").value = cols;
 
         board.cols = cols;
         board.rows = rows;
@@ -104,7 +129,6 @@ function init() {
         for(var i=0;i<customTypeStrings.length;i++) {
             addNewMarkerType(JSON.parse(customTypeStrings[i]));
         }
-        console.log(markerTypes);
         markerButtonsSetUp();
         
         // Load markers onto board
@@ -189,9 +213,6 @@ function init() {
             sensors[i].target.contents()[0].nodeValue = i+1;
         }
 
-        console.log(sourceOrder);
-        console.log(sensorOrder);
-
         doLightMapUpdating = true;
         updateLightMap();
         updateTable();
@@ -249,13 +270,6 @@ function downloadBoard() {
     for(var i=0;i<markerTypes.length-4;i++) {
         customMarkerTypeStrings.push(JSON.stringify(markerTypes[i+4]));
     }
-    
-    for(var i=0;i<boardContent.length;i++) {
-        console.log(boardContent[i]);
-    }
-    for(var i=0;i<customMarkerTypeStrings.length;i++) {
-        console.log(customMarkerTypeStrings[i]);
-    }
 
     var fileContent = sizeString + "\n";
     for(var i=0;i<boardContent.length;i++) {
@@ -294,7 +308,6 @@ function downloadTable() {
     for(var row=0;row<tableOuts.length;row++) {
         fileContent += "\n";
         for(var i=0; i<insCombinations[row].length; i++) {
-            console.log("i");
             if(insCombinations[row][i]) {
                 fileContent += "An;";
             }
@@ -306,21 +319,17 @@ function downloadTable() {
         for(var out=0;out<tableOuts[row].length-1;out++) {
             if(tableOuts[row][out].active) {
                 fileContent += "An;";
-                console.log("an");
             }
             else {
                 fileContent += "Aus;";
-                console.log("aus");
             }
         }
         if(tableOuts[row].length != 0) {
             if(tableOuts[row][tableOuts[row].length-1].active) {
                 fileContent += "An";
-                console.log("an");
             }
             else {
                 fileContent += "Aus";
-                console.log("aus");
             }
         }
     }
@@ -348,8 +357,8 @@ function downloadFile(fileName, fileContent) {
 
 function changeBoardSize() {
     // cast input values to numbers
-    board.rows = +input.sizeX.val();
-    board.cols = +input.sizeY.val();
+    board.rows = +input.rows.val();
+    board.cols = +input.columns.val();
     snapX = 100/board.cols;
     snapY = 100/board.rows;
     
@@ -407,7 +416,7 @@ function changeBoardSize() {
         });
         i++;
     }
-    console.log(sources,sensors);
+
     updateLightMap();
 
     updateSize();
@@ -430,12 +439,10 @@ function updateSize() {
     var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
     var possibleBoardWidth = (windowWidth-widthLeft-widthRight);
     if(windowHeight/board.rows<possibleBoardWidth/board.cols){
-        board.size = input.zoom.val()*board.cols/board.rows;
-        console.log("a",board.size);
+        board.size = zoom*board.cols/board.rows;
     }
     else {
-        board.size = possibleBoardWidth/windowHeight*input.zoom.val();
-        console.log("b",board.size);
+        board.size = possibleBoardWidth/windowHeight*zoom;
     }
     
     var size = board.size * windowHeight / windowWidth;
@@ -567,7 +574,6 @@ function setDarkMode(active) {
             for(var i=1;i<tableTarget.children.length;i++) {
                 tableTarget.children[i].children[0].children[0].style.backgroundImage = "url(lamp_pick.png)";
                 tableTarget.children[i].children[0].children[0].style.backgroundColor = borderGrey;
-                console.log(i);
             }
         }
         showTablePickedRow();
@@ -662,39 +668,6 @@ function changeTabSettings() {
         setDarkMode(darkModeActive);
     }
     updateSize();
-}
-
-
-function initMarker(marker) {
-    // Make the marker element draggable
-    marker.target.draggable({
-        containment: "parent", // Keep the marker within its parent element (the board)
-        snap: ".cell",         // Snap to elements with the class "cell"
-        snapMode: "both"       // Snap to both the x and y axes
-        /*
-        drag: function (event, ui) {
-            onDrag(event, ui, marker); // Pass the marker to onDrag
-        }*/
-    });
-
-    console.log("initMarker called");
-    return (marker);
-}
-
-function initSource(source) {
-    // Make the marker element draggable
-    source.target.draggable({
-        containment: "parent", // Keep the marker within its parent element (the board)
-        snap: ".cell",         // Snap to elements with the class "cell"
-        snapMode: "both"       // Snap to both the x and y axes
-        /*
-        drag: function (event, ui) {
-            onDrag(event, ui, marker); // Pass the marker to onDrag
-        }*/
-    });
-    
-    console.log("initSource called");
-    return (source);
 }
 
 // Reset Board ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -991,7 +964,7 @@ function updateLightMarkers() {
                         number=parseInt(match[0]); // Convert the matched string to an integer
                     }
                     else{
-                        console.log("Krise");
+                        console.log("Error");
                     }
                     
                     var element = [(c-(c%2))/2];
@@ -1165,12 +1138,6 @@ function createGrid() {
 }
 
 $(document).ready(function () {
-
-    $("#apply-button").on("click", function (event) {
-        event.preventDefault();
-        init(event);
-    });
-
     window.addEventListener('resize', function() {
         changeBoardSize();
     });
@@ -1385,9 +1352,7 @@ function spawnMarkerButtons() {
 }
 
 function changeMarkerButtonSettings(){
-    console.log(input.markerButtonsPerRow.val());
     var addElements = document.getElementById("add-elements");
-    console.log(input.markerButtonWidth.val()+2);
     addElements.style.width = ((parseFloat(input.markerButtonWidth.val())+2)*input.markerButtonsPerRow.val() + 15) + "px";
 
     var sourceAdd = document.getElementById("source-add");
@@ -1681,7 +1646,6 @@ function createMarker(typeIndex, xPercent, yPercent, inBounds) {
                         onDrag(marker);
 
                         if(marker.inBounds) {
-                            //initMarker(marker);
                             markers.push(marker);
                             updateLightMap();
                         }
@@ -1818,7 +1782,6 @@ function createSource(outs,xPercent,yPercent,inBounds) {
                         onDrag(source);
 
                         if(source.inBounds) {
-                            //initSource(source);
                             sources.push(source);
                             updateLightMap();
                         }
@@ -2226,7 +2189,6 @@ function showTablePickedRow() {
         for(var i=1;i<tableTarget.children.length;i++) {
             tableTarget.children[i].children[0].children[0].style.backgroundImage = "url(dark_mode_lamp_pick.png)";
             tableTarget.children[i].children[0].children[0].style.backgroundColor = darkGrey;
-            console.log(i);
         }
     }
     if(pickedRowIndex) {
@@ -2479,7 +2441,6 @@ function customMarkerNewPart() {
 
 function customMarkerDeletePart() {
     if(customMarkerParts.length<=1) {
-        console.log("bruh");
         return;
     }
     var index = customMarkerParts.length-1;
@@ -2491,7 +2452,6 @@ function customMarkerDeletePart() {
         customMarkerNumberOfOutputs-=1;
     }
     customMarkerParts.pop(index);
-    console.log(customMarkerNumberOfInputs,customMarkerNumberOfOutputs);
     
     if(customMarkerParts.length==0) {
         target.css({borderTop: "1px solid black"});
@@ -2515,7 +2475,6 @@ function customMarkerDeletePart() {
 }
 
 function customMarkerActivateInput(i) {
-    console.log("Input");
     customMarkerParts[i].input= !customMarkerParts[i].input;
     if(customMarkerParts[i].input) {
         customMarkerNumberOfInputs+=1;
@@ -2530,7 +2489,6 @@ function customMarkerActivateInput(i) {
 }
 
 function customMarkerActivateOutput(i) {
-    console.log("Output");
     customMarkerParts[i].output= !customMarkerParts[i].output;
     if(customMarkerParts[i].output) {
         customMarkerNumberOfOutputs+=1;
@@ -2696,7 +2654,6 @@ function customMarkerShowTable(ins,outs) { // number of inputs and outputs
 }
 
 function customMarkerTableChangeOutput(out,row) {
-    console.log(out,row);
     if(customMarkerTableOuts[row][out].active) {
         customMarkerTableOuts[row][out].target.css({background: "lightgray"});
         customMarkerTableOuts[row][out].active = false;
@@ -2714,7 +2671,6 @@ function customMarkerGetRules() {
         for(var o=0; o<customMarkerTableOuts[0].length; o++) {
             rules[r].push(customMarkerTableOuts[r][o].active);
         }
-        console.log(rules[r]);
     }
     return(rules);
 }
