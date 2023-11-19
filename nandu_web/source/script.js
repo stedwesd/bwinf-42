@@ -477,11 +477,11 @@ function darkMode() {
 
     var button = document.getElementById("dark-mode-button");
     if(darkModeActive) {
-        button.textContent = "Change to light mode";
+        button.textContent = "Zu Lightmode wechseln";
     }
 
     else {
-        button.textContent = "Change to dark mode";
+        button.textContent = "Zu Darkmode wechseln";
     }
 
 }
@@ -689,15 +689,15 @@ function showInfo() {
     document.getElementById("info").style.visibility = "visible";
     if(activeTab==0) {
         // Table
-        document.getElementById("info").innerHTML = "<p>Die Tabelle zeigt bla</p>"
+        document.getElementById("info").innerHTML = "<p>Diese Wahrheitestabelle zeigt die Werte für die jeweiligen Kombinationen an. Auf die Pipetten-symbole kann angeklickt werden, um den Bauplan auf die Werte zu setzen</p>"
     }
     else if(activeTab==1) {
         // Custom marker
-        document.getElementById("info").innerHTML = "<p>Custom marker erstellen bla</p>"
+        document.getElementById("info").innerHTML = "<p>Hier kann man eigene Licht-gatter erstellen. Um eine Eingabe/Ausgabe zu aktivieren/deaktivieren, klickt man auf die entsprechenden umrandeten Rechtecke. Daraufhin kann man die Werte in der Werte-tabelle nach eigenen Bedarf einstellen</p>"
     }
     else {
         // Settings
-        document.getElementById("info").innerHTML = "<p>Settings bla</p>"
+        document.getElementById("info").innerHTML = "<p>Hier kann man allgemeine Einstellungen einstellen, sowie Dateien importieren / exportieren.</p>"
     }
 }
 
@@ -713,7 +713,7 @@ function resetBoard() {
 
     var defaultMakerTypes = [
         {
-            name: "White Marker",
+            name: "Weißer Lichtgatter",
             color: "#EBEBEB",
             realWidth: 1,
             realHeight: 2,
@@ -726,7 +726,7 @@ function resetBoard() {
             ]
         },
         {
-            name: "Red Marker 1",
+            name: "Roter Lichtgatter 1",
             color: "#E91607",
             realWidth: 1,
             realHeight: 2,
@@ -737,7 +737,7 @@ function resetBoard() {
             ]
         },
         {
-            name: "Red Marker 2",
+            name: "Roter Lichtgatter 2",
             color: "#E91607",
             realWidth: 1,
             realHeight: 2,
@@ -748,7 +748,7 @@ function resetBoard() {
             ]
         },
         {
-            name: "Blue Marker",
+            name: "Blauer Lichtgatter",
             color: "#0089FF",
             realWidth: 1,
             realHeight: 2,
@@ -1235,7 +1235,7 @@ function setRelativeSensor(sensor) {
 // Functions:::::::::::::::::::::::::::::::::
 var markerTypes = [
     {
-        name: "White Marker",
+        name: "Weißer Lichtgatter",
         color: "#EBEBEB",
         realWidth: 1,
         realHeight: 2,
@@ -1248,7 +1248,7 @@ var markerTypes = [
         ]
     },
     {
-        name: "Red Marker 1",
+        name: "Roter Lichtgatter 1",
         color: "#E91607",
         realWidth: 1,
         realHeight: 2,
@@ -1259,7 +1259,7 @@ var markerTypes = [
         ]
     },
     {
-        name: "Red Marker 2",
+        name: "Roter Lichtgatter 2",
         color: "#E91607",
         realWidth: 1,
         realHeight: 2,
@@ -1270,7 +1270,7 @@ var markerTypes = [
         ]
     },
     {
-        name: "Blue Marker",
+        name: "Blauer Lichtgatter",
         color: "#0089FF",
         realWidth: 1,
         realHeight: 2,
@@ -2042,12 +2042,12 @@ function removeSensor(index) {
 function automaticallyUpdateTable() {
     doTableUpdating = !doTableUpdating;
     if(doTableUpdating) {
-        document.getElementById("automatically-update-table-button").textContent = "Automatically update table: ON"
+        document.getElementById("automatically-update-table-button").textContent = "Wahrheitstabelle aktualisieren: AUTO"
         document.getElementById("update-table-button").remove();
     }
     else {
-        document.getElementById("automatically-update-table-button").textContent = "Automatically update table: OFF"
-        $("<button type='button' id='update-table-button' onclick='reloadTable()'>Update Table</button>").appendTo(document.getElementById("table-header"));
+        document.getElementById("automatically-update-table-button").textContent = "Wahrheitstabelle aktualisieren: MANUELL"
+        $("<button type='button' id='update-table-button' onclick='reloadTable()'>Tabelle Aktualisieren</button>").appendTo(document.getElementById("table-header"));
     }
 }
 
@@ -2268,9 +2268,9 @@ function customMarkerSetUp() {
     customMarkerShowInOutNumbers();
 
     // Buttons for creating the marker type or canceling
-    $("#custom-marker-header").html("Create custom Marker <button type='button' id='custom-marker-i-button'>i</button>");
-    document.getElementById("custom-marker-done-button").textContent = "Create Marker";
-    document.getElementById("custom-marker-revert-changes-button").textContent = "Cancel";
+    $("#custom-marker-header").html("Eigenen Licht-gatter erstellen <button type='button' id='custom-marker-i-button'>i</button>");
+    document.getElementById("custom-marker-done-button").textContent = "Gatter erstellen";
+    document.getElementById("custom-marker-revert-changes-button").textContent = "Zurücksetzen";
     if(document.getElementById("custom-marker-delete-button") != null) {
         document.getElementById("custom-marker-delete-button").remove();
     }
@@ -2282,7 +2282,7 @@ function customMarkerSetUp() {
     document.getElementById("custom-marker-delete-part").style.opacity = "0.5";
 
     // Namefield
-    document.getElementById("custom-marker-name").placeholder = "Custom Marker " + (markerTypes.length-3);
+    document.getElementById("custom-marker-name").placeholder = "Custom Gate " + (markerTypes.length-3);
     document.getElementById("custom-marker-name").value = "";
 
     customMarkerShowActiveInOutPuts();
@@ -2330,11 +2330,11 @@ function customMarkerLoad(index) {
     }
     customMarkerShowInOutNumbers();
 
-    $("#custom-marker-header").html("Edit Marker <button type='button' id='custom-marker-i-button'>i</button> ");
+    $("#custom-marker-header").html("Licht-gatter bearbeiten <button type='button' id='custom-marker-i-button'>i</button> ");
 
     // Buttons for applying/reverting changes and for deleting the marker type
-    document.getElementById("custom-marker-done-button").textContent = "Apply changes";
-    document.getElementById("custom-marker-revert-changes-button").textContent = "Revert changes";
+    document.getElementById("custom-marker-done-button").textContent = "Änderungen übernehmen";
+    document.getElementById("custom-marker-revert-changes-button").textContent = "Änderungen zurücknehmen";
     if(document.getElementById("custom-marker-delete-button") == null) {
         var div = $("<div id='custom-marker-delete' />").appendTo($("#custom-marker-panel"));
         $("<button type='button' id='custom-marker-delete-button' onclick='customMarkerDeleteMarker()'>Delete Marker</button>").appendTo(div);
@@ -2359,7 +2359,7 @@ function customMarkerLoad(index) {
     }
 
     // Namefield
-    document.getElementById("custom-marker-name").placeholder = "Custom Marker " + (customMarkerIndex-3);
+    document.getElementById("custom-marker-name").placeholder = "Custom Gate " + (customMarkerIndex-3);
     document.getElementById("custom-marker-name").value = markerTypes[customMarkerIndex].name;
 
     customMarkerShowActiveInOutPuts();
@@ -2380,14 +2380,14 @@ function customMarkerAddMarker() {
     }
     if(customMarkerIndex==-1) {
         if(name == "") {
-            markerType.name = "Custom Marker " + (markerTypes.length-3);
+            markerType.name = "Custom Gate " + (markerTypes.length-3);
         }
 
         addNewMarkerType(markerType);
     }
     else {
         if(name == "") {
-            markerType.name = "Custom Marker " + (customMarkerIndex-3);
+            markerType.name = "Custom Gate " + (customMarkerIndex-3);
         }
 
         markerTypes[customMarkerIndex] = markerType;
