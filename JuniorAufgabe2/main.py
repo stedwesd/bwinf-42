@@ -11,7 +11,7 @@ def getSecretMessage(filename: str, output: str):
         x, y = x + dx, y + dy # add the offsets
         x, y = x % w, y % h # wrap over the ends of the picture
     
-    with open(output, "w") as f:
+    with open(output, "w",encoding="utf-8") as f:
         f.write(msg)
 
 
