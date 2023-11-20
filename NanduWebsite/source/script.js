@@ -690,18 +690,18 @@ function changeTabSettings() {
 
 function showInfo() {
     document.getElementById("info").style.visibility = "visible";
-    var general = "<p>Zum Hinzufügen eines Elements ziehen Sie es von der linken Leiste auf das Spielfeld. Bereits platzierte Elemente können auf dem Spielfeld bewegt und gelöscht werden (indem man sie in den rot markierten Bereich zieht). <br> Lichtquellen geben einen Lichtstrahl aus, wenn sie angeschaltet sind. Sie können per Klick auf die Quelle auf dem Spielfeld aktiviert und deaktiviert werden. <br> Lichtsensoren leuchten, wenn Licht auf sie trifft. <br> Lichtgatter geben abhängig davon ob Licht auf ihre Sensoren fällt Licht aus. Das Verhalten der Lichtgatter kann durch Bewegen der Maus auf das i in der Leiste eingesehen werden.</p>";
+    var general = "<p>Zum Hinzufügen eines Elements ziehen Sie es von der linken Leiste auf das Spielfeld. Bereits platzierte Elemente können auf dem Spielfeld bewegt und gelöscht werden (indem man sie in den rot markierten Bereich zieht). <br><br> Lichtquellen geben einen Lichtstrahl aus, wenn sie angeschaltet sind. Sie können per Klick auf die Quelle auf dem Spielfeld aktiviert und deaktiviert werden. <br><br> Lichtsensoren leuchten, wenn Licht auf sie trifft. <br><br> Lichtgatter geben abhängig davon, ob Licht auf ihre Sensoren fällt, Licht aus. Das Verhalten der Lichtgatter kann durch Bewegen der Maus auf das i in der Leiste eingesehen werden. _________________</p>";
     if(activeTab==0) {
         // Table
-        document.getElementById("info").innerHTML = general+"<p>Diese Wahrheitstabelle zeigt wie die Sensoren auf die jeweiligen Zustände der Lichtquellen reagieren. Mit dem Pipettensymbol können die Zustände aus der entsprechenden Zeile der Tabelle auf das Brett übertragen werden.</p>"
+        document.getElementById("info").innerHTML = general+"<p>Diese Wahrheitstabelle zeigt, wie die Sensoren auf die jeweiligen Zustände der Lichtquellen reagieren. Mit dem Pipettensymbol können die Zustände aus der entsprechenden Zeile der Tabelle auf die Quellen auf dem Spielfeld übertragen werden.</p>"
     }
     else if(activeTab==1) {
         // Custom marker
-        document.getElementById("info").innerHTML = general+"<p>In diesem Tab können eigene Lichtgatter erstellt werden. Um eine Eingabe/Ausgabe zu aktivieren/deaktivieren, klickt man auf die entsprechenden Rechtecke. Daraufhin kann man das Verhalten der Lichtquellen des Lichtgatters abhängig von den Sensoren nach eigenen Bedarf einstellen. Bereits erstellte Lichtgatter können mit dem \"Edit\"-Button bei dem jeweiligen Gatter berabeitet werden. Beim bearbeiten werden alle Gatter diesen Types verändert.</p>"
+        document.getElementById("info").innerHTML = general+"<p>In diesem Tab können eigene Lichtgatter erstellt werden. Um eine Eingabe/Ausgabe zu aktivieren/deaktivieren, klickt man auf die entsprechenden Rechtecke. Daraufhin kann man das Verhalten der Lichtquellen des Lichtgatters abhängig von den Sensoren nach Bedarf in der Wahrheitstabelle einstellen. <br><br> Bereits erstellte Lichtgatter können mit dem \"Edit\"-Button bei dem jeweiligen Gatter berabeitet werden. Beim Bearbeiten werden alle Gatter diesen Typs verändert.</p>"
     }
     else {
         // Settings
-        document.getElementById("info").innerHTML = general+"<p>In diesem Tab können allgemeine Einstellungen eingestellt, sowie Dateien importiert/exportiert werden.</p>"
+        document.getElementById("info").innerHTML = general+"<p>In diesem Tab können allgemeine Einstellungen gemacht, sowie Spielfelder importiert/exportiert und Wahrheitstabellen exportiert werden.</p>"
     }
 
     var infoElement = document.getElementById("info");
