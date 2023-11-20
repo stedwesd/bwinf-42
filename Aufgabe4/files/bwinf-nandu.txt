@@ -1,0 +1,29 @@
+27 24
+X  Q1 X  X  X  Q2 X  X  X  Q3 X  X  X  Q4 X  X  X  Q5 X  X  X  Q6 X  X  X  Q7 X
+X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X
+X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X
+X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X
+X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X
+X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X
+X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X
+X  X  X  X  X  X  X  X  X  X  X  X  M3 M3 M3 X  X  X  X  X  X  X  M3 M3 M3 X  X
+X  X  X  X  X  X  X  X  X  X  X  M2 M2 M1 M2 M2 X  X  X  X  X  M3 M3 M3 M2 M2 X
+X  X  X  X  X  X  X  X  X  X  M2 M2 M1 M3 M3 M3 X  X  X  X  M1 M3 M3 M3 M2 M2 X
+X  X  X  X  X  X  X  X  X  M2 M2 X  X  M3 M3 M3 X  X  X  M3 M3 M3 M3 M3 M3 X  X
+X  X  X  X  X  M1 X  X  M1 M1 X  X  X  M1 M2 M2 X  X  M3 M3 M3 M2 M2 X  X  X  X
+X  X  X  X  M2 M2 X  M2 M2 X  X  X  X  M3 M3 M3 X  M3 M3 M3 M2 M2 X  X  X  X  X
+X  X  X  M3 M3 M3 M2 M2 X  X  X  X  X  M2 M2 M1 M3 M3 M3 M2 M2 X  X  X  X  X  X
+X  X  M3 M3 M3 M1 M1 X  X  X  X  X  X  M3 M3 M3 M1 M2 M2 X  X  X  X  X  X  X  X
+X  M2 M2 M1 M2 M2 X  X  X  M2 M2 X  X  X  M2 M2 M1 M1 X  X  X  X  X  X  X  X  X
+X  X  M3 M3 M3 M2 M2 X  X  M2 M2 X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X
+X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X
+X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X
+X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X
+X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X
+X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X
+X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X  X
+X  L1 X  X  X  L2 X  X  X  L3 X  X  X  L4 X  X  X  L5 X  X  X  L6 X  X  X  L7 X
+
+{"name":"BWINF 1x1","color":"#F3D214","realHeight":1,"inOut":[["I1"],["O1"]],"rules":[[true],[false]]}
+{"name":"BWINF 1x2","color":"#F3D214","realHeight":2,"inOut":[["I1","I2"],["O1","O2"]],"rules":[[false,true],[true,false],[true,true],[false,false]]}
+{"name":"BWINF 1x3","color":"#F3D214","realHeight":3,"inOut":[["I1","I2","I3"],["O1","O2","O3"]],"rules":[[true,false,true],[false,true,false],[true,false,true],[false,true,false],[true,false,true],[false,true,false],[true,false,true],[false,false,false]]}

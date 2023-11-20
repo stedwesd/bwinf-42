@@ -29,6 +29,7 @@ class LightGate:
 
     def __init__(self, id: Union[list[str], int] , json_data: dict):
 
+
         # custom markers are always saved as a sequence of M<int>'s, so we can automate that 
         if isinstance(id, int):
             self.id: list[str] = [f"M{id}"] * json_data["realHeight"]
@@ -41,9 +42,8 @@ class LightGate:
         self.inputs: ConnectionList = json_data["inOut"][0]
         self.outputs: ConnectionList = json_data["inOut"][1]
 
-        # reverse the truth table as the website implements it to have the zero'th index to have all the inputs on, and the last index to have all of them off
-        # which is convinienter to deal with in reverse
         self.truth_table: list[TruthtableValue] = json_data["rules"][::-1]
+
     
     def process(self, input_values: LightValueRow):
         
@@ -55,15 +55,14 @@ class LightGate:
             return output_values
 
         rule_index = 0
+        input_count = sum(1 if k else 0 for k in self.inputs)
         for input, value in zip(self.inputs, input_values):
             if input != None and value == True:
                 # inputs are named in the form of "I<int>", we can just extract the integer and gets it's identification
                 input_id: int = int(input[1:])
-                rule_index += 2 ** (input_id - 1)
+                rule_index += 2 ** (input_count - input_id)
         
-
-        # we need to reverse the output rule as it seems to be reversed on the website for some reason
-        output_rule: TruthtableValue = self.truth_table[rule_index][::-1]
+        output_rule: TruthtableValue = self.truth_table[rule_index]
 
         for index, output in enumerate(self.outputs):
             if output != None:
@@ -231,6 +230,8 @@ def evaluateNanduGrid(grid: list[NanduRow], gates: list[LightGate], source_value
             source_values = source_values,
             sensor_values = sensor_values
         )
+        #print(" ".join(k.ljust(2) for k in row), "  ", " ".join("##" if k else ".." for k in output_values))
+        #print()
         
     return sensor_values
 
@@ -286,16 +287,17 @@ def solveNandu(filename: str, output: str):
         )))
 
     # exported als CSV. we use semicolons as separators, shouldn't be a problem as google sheets and excel can work with those
-    with open(output, "w") as f:
+    with open(output, "w", encoding="utf-8") as f:
         # creates the header that describes what column belong to what input/output
-        header = ";".join(f"  Q{n+1}  " for n in range(count_sources)) + ";"
-        header += ";".join(f"  L{n+1}  " for n in range(count_sensors))
+        header = ";".join(f" Q{n+1}  " for n in range(count_sources)) + ";"
+        header += ";".join(f" L{n+1}  " for n in range(count_sensors))
         f.write(header + "\n")
         for source_values, sensor_values in truth_table:
-            f.write(";".join("  An  " if val else "  Aus " for val in (list(source_values) + sensor_values)) + "\n")
+            f.write(";".join(" An  " if val else " Aus " for val in (list(source_values) + sensor_values)) + "\n")
 
 if __name__ == "__main__":
     print("WARNING: The CSV Files in nandu/output/ use semicolons as separators.")
     for i in range(5):
         solveNandu(f"files/nandu{i+1}.txt",f"output/nandu{i+1}.csv")
-        
+    solveNandu("files/bwinf-nandu.txt", "output/bwinf-nandu.csv")
+    
