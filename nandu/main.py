@@ -1,6 +1,6 @@
 from itertools import product
 import json
-from typing import Union
+from typing import Union # cannot use list[str] | int due to the feature being to recent (i think it was implemented 3.9ish?)
 
 # this code is fully compactable with the website. that means, it can use any table that has been generated from the website,
 # and is able to read and process the custom gates that the user has created. 
@@ -229,6 +229,31 @@ def evaluateNanduGrid(grid: list[NanduRow], gates: list[LightGate], source_value
         
     return sensor_values
 
+def importNanduGrid(filename: str) -> tuple[list[NanduRow], list[LightGate]]:
+    with open(filename, "r") as f:
+        data: str = f.read()
+
+    lines = data.split("\n")
+
+    width, height = map(int, lines[0].split())
+
+    grid: list[NanduRow] = [row.split() for row in lines[1:height+1]]
+
+    gates: list[LightGate] = DEFAULT_GATE_LIST
+
+    # if height+2 is out of range, we get an empty iterator, so it's all fine
+    for index, line in enumerate(lines[height+2:]):
+        try:
+            gate = LightGate(
+                id = index + 1, # id's should start from 1, indexes start from 0
+                json_data = json.loads(line)
+            )
+            gates.append(gate)
+        except json.decoder.JSONDecodeError:
+            raise Exception(f"Couldn't extract gate {index} from file: {line}")
+    
+    return grid, gates
+
 def solveNandu(filename: str, output: str):
 
     grid, gates = importNanduGrid(filename)
@@ -263,32 +288,6 @@ def solveNandu(filename: str, output: str):
         f.write(header + "\n")
         for source_values, sensor_values in truth_table:
             f.write(";".join("  An  " if val else "  Aus " for val in (list(source_values) + sensor_values)) + "\n")
-
-def importNanduGrid(filename: str) -> tuple[list[NanduRow], list[LightGate]]:
-    with open(filename, "r") as f:
-        data: str = f.read()
-
-    lines = data.split("\n")
-
-    width, height = map(int, lines[0].split())
-
-    grid: list[NanduRow] = [row.split() for row in lines[1:height+1]]
-
-    gates: list[LightGate] = DEFAULT_GATE_LIST
-
-    # if height+2 is out of range, we get an empty iterator, so it's all fine
-    for index, line in enumerate(lines[height+2:]):
-        try:
-            gate = LightGate(
-                id = index + 1, # id's should start from 1, indexes start from 0
-                json_data = json.loads(line)
-            )
-            gates.append(gate)
-        except json.decoder.JSONDecodeError:
-            raise Exception(f"Couldn't extract gate {index} from file: {line}")
-    
-    return grid, gates
-
 
 if __name__ == "__main__":
     print("WARNING: The CSV Files in nandu/output/ use semicolons as separators.")
