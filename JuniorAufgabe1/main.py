@@ -8,14 +8,14 @@ def importFile(filename: str):
     # Anzahl der Spielesorten
     k = int(data[1])
     # Anzahl der Spiele pro Spielesorte
-    sorts = []
+    sorten = []
     for i in range(k):
-        sorts.append(int(data[i+2]))
+        sorten.append(int(data[i+2]))
     
-    return writeOutput(getWundertueten(n,k,sorts))
+    return wundertuetenAufteilen(n,k,sorten)
 
 
-def getWundertueten(n,k,sorts):
+def wundertuetenAufteilen(n,k,sorts):
     # Erstellt eine Liste an Wundertueten, die jeweils die Anzahl an erhaltenen Spielen pro Spielesorte enthält
     tueten = []
     for t in range(n):
@@ -24,15 +24,15 @@ def getWundertueten(n,k,sorts):
             tueten[t].append(0)
 
     # Teilt die Spiele auf die Wundertueten auf, dabei wird jede Spielesorte nacheinander durchgegangen und jede Tuete bekommt nacheinander jeweils 1 Spielzeug.
-    currentTuete = 0   
+    aktuelleTuete = 0   
     for s in range(len(sorts)):
         for i in range(sorts[s]):
-            tueten[currentTuete][s]+=1
-            currentTuete = (currentTuete+1)%n
+            tueten[aktuelleTuete][s]+=1
+            aktuelleTuete = (aktuelleTuete+1)%n
     
     return tueten
 
-def writeOutput(tueten):
+def schreibeOutput(tueten):
     output = ""
     for t in tueten:
         text = str(t)
@@ -41,6 +41,6 @@ def writeOutput(tueten):
 
 if __name__ == "__main__":
     for i in range(6):
-        res = importFile(f"files/wundertuete{i}.txt")
+        ergebnis = schreibeOutput(importFile(f"files/wundertuete{i}.txt"))
         with open(f"output/wundertuete{i}.txt","w") as f:
-            f.write(res)
+            f.write(ergebnis)
