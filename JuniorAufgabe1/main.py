@@ -1,4 +1,3 @@
-
 def importFile(filename: str):
     with open(filename, "r") as f:
         data = f.read().split("\n")

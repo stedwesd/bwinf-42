@@ -5,7 +5,7 @@ def getSecretMessage(filename: str, output: str):
     x, y, dx, dy = 0, 0, 0, 0
     w, h = img.size
     msg = ""
-    while not msg or dx or dy: # if we returned to the start and the message is not empty.
+    while msg!="" or dx==0 or dy==0: # while we have not reached the last pixel (with g=0 and b=0)
         char, dx, dy = img.getpixel((x, y))[:3] # we are not interested in the alpha channel
         msg += chr(char) # add the characters
         x, y = x + dx, y + dy # add the offsets
