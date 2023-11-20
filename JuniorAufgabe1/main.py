@@ -15,7 +15,7 @@ def importFile(filename: str):
     return wundertuetenAufteilen(n,k,sorten)
 
 
-def wundertuetenAufteilen(n,k,sorts):
+def wundertuetenAufteilen(n,k,sorten):
     # Erstellt eine Liste an Wundertueten, die jeweils die Anzahl an erhaltenen Spielen pro Spielesorte enthält
     tueten = []
     for t in range(n):
@@ -25,8 +25,8 @@ def wundertuetenAufteilen(n,k,sorts):
 
     # Teilt die Spiele auf die Wundertueten auf, dabei wird jede Spielesorte nacheinander durchgegangen und jede Tuete bekommt nacheinander jeweils 1 Spielzeug.
     aktuelleTuete = 0   
-    for s in range(len(sorts)):
-        for i in range(sorts[s]):
+    for s in range(len(sorten)):
+        for i in range(sorten[s]):
             tueten[aktuelleTuete][s]+=1
             aktuelleTuete = (aktuelleTuete+1)%n
     
