@@ -7,7 +7,7 @@ The team consists of: @stedwesd, @Roboter09, @Banana2308
 
 | Task | Progress
 |-|-
-| `J1` Wundertüte        | ✅ Program implemented
+| `J1` Wundertüte        | ☑️ Documentation written 
 | `J2` St. Egano         | ☑️ Documentation written 
 | `N1` Arukone           | -
 | `N2` Die goldene Mitte | -
