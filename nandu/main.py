@@ -84,10 +84,11 @@ BlueMarker = LightGate(
             ["O1", "O2"]
         ],
         "rules" : [
-            [True, True],
-            [True, False],
-            [False, True],
-            [False, False]
+            # O1    O2         I1   I2
+            [True, True],  #  true, true
+            [True, False], #  true, false
+            [False, True], #  false, true
+            [False, False] #  false, false
         ]
     }
 )
@@ -101,10 +102,11 @@ WhiteMarker = LightGate(
             ["O1","O2"]
         ],
         "rules" : [
-            [False, False],
-            [True, True],
-            [True, True],
-            [True, True]
+            # O1     O2       I1  I2
+            [False, False], # true, true
+            [True, True],   # true, false
+            [True, True],   # false, true
+            [True, True]    # false ,false
         ]
     }
 )
@@ -118,8 +120,9 @@ RedMarker = LightGate(
             ["O1","O2"]
         ],
         "rules" : [
-            [False, False],
-            [True, True]
+            #  O1     O2        I1
+            [False, False], # true
+            [True, True]    # false
         ]
     }
 )
@@ -133,8 +136,9 @@ ReflectedRedMarker = LightGate(
             ["O1","O2"]
         ],
         "rules" : [
-            [False, False],
-            [True, True]
+            #  O1     O2        I1
+            [False, False],  # true
+            [True, True]     # false
         ]
     }
 )
@@ -148,8 +152,9 @@ empty = LightGate(
             ["O1"]
         ],
         "rules" : [
-            [True],
-            [False]
+            # O1       I1
+            [True], # true
+            [False] # false
         ]
     }
 )
