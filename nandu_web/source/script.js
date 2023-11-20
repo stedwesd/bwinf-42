@@ -77,11 +77,9 @@ function init() {
     var infoButtons = [document.getElementById("table-i-button"),document.getElementById("custom-marker-i-button"),document.getElementById("settings-i-button"),];
     for(var i=0;i<3;i++) {
         infoButtons[i].addEventListener("mouseover", function() {
-            // Show marker table when hovering
             showInfo();
         });
         infoButtons[i].addEventListener("mouseout", function() {
-            // Show marker table when hovering
             hideInfo();
         });
         console.log(infoButtons[i]);
@@ -688,17 +686,18 @@ function changeTabSettings() {
 
 function showInfo() {
     document.getElementById("info").style.visibility = "visible";
+    var general = "<p>Zum Hinzufügen eines Elements ziehen Sie es von der linken Leiste auf das Spielfeld. Bereits platzierte Elemente können auf dem Spielfeld bewegt und gelöscht werden (indem man sie in den rot markierten Bereich zieht). \n Lichtquellen geben einen Lichtstrahl aus, wenn sie angeschaltet sind. Sie können per Klick auf die Quelle auf dem Spielfeld aktiviert und deaktiviert werden. \n Lichtsensoren leuchten, wenn Licht auf sie trifft. \n Lichtgatter geben abhängig davon ob Licht in ihre Sensoren fällt Licht aus. Das Verhalten der Lichtgatter kann durch Bewegen der Maus auf das i in der Leiste eingesehen werden.</p>";
     if(activeTab==0) {
         // Table
-        document.getElementById("info").innerHTML = "<p>Diese Wahrheitestabelle zeigt die Werte für die jeweiligen Kombinationen an. Auf die Pipetten-symbole kann angeklickt werden, um den Bauplan auf die Werte zu setzen</p>"
+        document.getElementById("info").innerHTML = general+"<p>Diese Wahrheitstabelle zeigt wie die Sensoren auf die jeweiligen Zustände der Lichtquellen reagieren. Mit dem Pipettensymbol können die Zustände aus der entsprechenden Zeile der Tabelle auf das Brett übertragen werden.</p>"
     }
     else if(activeTab==1) {
         // Custom marker
-        document.getElementById("info").innerHTML = "<p>Hier kann man eigene Licht-gatter erstellen. Um eine Eingabe/Ausgabe zu aktivieren/deaktivieren, klickt man auf die entsprechenden umrandeten Rechtecke. Daraufhin kann man die Werte in der Werte-tabelle nach eigenen Bedarf einstellen</p>"
+        document.getElementById("info").innerHTML = general+"<p>In diesem Tab können eigene Licht-gatter erstellt werden. Um eine Eingabe/Ausgabe zu aktivieren/deaktivieren, klickt man auf die entsprechenden Rechtecke. Daraufhin kann man das Verhalten der Lichtquellen des Lichtgatters abhängig von den Sensoren nach eigenen Bedarf einstellen. Bereits erstellte Lichtgatter können mit dem \"Edit\"-Button bei dem jeweiligen Gatter berabeitet werden. Beim bearbeiten werden alle Gatter diesen Types verändert.</p>"
     }
     else {
         // Settings
-        document.getElementById("info").innerHTML = "<p>Hier kann man allgemeine Einstellungen einstellen, sowie Dateien importieren / exportieren.</p>"
+        document.getElementById("info").innerHTML = general+"<p>In diesem Tab können allgemeine Einstellungen eingestellt, sowie Dateien importiert/exportiert werden.</p>"
     }
 }
 
@@ -2239,7 +2238,9 @@ function customMarkerSetUp() {
     customMarkerShowInOutNumbers();
 
     // Buttons for creating the marker type or canceling
-    $("#custom-marker-header").html("Eigenen Licht-gatter erstellen <button type='button' id='custom-marker-i-button'>i</button>");
+    document.getElementById("custom-marker-i-button").remove();
+    var title = $("#custom-marker-header").html("Eigenen Licht-gatter erstellen");
+    $("<button type='button' id='custom-marker-i-button'>i</button>").appendTo(title);
     document.getElementById("custom-marker-done-button").textContent = "Gatter erstellen";
     document.getElementById("custom-marker-revert-changes-button").textContent = "Zurücksetzen";
     if(document.getElementById("custom-marker-delete-button") != null) {
