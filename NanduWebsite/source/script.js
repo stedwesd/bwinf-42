@@ -84,7 +84,6 @@ function init() {
         infoButtons[i].addEventListener("mouseout", function() {
             hideInfo();
         });
-        console.log(infoButtons[i]);
     }
 
     // Input from file
@@ -192,7 +191,6 @@ function init() {
                 row++;
             }
         }
-        console.log(lightMap);
 
         // Sort sources 
         for(var a=0;a<sources.length;a++) {
@@ -303,7 +301,6 @@ function downloadBoard() {
 
     }
 
-    console.log(fileContent);
     downloadFile("nandu.txt", fileContent);
 }
 
@@ -348,7 +345,6 @@ function downloadTable() {
             }
         }
     }
-    console.log(fileContent);
     downloadFile("table.csv",fileContent);
 }
 
@@ -856,7 +852,6 @@ function onDrag(marker) { // is used for both markers and sources
         marker.y = yPos;
         marker.inBounds = true;
         updateLightMap();
-        console.log(lightMap);
     }
     if(colliding) {
         if(!marker.inBounds) {
@@ -1385,7 +1380,6 @@ function showMarkerTable(index,event) {
     var height = parseInt(tableParent.css("height"));
     var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
-    console.log(posY,height,windowHeight);
     if(height+posY>windowHeight) {
         tableParent.css({top: windowHeight-height});
     }
