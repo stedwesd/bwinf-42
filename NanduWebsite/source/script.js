@@ -1259,6 +1259,7 @@ function markerButtonsSetUp() {
     }
 
     changeMarkerButtonSettings();
+    setDarkMode(activeTab);
 }
 
 function spawnMarkerButtons() {
