@@ -1,0 +1,6 @@
+3 3
+Q1 Q2 Q3
+M1 M1 M1
+L1 L2 L3
+
+{"name":"Custom Gate 1","color":"#ffffff","realHeight":3,"inOut":[["I1","I2","I3"],["O1","O2","O3"]],"rules":[[true,false,false],[true,false,false],[true,false,false],[true,false,false],[true,false,false],[true,false,false],[true,false,false],[true,false,false]]}
