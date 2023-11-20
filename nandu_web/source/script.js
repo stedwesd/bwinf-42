@@ -11,6 +11,7 @@ var tableOuts = [];
 var showLights = true;
 var doLightMapUpdating = true;
 var doTableUpdating = true;
+var markerTypes = [];
 
 var colors = {
     activeInput: "#FFFDBC",
@@ -47,6 +48,7 @@ var darkModeActive = false;
 
 // INIT :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 function init() {
+    resetBoard();
     changeBoardSize();
 
     createGrid();
@@ -720,7 +722,7 @@ function resetBoard() {
 
     var defaultMakerTypes = [
         {
-            name: "Weißer Lichtgatter",
+            name: "NAND-Gatter",
             color: "#EBEBEB",
             realHeight: 2,
             inOut: [["I1","I2"],["O1","O2"]],
@@ -732,7 +734,7 @@ function resetBoard() {
             ]
         },
         {
-            name: "Roter Lichtgatter 1",
+            name: "NOT-Gatter 1",
             color: "#E91607",
             realHeight: 2,
             inOut: [["I1",null],["O1","O2"]],
@@ -742,7 +744,7 @@ function resetBoard() {
             ]
         },
         {
-            name: "Roter Lichtgatter 2",
+            name: "NOT-Gatter 2",
             color: "#E91607",
             realHeight: 2,
             inOut: [[null,"I1"],["O1","O2"]],
@@ -752,7 +754,7 @@ function resetBoard() {
             ]
         },
         {
-            name: "Blauer Lichtgatter",
+            name: "BUFFER",
             color: "#0089FF",
             realHeight: 2,
             inOut: [["I1","I2"],["O1","O2"]],
@@ -1235,54 +1237,6 @@ function setRelativeSensor(sensor) {
         removeSensor(sensors.indexOf(sensor));
     }
 }
-
-// Functions:::::::::::::::::::::::::::::::::
-var markerTypes = [
-    {
-        name: "Weißer Lichtgatter",
-        color: "#EBEBEB",
-        realHeight: 2,
-        inOut: [["I1","I2"],["O1","O2"]],
-        rules: [
-            [false,false], // Inputs: true, true
-            [true,true], // Inputs: true, false
-            [true,true], // Inputs: false, true
-            [true,true] // Inputs: false, false
-        ]
-    },
-    {
-        name: "Roter Lichtgatter 1",
-        color: "#E91607",
-        realHeight: 2,
-        inOut: [["I1",null],["O1","O2"]],
-        rules: [
-            [false,false], // Input: true
-            [true,true] // Input: false
-        ]
-    },
-    {
-        name: "Roter Lichtgatter 2",
-        color: "#E91607",
-        realHeight: 2,
-        inOut: [[null,"I1"],["O1","O2"]],
-        rules: [
-            [false,false], // Input: true
-            [true,true] // Input: false
-        ]
-    },
-    {
-        name: "Blauer Lichtgatter",
-        color: "#0089FF",
-        realHeight: 2,
-        inOut: [["I1","I2"],["O1","O2"]],
-        rules: [
-            [true,true], // Inputs: true, true
-            [true,false], // Inputs: true, false
-            [false,true], // Inputs: false, true
-            [false,false] // Inputs: false, false
-        ]
-    }
-];
 
 function elementButtonsSetUp() {
     var sourceButton = document.getElementById("source-add-source");
