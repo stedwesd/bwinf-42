@@ -2331,7 +2331,7 @@ function customMarkerLoad(index) {
     document.getElementById("custom-marker-revert-changes-button").textContent = "Änderungen verwerfen";
     if(document.getElementById("custom-marker-delete-button") == null) {
         var div = $("<div id='custom-marker-delete' />").appendTo($("#custom-marker-panel"));
-        $("<button type='button' id='custom-marker-delete-button' onclick='customMarkerDeleteMarker()'>Lichtgattertyp entfernen</button>").appendTo(div);
+        $("<button type='button' id='custom-marker-delete-button' onclick='customMarkerDeleteMarker()'>Lichtgattertyp löschen</button>").appendTo(div);
     }
 
     // Add and remove parts buttons
