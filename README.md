@@ -32,7 +32,7 @@ The team consists of: @stedwesd, @Roboter09, @Banana2308
 - ✅ tabelle-export?
 
 ### Tabelle
-- 🟠 wenn man ueber ~5 inputs hat, faengt das program an zu laggen, weil es nach jeden change welcher gemacht wird die ganze tabelle nochmal evaluieren muss. wuerde sagen dass du einen extra-button bei der tabelle fuer die calculation addest
+- ✅ wenn man ueber ~5 inputs hat, faengt das program an zu laggen, weil es nach jeden change welcher gemacht wird die ganze tabelle nochmal evaluieren muss. wuerde sagen dass du einen extra-button bei der tabelle fuer die calculation addest
 - ✅ einzelnen sachen in der tabelle anklickbar machen, um die entsprechenden Inpputs zu aktivieren
 
 ### Custom Marker

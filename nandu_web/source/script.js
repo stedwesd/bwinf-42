@@ -538,6 +538,7 @@ function setDarkMode(active) {
         tabButtonTable.style.color = "white";
         tabButtonCustomMarker.style.color = "white";
         tabButtonSettings.style.color = "white";
+        document.getElementById("info").style.background = darkGrey;
 
         showTablePickedRow();
     }
@@ -581,6 +582,7 @@ function setDarkMode(active) {
         tabButtonTable.style.color = black;
         tabButtonCustomMarker.style.color = black;
         tabButtonSettings.style.color = black;
+        document.getElementById("info").style.background = borderGrey;
 
         // Table pick
         if(tableTarget.children.length>=1) {
@@ -686,19 +688,24 @@ function changeTabSettings() {
 
 function showInfo() {
     document.getElementById("info").style.visibility = "visible";
-    var general = "<p>Zum Hinzufügen eines Elements ziehen Sie es von der linken Leiste auf das Spielfeld. Bereits platzierte Elemente können auf dem Spielfeld bewegt und gelöscht werden (indem man sie in den rot markierten Bereich zieht). \n Lichtquellen geben einen Lichtstrahl aus, wenn sie angeschaltet sind. Sie können per Klick auf die Quelle auf dem Spielfeld aktiviert und deaktiviert werden. \n Lichtsensoren leuchten, wenn Licht auf sie trifft. \n Lichtgatter geben abhängig davon ob Licht in ihre Sensoren fällt Licht aus. Das Verhalten der Lichtgatter kann durch Bewegen der Maus auf das i in der Leiste eingesehen werden.</p>";
+    var general = "<p>Zum Hinzufügen eines Elements ziehen Sie es von der linken Leiste auf das Spielfeld. Bereits platzierte Elemente können auf dem Spielfeld bewegt und gelöscht werden (indem man sie in den rot markierten Bereich zieht). <br> Lichtquellen geben einen Lichtstrahl aus, wenn sie angeschaltet sind. Sie können per Klick auf die Quelle auf dem Spielfeld aktiviert und deaktiviert werden. <br> Lichtsensoren leuchten, wenn Licht auf sie trifft. <br> Lichtgatter geben abhängig davon ob Licht auf ihre Sensoren fällt Licht aus. Das Verhalten der Lichtgatter kann durch Bewegen der Maus auf das i in der Leiste eingesehen werden.</p>";
     if(activeTab==0) {
         // Table
         document.getElementById("info").innerHTML = general+"<p>Diese Wahrheitstabelle zeigt wie die Sensoren auf die jeweiligen Zustände der Lichtquellen reagieren. Mit dem Pipettensymbol können die Zustände aus der entsprechenden Zeile der Tabelle auf das Brett übertragen werden.</p>"
     }
     else if(activeTab==1) {
         // Custom marker
-        document.getElementById("info").innerHTML = general+"<p>In diesem Tab können eigene Licht-gatter erstellt werden. Um eine Eingabe/Ausgabe zu aktivieren/deaktivieren, klickt man auf die entsprechenden Rechtecke. Daraufhin kann man das Verhalten der Lichtquellen des Lichtgatters abhängig von den Sensoren nach eigenen Bedarf einstellen. Bereits erstellte Lichtgatter können mit dem \"Edit\"-Button bei dem jeweiligen Gatter berabeitet werden. Beim bearbeiten werden alle Gatter diesen Types verändert.</p>"
+        document.getElementById("info").innerHTML = general+"<p>In diesem Tab können eigene Lichtgatter erstellt werden. Um eine Eingabe/Ausgabe zu aktivieren/deaktivieren, klickt man auf die entsprechenden Rechtecke. Daraufhin kann man das Verhalten der Lichtquellen des Lichtgatters abhängig von den Sensoren nach eigenen Bedarf einstellen. Bereits erstellte Lichtgatter können mit dem \"Edit\"-Button bei dem jeweiligen Gatter berabeitet werden. Beim bearbeiten werden alle Gatter diesen Types verändert.</p>"
     }
     else {
         // Settings
         document.getElementById("info").innerHTML = general+"<p>In diesem Tab können allgemeine Einstellungen eingestellt, sowie Dateien importiert/exportiert werden.</p>"
     }
+
+    var infoElement = document.getElementById("info");
+    var tabs = [document.getElementById("table-panel"),document.getElementById("custom-marker-panel"),document.getElementById("panel")];
+    var tabWidth = parseInt(tabs[activeTab].offsetWidth);
+    infoElement.style.right = (tabWidth+5) + "px";
 }
 
 function hideInfo() {
@@ -1419,6 +1426,14 @@ function showMarkerTable(index,event) {
 
     markerShowTable(numberOfInputs,numberOfOutputs,table);
     markerShowTableOuts(index);
+
+    var height = parseInt(tableParent.css("height"));
+    var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
+    console.log(posY,height,windowHeight);
+    if(height+posY>windowHeight) {
+        tableParent.css({top: windowHeight-height});
+    }
 }
 
 function deleteMarkerTable() {
@@ -2239,8 +2254,15 @@ function customMarkerSetUp() {
 
     // Buttons for creating the marker type or canceling
     document.getElementById("custom-marker-i-button").remove();
-    var title = $("#custom-marker-header").html("Eigenen Licht-gatter erstellen");
-    $("<button type='button' id='custom-marker-i-button'>i</button>").appendTo(title);
+    var title = $("#custom-marker-header").html("Eigenen Lichtgatter erstellen <button type='button' id='custom-marker-i-button'>i</button>");
+    var infoButton = document.getElementById("custom-marker-i-button");
+    infoButton.addEventListener("mouseover", function() {
+        showInfo();
+    });
+    infoButton.addEventListener("mouseout", function() {
+        hideInfo();
+    });
+
     document.getElementById("custom-marker-done-button").textContent = "Gatter erstellen";
     document.getElementById("custom-marker-revert-changes-button").textContent = "Zurücksetzen";
     if(document.getElementById("custom-marker-delete-button") != null) {
@@ -2302,14 +2324,14 @@ function customMarkerLoad(index) {
     }
     customMarkerShowInOutNumbers();
 
-    $("#custom-marker-header").html("Licht-gatter bearbeiten <button type='button' id='custom-marker-i-button'>i</button> ");
+    $("#custom-marker-header").html("Lichtgatter bearbeiten <button type='button' id='custom-marker-i-button'>i</button> ");
 
     // Buttons for applying/reverting changes and for deleting the marker type
     document.getElementById("custom-marker-done-button").textContent = "Änderungen übernehmen";
-    document.getElementById("custom-marker-revert-changes-button").textContent = "Änderungen zurücknehmen";
+    document.getElementById("custom-marker-revert-changes-button").textContent = "Änderungen verwerfen";
     if(document.getElementById("custom-marker-delete-button") == null) {
         var div = $("<div id='custom-marker-delete' />").appendTo($("#custom-marker-panel"));
-        $("<button type='button' id='custom-marker-delete-button' onclick='customMarkerDeleteMarker()'>Delete Marker</button>").appendTo(div);
+        $("<button type='button' id='custom-marker-delete-button' onclick='customMarkerDeleteMarker()'>Lichtgattertyp entfernen</button>").appendTo(div);
     }
 
     // Add and remove parts buttons
@@ -2572,8 +2594,7 @@ function customMarkerShowColors() {
         "#0089FF",
         "#9A31E0",
         "#EBEBEB",
-        "#676667"/*,
-        "#111111"*/
+        "#676667"
     ]
 
     var colorSelectionTarget = $("#custom-marker-choose-colors");

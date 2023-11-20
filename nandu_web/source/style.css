@@ -164,6 +164,8 @@ main {
     padding: 5px;
     background: #ccc;
     visibility: hidden;
+    font-size: small;
+    z-index: 100;
 }
 
 #tabs {
