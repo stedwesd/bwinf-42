@@ -1,20 +1,46 @@
-from PIL import Image
 
-def getSecretMessage(filename: str, output: str):
-    img = Image.open(filename)
-    x, y, dx, dy = 0, 0, 0, 0
-    w, h = img.size
-    msg = ""
-    while not msg or dx or dy: # if we returned to the start and the message is not empty.
-        char, dx, dy = img.getpixel((x, y))[:3] # we are not interested in the alpha channel
-        msg += chr(char) # add the characters
-        x, y = x + dx, y + dy # add the offsets
-        x, y = x % w, y % h # wrap over the ends of the picture
+def importFile(filename: str):
+    with open(filename, "r") as f:
+        data = f.read().split("\n")
+
+    # Anzahl an Wundertueten 
+    n = int(data[0])
+    # Anzahl der Spielesorten
+    k = int(data[1])
+    # Anzahl der Spiele pro Spielesorte
+    sorts = []
+    for i in range(k):
+        sorts.append(int(data[i+2]))
     
-    with open(output, "w") as f:
-        f.write(msg)
+    return writeOutput(getWundertueten(n,k,sorts))
 
+
+def getWundertueten(n,k,sorts):
+    # Erstellt eine Liste an Wundertueten, die jeweils die Anzahl an erhaltenen Spielen pro Spielesorte enthält
+    tueten = []
+    for t in range(n):
+        tueten.append([])
+        for i in range(k):
+            tueten[t].append(0)
+
+    # Teilt die Spiele auf die Wundertueten auf, dabei wird jede Spielesorte nacheinander durchgegangen und jede Tuete bekommt nacheinander jeweils 1 Spielzeug.
+    currentTuete = 0   
+    for s in range(len(sorts)):
+        for i in range(sorts[s]):
+            tueten[currentTuete][s]+=1
+            currentTuete = (currentTuete+1)%n
+    
+    return tueten
+
+def writeOutput(tueten):
+    output = ""
+    for t in tueten:
+        text = str(t)
+        output += text[1:len(text)-1] + "\n"
+    return output
 
 if __name__ == "__main__":
-    for i in range(7):
-        getSecretMessage(f"files/bild0{i+1}.png", f"output/bild0{i+1}.txt")
+    for i in range(6):
+        res = importFile(f"files/wundertuete{i}.txt")
+        with open(f"output/wundertuete{i}.txt","w") as f:
+            f.write(res)
